@@ -657,10 +657,11 @@ function renderSlotBiS(key,item,nameEn,ref,tierKw){
   const badgeMap={ok:"✓ BiS",notbis:"Not BiS",medium:"Upgrade",bad:"⚠ Priority",missing:"Missing",upgrade:"⬆ Raise ilvl"};
   const badge=`<span class="badge ${status}">${badgeMap[status]||status}</span>`;
   const trk=ilvl?trkPill(ilvl):"";
-  const isBis=status==="ok"||status==="upgrade";
-  const detail=isBis&&(isSame||!detectable)
-    ?`<div class="det-row"><span class="det-k">M+ BiS</span><span class="det-v">${ref.en}</span></div><div class="det-row"></div>`
-    :`<div class="det-row"><span class="det-k">M+ BiS (Archon)</span><span class="det-v">${ref.en}</span></div><div class="det-row"><span class="det-k">Source</span><span class="det-src">${ref.src}</span></div>`;
+  // Always show BiS name and source regardless of status
+  const isBisConfirmed = (status==="ok"||status==="upgrade") && (isSame||!detectable);
+  const detail = isBisConfirmed
+    ? `<div class="det-row"><span class="det-k">M+ BiS</span><span class="det-v">${ref.en}</span></div><div class="det-row"></div>`
+    : `<div class="det-row"><span class="det-k">M+ BiS (Archon)</span><span class="det-v">${ref.en}</span></div><div class="det-row"><span class="det-k">Source</span><span class="det-src">${ref.src}</span></div>`;
   let msg="";const t=getTrack(ilvl);const tN=t?t.n:"";const vfNote=showVF?" Voidforge can push it to 298.":"";
   if(status==="missing")msg=`<div class="det-msg dm-danger">Empty slot.</div>`;
   else if(status==="bad")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — upgrade with Champion then Hero Dawncrests.</div>`;
