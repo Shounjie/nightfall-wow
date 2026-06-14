@@ -5,348 +5,617 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Nightfall — WoW M+ Gear Optimizer</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#05060c">
+<meta name="theme-color" content="#04060e">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Void Midnight palette */
-  --void-0:#05060c;      /* deepest bg */
-  --void-1:#0a0c16;      /* panel bg */
-  --void-2:#11142270;    /* card bg translucent */
-  --void-3:#161a2e;      /* raised */
-  --line:#1d2340;        /* hairline */
-  --line-2:#2a3458;
-  --ink:#e8ecfb;         /* primary text */
-  --ink-soft:#9aa6cc;    /* secondary */
-  --ink-dim:#5a648c;     /* tertiary */
-  --ink-faint:#373f63;
-  /* Track colors (gear progression) */
-  --t-champ:#34d39e;
-  --t-hero:#f0b429;
-  --t-myth:#a78bfa;
-  --t-void:#fb6a6a;
-  --t-vet:#5b9ce8;
-  /* Accents */
-  --arcane:#9d7bff;      /* signature void-arcane */
-  --arcane-glow:#7c5cff;
-  --cyan:#3dd6e8;
-  --gold:#f0b429;
-  --good:#34d39e;
-  --warn:#f0b429;
-  --bad:#fb6a6a;
-  --teal:#2dd4bf;
+  --bg:#04060e;--bg2:#080d1a;--bg3:#0d1525;--bg4:#121d32;
+  --border:#16233a;--border2:#1e3050;
+  --text:#dce8ff;--muted:#4d6a99;--dim:#253550;
+  --blue:#4488dd;--green:#22c97a;--amber:#f0b030;--red:#e04848;
+  --purple:#7755ee;--teal:#18b8b0;--gold:#f0c040;
+  --grad-a:#7755ee;--grad-b:#4488dd;
+  --r:8px;--rl:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Inter',-apple-system,sans-serif;
-  background:var(--void-0);
-  color:var(--ink);
-  min-height:100vh;
-  line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-  position:relative;
-  overflow-x:hidden;
-}
-/* Ambient void glow background */
-body::before{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,92,255,.14), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(61,214,232,.07), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 5% 30%, rgba(167,139,250,.06), transparent 50%);
-}
-body::after{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
-  background-image:radial-gradient(circle at 1px 1px, rgba(157,123,255,.08) 1px, transparent 0);
-  background-size:42px 42px;
-}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.zh body,.zh{font-family:'Noto Sans SC','Inter',sans-serif}
+a{color:var(--blue);text-decoration:none}
+
+/* ── AMBIENT BG ── */
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 90% 60% at 50% -5%,rgba(119,85,238,.12),transparent 60%),
+             radial-gradient(ellipse 50% 40% at 95% 15%,rgba(68,136,221,.07),transparent 50%),
+             radial-gradient(ellipse 40% 30% at 5% 40%,rgba(119,85,238,.05),transparent 50%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3;
+  background-image:radial-gradient(circle at 1px 1px,rgba(119,85,238,.07) 1px,transparent 0);
+  background-size:40px 40px}
 .wrap{position:relative;z-index:1}
-a{color:var(--arcane);text-decoration:none;transition:color .15s}
-a:hover{color:var(--cyan)}
 
-/* ─── HEADER ─── */
-.masthead{
-  border-bottom:1px solid var(--line);
-  background:linear-gradient(180deg, rgba(124,92,255,.05), transparent);
-  backdrop-filter:blur(8px);
-  position:sticky;top:0;z-index:50;
-}
-.masthead-in{max-width:1000px;margin:0 auto;padding:1rem 1.5rem;display:flex;align-items:center;gap:14px}
-.crest{
-  width:46px;height:46px;border-radius:13px;flex-shrink:0;position:relative;
-  background:linear-gradient(135deg,#6532d6,#1b3fb8);
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-  box-shadow:0 0 0 1px rgba(157,123,255,.3), 0 8px 24px -8px rgba(124,92,255,.6);
-}
-.crest::after{content:"";position:absolute;inset:0;border-radius:13px;background:radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), transparent 50%)}
-.mast-title h1{font-family:'Cinzel',serif;font-size:18px;font-weight:700;letter-spacing:.02em;line-height:1.1}
-.mast-title .sub{font-size:11px;color:var(--ink-soft);margin-top:3px;letter-spacing:.01em}
-.mast-title .sub strong{color:var(--arcane)}
-.mast-links{margin-left:auto;display:flex;gap:7px}
-.mast-link{font-size:11px;font-weight:600;color:var(--ink-soft);padding:6px 11px;border-radius:8px;border:1px solid var(--line);transition:.18s;background:var(--void-2)}
-.mast-link:hover{border-color:var(--line-2);color:var(--ink);transform:translateY(-1px)}
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);
+  background:rgba(4,6,14,.85);backdrop-filter:blur(16px);
+  padding:0 1.5rem;display:flex;align-items:center;height:56px;gap:14px}
+.logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--grad-a),var(--grad-b));
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 0 0 1px rgba(119,85,238,.3),0 6px 20px -6px rgba(119,85,238,.5)}
+.logo-text{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--text);letter-spacing:.02em}
+.logo-text span{color:var(--purple);opacity:.7;font-size:11px;display:block;font-family:'Inter',sans-serif;font-weight:500;letter-spacing:.05em;margin-top:-2px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.lang-btn{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;letter-spacing:.02em}
+.lang-btn:hover{border-color:var(--purple);color:var(--text)}
+.lang-btn.active{background:rgba(119,85,238,.15);border-color:rgba(119,85,238,.4);color:var(--text)}
+.lang-flag{font-size:14px}
+.tl-btn{font-size:11px;font-weight:600;color:var(--muted);padding:5px 10px;border-radius:6px;border:1px solid var(--border);transition:.15s}
+.tl-btn:hover{border-color:var(--border2);color:var(--text)}
 
-/* ─── TABS ─── */
-.tabs{max-width:1000px;margin:0 auto;padding:0 1.5rem;display:flex;gap:4px;border-bottom:1px solid var(--line)}
-.tab{
-  padding:.7rem 1.1rem;font-size:12.5px;font-weight:600;color:var(--ink-dim);cursor:pointer;
-  border-bottom:2px solid transparent;margin-bottom:-1px;transition:.18s;display:flex;align-items:center;gap:6px;
-}
-.tab:hover{color:var(--ink-soft)}
-.tab.on{color:var(--arcane);border-bottom-color:var(--arcane)}
-.tc{display:none;animation:fadeIn .35s ease}
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 1.5rem;background:rgba(4,6,14,.6);backdrop-filter:blur(8px)}
+.tab{padding:.625rem 1.125rem;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:.18s;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--purple);border-bottom-color:var(--purple)}
+.tc{display:none;animation:fadeIn .3s ease}
 .tc.on{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-.page{max-width:1000px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+.page{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
 
-/* ─── SEARCH ─── */
-.search{
-  background:var(--void-1);border:1px solid var(--line);border-radius:16px;
-  padding:1.25rem 1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden;
-}
-.search::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(157,123,255,.5),transparent)}
-.search-label{font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:.875rem;text-transform:uppercase}
-.search-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-.field{position:relative;flex:1;min-width:130px}
-.field input,.field select,.search-row>select{
-  width:100%;background:var(--void-0);border:1px solid var(--line-2);border-radius:10px;
-  color:var(--ink);padding:11px 14px;font-size:14px;font-family:inherit;outline:none;transition:.18s;
-}
-.field input::placeholder{color:var(--ink-faint)}
-.field input:focus,.search-row select:focus{border-color:var(--arcane);box-shadow:0 0 0 3px rgba(124,92,255,.15)}
-.search-row>select{min-width:72px;flex:0 0 auto}
-.btn{
-  background:linear-gradient(135deg,var(--arcane),var(--arcane-glow));color:#fff;border:none;border-radius:10px;
-  padding:11px 26px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0;
-  transition:.18s;box-shadow:0 4px 16px -4px rgba(124,92,255,.5);letter-spacing:.01em;
-}
-.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px -4px rgba(124,92,255,.7)}
-.btn:active{transform:translateY(0)}
-.btn:disabled{opacity:.4;cursor:default;transform:none}
+/* ── SEARCH ── */
+.search-wrap{background:linear-gradient(135deg,rgba(13,21,37,.9),rgba(8,13,26,.9));
+  border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.5rem;
+  position:relative;overflow:hidden}
+.search-wrap::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(119,85,238,.6),transparent)}
+.search-label{font-family:'Cinzel',serif;font-size:12px;font-weight:600;letter-spacing:.1em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:.875rem}
+.search-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.s-input{flex:1;min-width:130px;background:rgba(4,6,14,.8);border:1px solid var(--border2);
+  border-radius:var(--r);color:var(--text);padding:10px 14px;font-size:14px;font-family:inherit;
+  outline:none;transition:.18s}
+.s-input::placeholder{color:var(--dim)}
+.s-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(119,85,238,.12)}
+.s-select{background:rgba(4,6,14,.8);border:1px solid var(--border2);border-radius:var(--r);
+  color:var(--text);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;min-width:62px}
+.s-btn{background:linear-gradient(135deg,var(--grad-a),var(--grad-b));color:#fff;border:none;
+  border-radius:var(--r);padding:10px 24px;font-size:14px;font-weight:700;font-family:inherit;
+  cursor:pointer;flex-shrink:0;transition:.18s;letter-spacing:.01em;
+  box-shadow:0 4px 16px -4px rgba(119,85,238,.5)}
+.s-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px -4px rgba(119,85,238,.7)}
+.s-btn:disabled{opacity:.35;cursor:default;transform:none}
 
-/* ─── SPEC BANNER ─── */
-.banner{border-radius:12px;padding:.8rem 1.1rem;margin-bottom:1.25rem;font-size:12.5px;display:none;align-items:center;gap:10px;line-height:1.5}
-.banner.ok{background:rgba(52,211,158,.06);border:1px solid rgba(52,211,158,.2);color:var(--ink-soft)}
-.banner.warn{background:rgba(240,180,41,.05);border:1px solid rgba(240,180,41,.18);color:var(--ink-soft)}
-.banner strong{color:var(--ink)}
-.banner .bico{font-size:17px;flex-shrink:0}
+/* ── SPEC BANNER ── */
+.banner{border-radius:var(--r);padding:.75rem 1rem;margin-bottom:1.125rem;
+  font-size:12.5px;display:none;align-items:center;gap:10px}
+.banner.ok{background:rgba(34,201,122,.05);border:1px solid rgba(34,201,122,.2);color:var(--muted)}
+.banner.warn{background:rgba(240,176,48,.05);border:1px solid rgba(240,176,48,.18);color:var(--muted)}
+.banner.ok strong,.banner.warn strong{color:var(--text)}
 
-/* ─── HERO CARD (signature) ─── */
-.hero{
-  background:linear-gradient(135deg, var(--void-1), rgba(22,26,46,.6));
-  border:1px solid var(--line);border-radius:18px;padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden;
-}
-.hero::before{content:"";position:absolute;top:-40%;right:-10%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.12),transparent 65%);pointer-events:none}
+/* ── TRACK BAR ── */
+.track-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center}
+.track-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-right:4px}
+.tp{display:flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;padding:3px 9px;font-size:10px;font-weight:600;color:var(--muted)}
+.tp .td{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ── HERO CARD ── */
+.hero{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);
+  border-radius:18px;padding:1.5rem;margin-bottom:1.125rem;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-60%;right:-10%;width:320px;height:320px;
+  border-radius:50%;background:radial-gradient(circle,rgba(119,85,238,.1),transparent 65%);pointer-events:none}
 .hero-top{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem}
-.hero-id{flex:1;min-width:200px}
-.hero-name{font-family:'Cinzel',serif;font-size:26px;font-weight:700;line-height:1.1;letter-spacing:.01em}
-.hero-meta{font-size:13px;color:var(--ink-soft);margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.hero-spec-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(124,92,255,.12);border:1px solid rgba(124,92,255,.3);color:var(--arcane);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.hero-scores{display:flex;gap:1.5rem;flex-wrap:wrap}
-.hero-score{text-align:right}
-.hero-score .v{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;line-height:1}
-.hero-score .l{font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;font-weight:600}
+.hero-id{flex:1;min-width:180px}
+.hero-name{font-family:'Cinzel',serif;font-size:28px;font-weight:700;line-height:1.1;letter-spacing:.01em}
+.hero-meta{font-size:12px;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.spec-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(119,85,238,.12);
+  border:1px solid rgba(119,85,238,.28);color:var(--purple);padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:700}
+.hero-scores{display:flex;gap:2rem;flex-wrap:wrap}
+.hscore{text-align:right}
+.hscore .v{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;line-height:1}
+.hscore .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;font-weight:600}
 
-/* Signature: ilvl track bar */
+/* ilvl progress bar */
 .ilvl-bar-wrap{margin-top:.5rem}
 .ilvl-bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
-.ilvl-bar-head .lab{font-size:11px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
-.ilvl-bar-head .cur{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--ink)}
-.ilvl-bar{height:10px;border-radius:6px;background:var(--void-0);border:1px solid var(--line);position:relative;overflow:hidden}
-.ilvl-bar-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.2,.8,.2,1);position:relative}
-.ilvl-bar-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:shimmer 2.5s infinite}
+.ilvl-bar-head .lab{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.ilvl-bar-head .cur{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+.ilvl-bar{height:8px;border-radius:5px;background:rgba(4,6,14,.8);border:1px solid var(--border);overflow:hidden}
+.ilvl-bar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.2,.8,.2,1);position:relative}
+.ilvl-bar-fill::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  animation:shimmer 2.5s infinite}
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-.ilvl-ticks{display:flex;justify-content:space-between;margin-top:6px}
-.ilvl-tick{font-size:9px;color:var(--ink-faint);font-family:'JetBrains Mono',monospace;font-weight:500}
+.ilvl-ticks{display:flex;justify-content:space-between;margin-top:5px}
+.ilvl-tick{font-size:9px;color:var(--dim);font-family:'JetBrains Mono',monospace;font-weight:500}
 
-/* Stat priority row (NEW) */
-.statprio{display:flex;align-items:center;gap:10px;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--line);flex-wrap:wrap}
-.statprio-lab{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-dim);flex-shrink:0}
-.statprio-chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.stat-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:8px;background:var(--void-3);border:1px solid var(--line-2)}
-.stat-chip.primary{background:rgba(157,123,255,.13);border-color:rgba(157,123,255,.35);color:var(--arcane)}
-.stat-chip .rank{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);font-weight:700}
-.statprio-sep{color:var(--ink-faint);font-size:11px}
+/* stat priority */
+.statprio{display:flex;align-items:center;gap:10px;margin-top:1.125rem;
+  padding-top:1.125rem;border-top:1px solid var(--border);flex-wrap:wrap}
+.statprio-lab{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);flex-shrink:0}
+.statprio-chain{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.stat-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;
+  padding:3px 10px;border-radius:7px;background:var(--bg4);border:1px solid var(--border2)}
+.stat-chip.primary{background:rgba(119,85,238,.13);border-color:rgba(119,85,238,.32);color:var(--purple)}
+.stat-chip .rank{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);font-weight:700}
+.statprio-sep{color:var(--dim);font-size:10px}
 
-/* ─── STAT GRID (mini summary) ─── */
-.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:9px;margin-bottom:1.25rem}
-.scard{background:var(--void-1);border:1px solid var(--line);border-radius:13px;padding:.85rem 1rem;transition:.18s}
-.scard:hover{border-color:var(--line-2)}
-.scard .sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:7px}
-.scard .sv{font-family:'JetBrains Mono',monospace;font-size:23px;font-weight:700;line-height:1}
-.scard .ss{font-size:11px;color:var(--ink-soft);margin-top:3px}
-.cg{color:var(--good)}.ca{color:var(--warn)}.cr{color:var(--bad)}.cp{color:var(--t-myth)}.cb{color:var(--t-vet)}.ct{color:var(--teal)}.cgr{color:var(--ink-dim)}
+/* ── SUMMARY CARDS ── */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:1.125rem}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:.75rem .875rem;transition:.15s}
+.sc:hover{border-color:var(--border2)}
+.sc .sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.sc .sv{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;line-height:1}
+.sc .sv.sm{font-size:14px;font-weight:600;margin-top:3px}
+.sc .ss{font-size:10px;color:var(--muted);margin-top:2px}
+.cg{color:var(--green)}.ca{color:var(--amber)}.cr{color:var(--red)}.cp{color:var(--purple)}.cb{color:var(--blue)}.cgr{color:var(--muted)}
 
-/* ─── VOIDFORGE NOTE ─── */
-.vf-note{display:flex;gap:11px;background:rgba(251,106,106,.04);border:1px solid rgba(251,106,106,.16);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1.25rem;font-size:11.5px;color:var(--ink-soft);line-height:1.65}
-.vf-ico{font-size:18px;flex-shrink:0;margin-top:1px}
-.vf-note strong{color:var(--bad)}
+/* ── VF NOTE ── */
+.vf-note{display:flex;gap:10px;background:rgba(224,72,72,.04);border:1px solid rgba(224,72,72,.15);
+  border-radius:12px;padding:.875rem 1rem;margin-bottom:1.125rem;font-size:11.5px;color:var(--muted);line-height:1.65}
+.vf-ico{font-size:17px;flex-shrink:0;margin-top:1px}
+.vf-note strong{color:var(--red)}
 
-/* ─── TIER BANNER ─── */
-.tier-ban{border-radius:13px;padding:.95rem 1.1rem;margin-bottom:1.25rem;border:1px solid rgba(167,139,250,.25);background:linear-gradient(135deg,rgba(167,139,250,.07),rgba(124,92,255,.03));display:flex;gap:12px;align-items:flex-start}
+/* ── TIER BANNER ── */
+.tier-ban{border-radius:12px;padding:.875rem 1rem;margin-bottom:1.125rem;
+  border:1px solid rgba(119,85,238,.22);background:linear-gradient(135deg,rgba(119,85,238,.07),rgba(68,136,221,.03));
+  display:flex;gap:12px;align-items:flex-start}
 .tier-ico{font-size:22px;flex-shrink:0}
-.tier-h{font-family:'Cinzel',serif;font-weight:600;color:var(--t-myth);font-size:14px;margin-bottom:3px}
-.tier-s{color:var(--ink-soft);font-size:11.5px;line-height:1.6}
+.tier-h{font-family:'Cinzel',serif;font-weight:600;color:var(--purple);font-size:14px;margin-bottom:3px}
+.tier-s{color:var(--muted);font-size:11.5px;line-height:1.6}
 
-/* ─── SECTIONS ─── */
-.section-head{display:flex;align-items:center;gap:9px;margin:1.5rem 0 .65rem}
-.section-head .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
-.section-head .t{font-family:'Cinzel',serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft)}
-.section-head .c{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);font-weight:700;background:var(--void-3);padding:2px 8px;border-radius:20px}
-.section-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+/* ── SECTIONS ── */
+.sec-head{display:flex;align-items:center;gap:9px;margin:1.5rem 0 .625rem}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+.sec-t{font-family:'Cinzel',serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.sec-c{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);font-weight:700;
+  background:var(--bg3);padding:2px 8px;border-radius:20px;border:1px solid var(--border)}
+.sec-rule{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
 
-/* ─── SLOT ITEMS ─── */
-.slots{display:flex;flex-direction:column;gap:6px}
-.slot{
-  background:var(--void-1);border:1px solid var(--line);border-radius:14px;padding:.9rem 1.05rem;
-  display:grid;grid-template-columns:46px 1fr auto;gap:0 13px;transition:.18s;position:relative;overflow:hidden;
-}
-.slot::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
-.slot:hover{border-color:var(--line-2);transform:translateX(2px)}
-.slot.bad::before{background:var(--bad)}
-.slot.medium::before,.slot.notbis::before{background:var(--warn)}
-.slot.ok::before{background:var(--good)}
-.slot.upgrade::before{background:var(--teal)}
-.slot.missing::before{background:var(--ink-faint)}
-.slot-ico{width:44px;height:44px;border-radius:10px;border:1px solid var(--line-2);object-fit:cover;background:var(--void-3);display:block}
-.slot-ico-txt{width:44px;height:44px;border-radius:10px;background:var(--void-3);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--line-2)}
-.slot-slot{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-dim);margin-bottom:3px}
+/* ── SLOT ITEMS ── */
+.slots{display:flex;flex-direction:column;gap:5px}
+.slot{background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:.875rem 1rem;display:grid;grid-template-columns:44px 1fr auto;gap:0 12px;
+  border-left-width:3px;transition:.18s;position:relative;overflow:hidden}
+.slot:hover{background:var(--bg3);transform:translateX(2px)}
+.slot.bad{border-left-color:var(--red)}.slot.medium{border-left-color:var(--amber)}
+.slot.ok{border-left-color:var(--green)}.slot.notbis{border-left-color:var(--amber)}
+.slot.upgrade{border-left-color:var(--teal)}.slot.missing{border-left-color:var(--dim)}
+.slot-img{width:42px;height:42px;border-radius:9px;border:1px solid var(--border2);
+  object-fit:cover;background:var(--bg3);display:block}
+.slot-txt{width:42px;height:42px;border-radius:9px;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;font-size:19px;border:1px solid var(--border2)}
+.slot-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
 .slot-nr{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px}
 .slot-name{font-size:14px;font-weight:700;letter-spacing:.005em}
 .slot-ilvl{display:flex;align-items:center;gap:6px;font-size:12px}
 .slot-ilvl strong{font-family:'JetBrains Mono',monospace;font-weight:700}
-.pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid transparent;letter-spacing:.02em;text-transform:uppercase}
-.p-tier{background:rgba(167,139,250,.14);color:var(--t-myth);border-color:rgba(167,139,250,.3)}
-.p-craft{background:rgba(61,214,232,.1);color:var(--cyan);border-color:rgba(61,214,232,.25)}
-.p-vf{background:rgba(251,106,106,.1);color:var(--bad);border-color:rgba(251,106,106,.25)}
+.pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;
+  padding:2px 7px;border-radius:20px;border:1px solid transparent;letter-spacing:.02em;text-transform:uppercase}
+.p-tier{background:rgba(119,85,238,.13);color:var(--purple);border-color:rgba(119,85,238,.28)}
+.p-craft{background:rgba(24,184,176,.1);color:var(--teal);border-color:rgba(24,184,176,.25)}
+.p-vf{background:rgba(224,72,72,.1);color:var(--red);border-color:rgba(224,72,72,.25)}
 .p-track{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid transparent;font-family:'JetBrains Mono',monospace}
-.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:4px 11px;border-radius:20px;border:1px solid transparent;white-space:nowrap;align-self:start}
-.badge.ok{background:rgba(52,211,158,.1);color:var(--good);border-color:rgba(52,211,158,.25)}
-.badge.notbis{background:rgba(240,180,41,.1);color:var(--warn);border-color:rgba(240,180,41,.25)}
-.badge.medium{background:rgba(240,180,41,.09);color:var(--warn);border-color:rgba(240,180,41,.2)}
-.badge.bad{background:rgba(251,106,106,.09);color:var(--bad);border-color:rgba(251,106,106,.2)}
-.badge.missing{background:rgba(55,63,99,.3);color:var(--ink-dim);border-color:var(--line)}
-.badge.upgrade{background:rgba(45,212,191,.09);color:var(--teal);border-color:rgba(45,212,191,.2)}
-.slot-detail{grid-column:1/-1;border-top:1px solid var(--line);margin-top:.8rem;padding-top:.8rem;display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:11.5px}
-.det-row{display:flex;flex-direction:column;gap:1px}
-.det-k{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint)}
-.det-v{color:var(--ink)}
-.det-src{color:var(--arcane)}
-.det-msg{margin-top:7px;grid-column:1/-1;font-size:11px;padding:6px 11px;border-radius:8px;line-height:1.55}
-.dm-ok{background:rgba(52,211,158,.06);color:var(--good);border-left:2px solid var(--good)}
-.dm-teal{background:rgba(45,212,191,.06);color:var(--teal);border-left:2px solid var(--teal)}
-.dm-warn{background:rgba(240,180,41,.06);color:var(--warn);border-left:2px solid var(--warn)}
-.dm-danger{background:rgba(251,106,106,.06);color:var(--bad);border-left:2px solid var(--bad)}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:4px 10px;
+  border-radius:20px;border:1px solid transparent;white-space:nowrap;align-self:start}
+.badge.ok{background:rgba(34,201,122,.1);color:var(--green);border-color:rgba(34,201,122,.22)}
+.badge.notbis{background:rgba(240,176,48,.1);color:var(--amber);border-color:rgba(240,176,48,.22)}
+.badge.medium{background:rgba(240,176,48,.09);color:var(--amber);border-color:rgba(240,176,48,.18)}
+.badge.bad{background:rgba(224,72,72,.09);color:var(--red);border-color:rgba(224,72,72,.18)}
+.badge.missing{background:rgba(37,53,80,.3);color:var(--muted);border-color:var(--border)}
+.badge.upgrade{background:rgba(24,184,176,.09);color:var(--teal);border-color:rgba(24,184,176,.18)}
+.slot-detail{grid-column:1/-1;border-top:1px solid var(--border);margin-top:.75rem;
+  padding-top:.75rem;display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:11.5px}
+.d-row{display:flex;flex-direction:column;gap:1px}
+.d-k{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}
+.d-v{color:var(--text)}.d-src{color:var(--blue)}
+.d-msg{margin-top:6px;grid-column:1/-1;font-size:11px;padding:5px 10px;border-radius:7px;line-height:1.55}
+.dm-ok{background:rgba(34,201,122,.06);color:var(--green);border-left:2px solid var(--green)}
+.dm-teal{background:rgba(24,184,176,.06);color:var(--teal);border-left:2px solid var(--teal)}
+.dm-warn{background:rgba(240,176,48,.06);color:var(--amber);border-left:2px solid var(--amber)}
+.dm-danger{background:rgba(224,72,72,.06);color:var(--red);border-left:2px solid var(--red)}
 
-/* ─── LOADER / ERR ─── */
-.loader{text-align:center;padding:3.5rem 1rem;color:var(--ink-soft);font-size:14px}
-.spin{display:inline-block;width:34px;height:34px;border:2.5px solid var(--line);border-top-color:var(--arcane);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:1rem}
+/* ── LOADER ── */
+.loader{text-align:center;padding:4rem 1rem;color:var(--muted);font-size:14px}
+.spin{display:inline-block;width:36px;height:36px;border:2.5px solid var(--border);
+  border-top-color:var(--purple);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:1rem}
 @keyframes sp{to{transform:rotate(360deg)}}
-.err{background:rgba(251,106,106,.05);border:1px solid rgba(251,106,106,.22);border-radius:13px;padding:1.25rem 1.5rem}
-.err strong{display:block;color:var(--bad);margin-bottom:6px;font-size:15px;font-family:'Cinzel',serif}
-.err p{font-size:12.5px;color:var(--ink-soft);line-height:1.65}
+.err{background:rgba(224,72,72,.05);border:1px solid rgba(224,72,72,.2);border-radius:14px;padding:1.25rem 1.5rem}
+.err strong{display:block;color:var(--red);margin-bottom:5px;font-size:14px;font-family:'Cinzel',serif}
+.err p{font-size:12.5px;color:var(--muted);line-height:1.65}
 
-/* ─── REFERENCE TAB ─── */
-.refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:11px;margin-bottom:1.25rem}
-.refcard{background:var(--void-1);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.refcard-h{padding:.8rem 1.1rem;border-bottom:1px solid var(--line);font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:8px;background:rgba(124,92,255,.03)}
-.refcard-h .rhi{font-size:16px}
-.refrow{display:flex;align-items:center;gap:11px;padding:.5rem 1.1rem;font-size:12px;transition:.15s;border-top:1px solid rgba(29,35,64,.5)}
-.refrow:first-of-type{border-top:none}
-.refrow:hover{background:var(--void-3)}
-.refi{width:30px;height:30px;border-radius:7px;background:var(--void-3);border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.refn{font-weight:600;flex:1}.refs{font-size:10px;color:var(--ink-soft);margin-top:1px}
-.refp{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--arcane)}
-.refnote{font-size:10.5px;color:var(--ink-dim);padding:.5rem 1.1rem;font-style:italic;line-height:1.5;border-top:1px solid rgba(29,35,64,.5)}
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:4rem 1rem}
+.empty-ico{font-size:52px;margin-bottom:1rem;opacity:.4}
+.empty-h{font-family:'Cinzel',serif;font-size:20px;color:var(--muted);margin-bottom:.625rem}
+.empty-p{font-size:13px;color:var(--dim);max-width:380px;margin:0 auto;line-height:1.65}
 
-/* ─── EMPTY STATE ─── */
-.empty{text-align:center;padding:4rem 1.5rem}
-.empty-ico{font-size:48px;margin-bottom:1rem;opacity:.5}
-.empty-h{font-family:'Cinzel',serif;font-size:18px;font-weight:600;color:var(--ink-soft);margin-bottom:.5rem}
-.empty-p{font-size:13px;color:var(--ink-dim);max-width:340px;margin:0 auto;line-height:1.6}
+/* ── ABOUT PAGE ── */
+.about-hero{text-align:center;padding:3rem 1rem 2rem;position:relative}
+.about-hero::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(119,85,238,.1),transparent 70%);pointer-events:none}
+.about-logo{width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,var(--grad-a),var(--grad-b));
+  display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 1.25rem;
+  box-shadow:0 0 0 1px rgba(119,85,238,.3),0 16px 40px -12px rgba(119,85,238,.6)}
+.about-title{font-family:'Cinzel',serif;font-size:32px;font-weight:700;letter-spacing:.02em;margin-bottom:.5rem}
+.about-sub{font-size:14px;color:var(--muted);max-width:480px;margin:0 auto 2rem}
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:2rem}
+.about-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;
+  position:relative;overflow:hidden;transition:.18s}
+.about-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.about-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.about-card-ico{font-size:28px;margin-bottom:.875rem}
+.about-card-title{font-family:'Cinzel',serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:.5rem}
+.about-card-text{font-size:12.5px;color:var(--muted);line-height:1.65}
+.about-section{margin-bottom:2rem}
+.about-section-title{font-family:'Cinzel',serif;font-size:16px;font-weight:600;
+  color:var(--text);margin-bottom:1rem;padding-bottom:.625rem;border-bottom:1px solid var(--border)}
+.about-warning{display:flex;gap:12px;background:rgba(240,176,48,.05);border:1px solid rgba(240,176,48,.2);
+  border-radius:12px;padding:1rem 1.25rem;font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:1.25rem}
+.about-warning strong{color:var(--amber)}
+.tier-s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.tier-s-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:.75rem 1rem;display:flex;align-items:center;gap:10px;font-size:13px;transition:.15s}
+.tier-s-item:hover{border-color:var(--border2)}
+.tier-s-item .role-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tier-s-item .spec-name{font-weight:600}
+.tier-s-item .role-lbl{font-size:10px;color:var(--muted);margin-top:1px}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:14px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;padding:1rem 1.25rem;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--grad-a),var(--grad-b));
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  flex-shrink:0;color:#fff;font-family:'JetBrains Mono',monospace}
+.step-t{font-weight:600;font-size:13px;margin-bottom:3px}
+.step-d{font-size:12px;color:var(--muted);line-height:1.6}
 
-.foot{border-top:1px solid var(--line);padding:1.5rem;text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2rem}
-.foot a{color:var(--ink-dim)}
+/* ── REF TAB ── */
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:1rem}
+.rc{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.rc-h{padding:.75rem 1.125rem;border-bottom:1px solid var(--border);font-family:'Cinzel',serif;
+  font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;
+  display:flex;align-items:center;gap:7px;background:rgba(119,85,238,.03)}
+.rr{display:flex;align-items:center;gap:10px;padding:.45rem 1.125rem;font-size:12px;transition:.15s;border-top:1px solid rgba(22,35,58,.5)}
+.rr:first-of-type{border-top:none}
+.rr:hover{background:var(--bg3)}
+.ri{width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.rn{font-weight:600;flex:1}.rs{font-size:10px;color:var(--muted);margin-top:1px}
+.rp{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--purple)}
+.rnote{font-size:10.5px;color:var(--dim);padding:.45rem 1.125rem;font-style:italic;line-height:1.5;border-top:1px solid rgba(22,35,58,.5)}
 
-@media(max-width:560px){
-  .slot-detail,.refgrid{grid-template-columns:1fr}
+/* ── FOOTER ── */
+.foot{border-top:1px solid var(--border);padding:1.5rem;text-align:center;font-size:11px;color:var(--dim);margin-top:2rem}
+.foot a{color:var(--muted)}
+
+@media(max-width:580px){
+  .slot-detail,.about-grid,.rg{grid-template-columns:1fr}
   .summary{grid-template-columns:repeat(2,1fr)}
   .hero-scores{width:100%;justify-content:space-between}
-  .hero-score{text-align:left}
+  .hscore{text-align:left}
+  .about-title{font-size:24px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="masthead">
-  <div class="masthead-in">
-    <div class="crest">🌙</div>
-    <div class="mast-title">
-      <h1>Nightfall</h1>
-      <div class="sub">M+ Gear Optimizer · <strong>Midnight Season 1</strong> · auto-detects class &amp; spec</div>
-    </div>
-    <div class="mast-links">
-      <a class="mast-link" href="https://www.archon.gg" target="_blank">Archon</a>
-      <a class="mast-link" href="https://www.icy-veins.com/wow/class-guides" target="_blank">Icy Veins</a>
-    </div>
+
+<div class="topbar">
+  <a class="logo-wrap" href="#">
+    <div class="logo">🌙</div>
+    <div class="logo-text">Nightfall<span data-i18n="tagline">M+ Gear Optimizer</span></div>
+  </a>
+  <div class="topbar-right">
+    <button class="lang-btn active" onclick="setLang('en')" id="btn-en"><span class="lang-flag">🇬🇧</span> EN</button>
+    <button class="lang-btn" onclick="setLang('zh')" id="btn-zh"><span class="lang-flag">🇨🇳</span> 中文</button>
+    <a class="tl-btn" href="https://www.archon.gg" target="_blank">Archon</a>
+    <a class="tl-btn" href="https://www.icy-veins.com/wow/class-guides" target="_blank">Icy Veins</a>
   </div>
 </div>
 
 <div class="tabs">
-  <div class="tab on" onclick="switchTab('gear',this)">⚔ Gear Check</div>
-  <div class="tab" onclick="switchTab('ref',this)">✦ Reference</div>
+  <div class="tab on" onclick="switchTab('gear',this)">⚔ <span data-i18n="tab_gear">Gear Check</span></div>
+  <div class="tab" onclick="switchTab('about',this)">📖 <span data-i18n="tab_about">About</span></div>
+  <div class="tab" onclick="switchTab('ref',this)">✦ <span data-i18n="tab_ref">Reference</span></div>
 </div>
 
 <div class="page">
-  <div id="tab-gear" class="tc on">
-    <div class="search">
-      <div class="search-label">Summon a character</div>
-      <div class="search-row">
-        <div class="field"><input id="charName" type="text" placeholder="Character name"/></div>
-        <div class="field"><input id="realmName" type="text" placeholder="Realm"/></div>
-        <select id="regionSel"><option value="eu" selected>EU</option><option value="us">US</option><option value="kr">KR</option><option value="tw">TW</option></select>
-        <button class="btn" id="btnGo" onclick="run()">Analyze</button>
-      </div>
-    </div>
-    <div id="specBanner" class="banner"></div>
-    <div id="out">
-      <div class="empty">
-        <div class="empty-ico">🌙</div>
-        <div class="empty-h">Awaiting your champion</div>
-        <div class="empty-p">Enter any character name and realm. Nightfall reads their live gear from Raider.IO and compares it to the current Mythic+ meta. Works for every class and spec.</div>
-      </div>
+
+<!-- TAB: GEAR -->
+<div id="tab-gear" class="tc on">
+  <div class="search-wrap">
+    <div class="search-label" data-i18n="search_label">Summon a character</div>
+    <div class="search-row">
+      <input id="charName" class="s-input" type="text" placeholder="Character name" data-i18n-ph="ph_name"/>
+      <input id="realmName" class="s-input" type="text" placeholder="Realm" data-i18n-ph="ph_realm"/>
+      <select id="regionSel" class="s-select">
+        <option value="eu" selected>EU</option>
+        <option value="us">US</option>
+        <option value="kr">KR</option>
+        <option value="tw">TW</option>
+      </select>
+      <button class="s-btn" id="btnGo" onclick="run()"><span data-i18n="btn_analyze">Analyze</span></button>
     </div>
   </div>
-  <div id="tab-ref" class="tc">
-    <div id="refContent">
-      <div class="empty">
-        <div class="empty-ico">✦</div>
-        <div class="empty-h">No spec loaded yet</div>
-        <div class="empty-p">Analyze a character first — this tab will fill with their spec's stat priority, enchants, gems and consumables.</div>
-      </div>
+  <div id="specBanner" class="banner"></div>
+  <div class="track-bar">
+    <span class="track-lbl" data-i18n="tracks_label">Tracks:</span>
+    <div class="tp"><span class="td" style="background:#22c97a"></span>Champion 250–263</div>
+    <div class="tp"><span class="td" style="background:#f0b030"></span>Hero 263–276</div>
+    <div class="tp"><span class="td" style="background:#7755ee"></span>Myth 276–289</div>
+    <div class="tp"><span class="td" style="background:#e04848"></span>🔥 Voidforge →298</div>
+  </div>
+  <div id="out">
+    <div class="empty">
+      <div class="empty-ico">🌙</div>
+      <div class="empty-h" data-i18n="empty_title">Awaiting your champion</div>
+      <div class="empty-p" data-i18n="empty_desc">Enter any character name and realm. Nightfall reads their live gear from Raider.IO and compares it to the Mythic+ meta. Works for every class and spec.</div>
     </div>
   </div>
 </div>
 
+<!-- TAB: ABOUT -->
+<div id="tab-about" class="tc">
+  <div class="about-hero">
+    <div class="about-logo">🌙</div>
+    <div class="about-title">Nightfall</div>
+    <div class="about-sub" data-i18n="about_sub">The fastest way to know what gear to target for Mythic+. Enter any character — Nightfall does the rest.</div>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card">
+      <div class="about-card-ico">⚡</div>
+      <div class="about-card-title" data-i18n="feat1_title">Live Data</div>
+      <div class="about-card-text" data-i18n="feat1_desc">Gear is fetched in real-time from Raider.IO. No manual input needed — just enter the character name and realm.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-ico">🎯</div>
+      <div class="about-card-title" data-i18n="feat2_title">Auto Spec Detection</div>
+      <div class="about-card-text" data-i18n="feat2_desc">Nightfall automatically detects the active class and specialization and loads the correct BiS data. Supports all 40 specs.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-ico">📊</div>
+      <div class="about-card-title" data-i18n="feat3_title">Data-Driven BiS</div>
+      <div class="about-card-text" data-i18n="feat3_desc">Best-in-slot recommendations sourced from Archon.gg (275k+ M+ parses). Updated each season. M+ drops and crafts only — no raid items.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-ico">🌍</div>
+      <div class="about-card-title" data-i18n="feat4_title">All Regions</div>
+      <div class="about-card-text" data-i18n="feat4_desc">Supports EU, US, KR and TW regions. Works for any character visible on Raider.IO.</div>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <div class="about-section-title" data-i18n="prereq_title">Prerequisites</div>
+    <div class="about-warning">
+      <div style="font-size:18px;flex-shrink:0">⚠️</div>
+      <div><strong data-i18n="prereq_warn_title">Raider.IO profile must be up to date.</strong><br>
+      <span data-i18n="prereq_warn_desc">If the character was recently played but not showing correct gear, visit raider.io, search the character and click <strong>"Update Character"</strong>. Data syncs within a few minutes.</span></div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div><div class="step-t" data-i18n="step1_t">Open Nightfall</div><div class="step-d" data-i18n="step1_d">No account needed. Works instantly in any browser.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div><div class="step-t" data-i18n="step2_t">Enter character name & realm</div><div class="step-d" data-i18n="step2_d">Type the exact name (including special characters like ë) and the realm name.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div><div class="step-t" data-i18n="step3_t">Click Analyze</div><div class="step-d" data-i18n="step3_d">Nightfall fetches live gear, detects your spec, and shows every slot with BiS target and dungeon source.</div></div></div>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <div class="about-section-title" data-i18n="specs_title">Tier S — Full BiS Coverage</div>
+    <div class="about-warning">
+      <div style="font-size:18px;flex-shrink:0">ℹ️</div>
+      <div><strong data-i18n="specs_warn_title">Currently in database:</strong>
+      <span data-i18n="specs_warn_desc"> Only Tier S specs have detailed per-slot BiS data. All other specs show ilvl check + tier set + tracks. More specs will be added progressively.</span></div>
+    </div>
+    <div class="tier-s-grid">
+      <div class="tier-s-item"><div class="role-dot" style="background:#22c97a"></div><div><div class="spec-name">Restoration Shaman</div><div class="role-lbl">Healer · Verified on Archon</div></div></div>
+      <div class="tier-s-item"><div class="role-dot" style="background:#22c97a"></div><div><div class="spec-name">Mistweaver Monk</div><div class="role-lbl">Healer · Verified on Archon</div></div></div>
+      <div class="tier-s-item"><div class="role-dot" style="background:#f0b030"></div><div><div class="spec-name">Guardian Druid</div><div class="role-lbl">Tank · Verified on Archon</div></div></div>
+      <div class="tier-s-item"><div class="role-dot" style="background:#f0b030"></div><div><div class="spec-name">Brewmaster Monk</div><div class="role-lbl">Tank · Verified on Archon</div></div></div>
+      <div class="tier-s-item"><div class="role-dot" style="background:#e04848"></div><div><div class="spec-name">Devourer Demon Hunter</div><div class="role-lbl">DPS · Verified on Archon</div></div></div>
+      <div class="tier-s-item"><div class="role-dot" style="background:#e04848"></div><div><div class="spec-name">Unholy Death Knight</div><div class="role-lbl">DPS · Verified on Archon</div></div></div>
+      <div class="tier-s-item"><div class="role-dot" style="background:#e04848"></div><div><div class="spec-name">Augmentation Evoker</div><div class="role-lbl">DPS · Verified on Archon</div></div></div>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <div class="about-section-title" data-i18n="about_data_title">About the Data</div>
+    <div class="steps">
+      <div class="step"><div class="step-num" style="background:var(--bg4);color:var(--muted);border:1px solid var(--border)">📡</div><div><div class="step-t">Raider.IO API</div><div class="step-d" data-i18n="data_raiderio">Live gear data for any character. Updated every time a player logs in or completes content.</div></div></div>
+      <div class="step"><div class="step-num" style="background:var(--bg4);color:var(--muted);border:1px solid var(--border)">📊</div><div><div class="step-t">Archon.gg</div><div class="step-d" data-i18n="data_archon">BiS sourced from 275,000+ Mythic+ parses. Keys +7 to +24. Updated each season patch.</div></div></div>
+      <div class="step"><div class="step-num" style="background:var(--bg4);color:var(--muted);border:1px solid var(--border)">🔥</div><div><div class="step-t" data-i18n="data_voidforge_t">Voidforge (patch 12.0.5)</div><div class="step-d" data-i18n="data_voidforge_d">Pushes Main Hand and Trinkets to ilvl 298 on Hero/Myth track. Not available on other slots.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: REFERENCE -->
+<div id="tab-ref" class="tc">
+  <div id="refContent">
+    <div class="empty">
+      <div class="empty-ico">✦</div>
+      <div class="empty-h" data-i18n="ref_empty_title">No spec loaded</div>
+      <div class="empty-p" data-i18n="ref_empty_desc">Analyze a character first to see their spec's stat priority, enchants, gems and consumables.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
 <div class="foot">
-  Live gear · <a href="https://raider.io/api" target="_blank">Raider.IO</a> &nbsp;·&nbsp;
-  Item names · <a href="https://www.wowhead.com" target="_blank">Wowhead</a> &nbsp;·&nbsp;
-  BiS data · <a href="https://www.archon.gg" target="_blank">Archon.gg</a> &nbsp;·&nbsp;
+  <span data-i18n="foot_data">Live gear</span> · <a href="https://raider.io/api" target="_blank">Raider.IO</a> &nbsp;·&nbsp;
+  <span data-i18n="foot_bis">BiS data</span> · <a href="https://www.archon.gg" target="_blank">Archon.gg</a> &nbsp;·&nbsp;
   Midnight S1 · patch 12.0.5
 </div>
 </div><!-- /wrap -->
 <script>
-/* ═══════════════════════════════════════════════════════════
-   NIGHTFALL — WoW M+ Gear Optimizer
-   Structural data: all 40 specs. Detailed BiS: verified specs only.
-   ═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   I18N — Translations EN / ZH-Hans
+   ══════════════════════════════════════════ */
+const I18N = {
+  en: {
+    tagline:"M+ Gear Optimizer",
+    tab_gear:"Gear Check", tab_about:"About", tab_ref:"Reference",
+    search_label:"Summon a character",
+    ph_name:"Character name", ph_realm:"Realm",
+    btn_analyze:"Analyze",
+    tracks_label:"Tracks:",
+    empty_title:"Awaiting your champion",
+    empty_desc:"Enter any character name and realm. Nightfall reads their live gear from Raider.IO and compares it to the Mythic+ meta.",
+    about_sub:"The fastest way to know what gear to target for Mythic+. Enter any character — Nightfall does the rest.",
+    feat1_title:"Live Data", feat1_desc:"Gear is fetched in real-time from Raider.IO. No manual input needed — just enter the character name and realm.",
+    feat2_title:"Auto Spec Detection", feat2_desc:"Nightfall automatically detects the active class and specialization and loads the correct BiS data. Supports all 40 specs.",
+    feat3_title:"Data-Driven BiS", feat3_desc:"Best-in-slot recommendations sourced from Archon.gg (275k+ M+ parses). M+ drops and crafts only — no raid items.",
+    feat4_title:"All Regions", feat4_desc:"Supports EU, US, KR and TW regions. Works for any character visible on Raider.IO.",
+    prereq_title:"Prerequisites",
+    prereq_warn_title:"Raider.IO profile must be up to date.",
+    prereq_warn_desc:" If gear isn't showing correctly, visit raider.io, search the character and click \"Update Character\".",
+    step1_t:"Open Nightfall", step1_d:"No account needed. Works instantly in any browser.",
+    step2_t:"Enter character name & realm", step2_d:"Type the exact name (including special characters) and the realm.",
+    step3_t:"Click Analyze", step3_d:"Nightfall fetches live gear, detects your spec, and shows every slot with BiS target and source.",
+    specs_title:"Tier S — Full BiS Coverage",
+    specs_warn_title:"Currently in database:",
+    specs_warn_desc:" Only Tier S specs have detailed per-slot BiS. All others show ilvl check + tier + tracks. More specs added progressively.",
+    about_data_title:"About the Data",
+    data_raiderio:"Live gear data for any character. Updated every time a player logs in or completes content.",
+    data_archon:"BiS sourced from 275,000+ Mythic+ parses. Keys +7 to +24. Updated each season patch.",
+    data_voidforge_t:"Voidforge (patch 12.0.5)", data_voidforge_d:"Pushes Main Hand and Trinkets to ilvl 298 on Hero/Myth track. Not available on other slots.",
+    ref_empty_title:"No spec loaded", ref_empty_desc:"Analyze a character first to see their spec's enchants, gems and consumables.",
+    foot_data:"Live gear", foot_bis:"BiS data",
+    banner_full:"Detected {spec} {class} — full BiS data loaded.",
+    banner_struct:"Detected {spec} {class} — structural check (ilvl, tier, tracks). Detailed BiS coming soon.",
+    banner_unknown:"Spec {spec} {class} not recognized — ilvl-only check.",
+    tier_complete:"T1 Set Complete — 4/4",
+    tier_incomplete:"T1 Set Incomplete — {n}/4",
+    tier_incomplete_sub:"Missing {x} piece(s) — top priority! 5 slots available (need 4): Head · Shoulders · Chest · Hands · Legs.",
+    sec_high:"High Priority", sec_notbis:"Not BiS — Swap Item", sec_needs:"Needs ilvl Upgrade",
+    sec_correct:"Correct Item — Raise ilvl", sec_ok:"Optimal Slots",
+    sec_low:"High Priority — Low ilvl", sec_needs2:"Needs Upgrade", sec_ok2:"ilvl 276+",
+    badge_ok:"✓ BiS", badge_notbis:"Not BiS", badge_medium:"Upgrade", badge_bad:"⚠ Priority",
+    badge_missing:"Missing", badge_upgrade:"⬆ Raise ilvl", badge_good:"✓ Good",
+    vf_title:"Voidforge (patch 12.0.5)",
+    vf_desc:"Pushes items to ilvl 298 on Hero/Myth track. Eligible slots: Main Hand · Trinket 1 · Trinket 2. Not on rings, armor, cloak or bracers.",
+    msg_empty:"Empty slot.",
+    msg_bad:"ilvl {ilvl} ({track}) — upgrade with Champion then Hero Dawncrests.",
+    msg_medium_craft:"Crafted ilvl {ilvl} — re-craft at higher quality.",
+    msg_medium:"ilvl {ilvl} ({track}) — upgrade with Hero Dawncrests (M+ ≥4).",
+    msg_upgrade_craft:"✓ Correct crafted item — re-craft higher to raise ilvl.",
+    msg_upgrade:"✓ Correct item — upgrade with Hero then Myth Dawncrests.",
+    msg_notbis:"ilvl {ilvl} is fine but this isn't the BiS item. Target the item listed above.",
+    msg_276:"✓ ilvl 276 — Hero 6/6 cap or Myth 1/6. If Hero track, get the Myth-track version to continue.",
+    msg_vfmax:"✓ Voidforge max — perfect!",
+    msg_max:"✓ Max ilvl — perfect!",
+    msg_good:"✓ Good.",
+    bis_label:"M+ BiS (Archon)", src_label:"Source",
+    stat_priority:"Stat Priority",
+    ref_title:"Reference for {spec} {class}",
+    ref_stats:"Stats & Priority", ref_primary:"Primary stat", ref_secondary:"Secondary priority",
+    ref_cons:"Consumables", ref_flask:"Flask", ref_pot:"Combat potion", ref_food:"Food", ref_rune:"Augment rune",
+    ref_ench:"Enchants", ref_weapon:"Weapon", ref_chest:"Chest", ref_legs:"Legs", ref_boots:"Boots", ref_rings:"Rings",
+    ref_struct:"Structural",
+  },
+  zh: {
+    tagline:"M+ 装备优化器",
+    tab_gear:"装备检查", tab_about:"关于", tab_ref:"参考",
+    search_label:"召唤角色",
+    ph_name:"角色名称", ph_realm:"服务器",
+    btn_analyze:"分析",
+    tracks_label:"装备档次:",
+    empty_title:"等待你的英雄",
+    empty_desc:"输入任意角色名和服务器。Nightfall 从 Raider.IO 获取实时装备数据，并与 M+ 最优装备进行对比。",
+    about_sub:"最快速了解 M+ 目标装备的工具。输入任意角色，Nightfall 为你完成剩余一切。",
+    feat1_title:"实时数据", feat1_desc:"装备数据通过 Raider.IO 实时获取，无需手动输入，只需填写角色名和服务器即可。",
+    feat2_title:"自动检测专精", feat2_desc:"Nightfall 自动识别当前职业和专精，并加载对应的最优装备数据，支持全部 40 个专精。",
+    feat3_title:"数据驱动的 BiS", feat3_desc:"最优装备推荐来源于 Archon.gg（超过 27.5 万条 M+ 记录）。仅包含 M+ 掉落和制造装备，不含团本装备。",
+    feat4_title:"全区支持", feat4_desc:"支持 EU、US、KR 和 TW 区服。适用于 Raider.IO 上可见的任何角色。",
+    prereq_title:"使用前提",
+    prereq_warn_title:"Raider.IO 档案必须保持最新状态。",
+    prereq_warn_desc:" 如果装备显示不正确，请前往 raider.io 搜索该角色并点击「更新角色」（Update Character）。",
+    step1_t:"打开 Nightfall", step1_d:"无需账号，在任意浏览器中即可立即使用。",
+    step2_t:"输入角色名和服务器", step2_d:"请填写完整的角色名（包含特殊字符）和服务器名称。",
+    step3_t:"点击「分析」", step3_d:"Nightfall 将获取实时装备，检测你的专精，并显示每个部位的 BiS 目标和副本来源。",
+    specs_title:"S 档专精 — 完整 BiS 覆盖",
+    specs_warn_title:"当前数据库收录：",
+    specs_warn_desc:" 仅 S 档专精拥有逐槽位 BiS 详细数据，其他专精显示装等检查 + 套装 + 档次。更多专精将持续更新。",
+    about_data_title:"关于数据来源",
+    data_raiderio:"任意角色的实时装备数据，每次玩家登录或完成内容后更新。",
+    data_archon:"BiS 数据来源于超过 27.5 万条 M+ 解析记录，涵盖 +7 至 +24 钥石，每个赛季版本更新。",
+    data_voidforge_t:"虚空锻造（12.0.5 版本）", data_voidforge_d:"可将主手武器和饰品提升至 298 装等（英雄/神话档次）。不适用于其他部位。",
+    ref_empty_title:"尚未加载专精", ref_empty_desc:"请先分析一个角色，以查看该专精的属性优先级、附魔、宝石和消耗品。",
+    foot_data:"实时装备", foot_bis:"BiS 数据",
+    banner_full:"检测到 {class} {spec} — 完整 BiS 数据已加载。",
+    banner_struct:"检测到 {class} {spec} — 结构检查（装等、套装、档次）。详细 BiS 即将推出。",
+    banner_unknown:"未识别专精 {class} {spec} — 仅装等检查。",
+    tier_complete:"T1 套装完整 — 4/4",
+    tier_incomplete:"T1 套装不完整 — {n}/4",
+    tier_incomplete_sub:"缺少 {x} 件 — 最高优先级！可用部位（需 4 件）：头部 · 肩部 · 胸部 · 手部 · 腿部。",
+    sec_high:"高优先级", sec_notbis:"非 BiS — 替换装备", sec_needs:"需提升装等",
+    sec_correct:"正确装备 — 提升装等", sec_ok:"最优槽位",
+    sec_low:"高优先级 — 装等过低", sec_needs2:"需要提升", sec_ok2:"装等 276+",
+    badge_ok:"✓ BiS", badge_notbis:"非 BiS", badge_medium:"需升级", badge_bad:"⚠ 优先",
+    badge_missing:"缺失", badge_upgrade:"⬆ 提升装等", badge_good:"✓ 良好",
+    vf_title:"虚空锻造（12.0.5）",
+    vf_desc:"可将英雄/神话档次装备推升至 298 装等。仅限：主手武器 · 饰品1 · 饰品2。不适用于副手、戒指、护甲等部位。",
+    msg_empty:"空槽位。",
+    msg_bad:"装等 {ilvl}（{track}）— 请使用冠军/英雄黎明碎晶升级。",
+    msg_medium_craft:"制造装等 {ilvl} — 请以更高品质重新制造。",
+    msg_medium:"装等 {ilvl}（{track}）— 请使用英雄黎明碎晶升级（M+ ≥4）。",
+    msg_upgrade_craft:"✓ 正确的制造装备 — 请以更高品质重新制造以提升装等。",
+    msg_upgrade:"✓ 装备正确 — 使用英雄然后神话黎明碎晶继续升级。",
+    msg_notbis:"装等 {ilvl} 合格，但这不是 BiS 装备，请以上方列出的装备为目标。",
+    msg_276:"✓ 装等 276 — 可能是英雄 6/6 上限或神话 1/6。若为英雄档，需获取神话档次版本。",
+    msg_vfmax:"✓ 虚空锻造最大值 — 完美！",
+    msg_max:"✓ 装等已满 — 完美！",
+    msg_good:"✓ 良好。",
+    bis_label:"M+ BiS（Archon）", src_label:"来源",
+    stat_priority:"属性优先级",
+    ref_title:"{class} {spec} 参考",
+    ref_stats:"属性与优先级", ref_primary:"主属性", ref_secondary:"副属性优先级",
+    ref_cons:"消耗品", ref_flask:"药水", ref_pot:"战斗药水", ref_food:"食物", ref_rune:"强化符文",
+    ref_ench:"附魔", ref_weapon:"武器", ref_chest:"胸部", ref_legs:"腿部", ref_boots:"鞋子", ref_rings:"戒指",
+    ref_struct:"结构信息",
+  }
+};
 
+let LANG = 'en';
+function t(key, vars={}) {
+  let s = (I18N[LANG]||I18N.en)[key] || (I18N.en)[key] || key;
+  Object.entries(vars).forEach(([k,v])=>{ s = s.replace(new RegExp(`{${k}}`,'g'), v); });
+  return s;
+}
+function setLang(lang) {
+  LANG = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-'+lang).classList.add('active');
+  // Update static i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if(I18N[lang][key]) el.textContent = I18N[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.dataset.i18nPh;
+    if(I18N[lang][key]) el.placeholder = I18N[lang][key];
+  });
+  // Noto Sans SC for Chinese
+  if(lang === 'zh') document.body.style.fontFamily = "'Noto Sans SC','Inter',sans-serif";
+  else document.body.style.fontFamily = "'Inter',-apple-system,sans-serif";
+}
+
+
+/* ══ TABS ══ */
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on'); document.getElementById('tab-'+id).classList.add('on');
+}
+
+/* ══ CONSTANTS ══ */
 const TIER_SLOTS = ["head","shoulder","chest","hands","legs"];
 const VF_SLOTS = new Set(["mainhand","trinket1","trinket2"]);
 
@@ -404,7 +673,6 @@ const SPEC_META = {
   "Warrior|Fury":              {role:"melee", primary:"Strength",  prio:"Strength > Haste > Crit > Mastery > Vers"},
   "Warrior|Protection":        {role:"tank",  primary:"Strength",  prio:"Strength > Haste > Vers > Crit > Mastery"},
 };
-
 const SPEC_BIS = {
   "Shaman|Restoration": {
     tierKeyword:"primal core",
@@ -577,32 +845,27 @@ const SPEC_BIS = {
 
 };
 
-/* Role-based enchants & consumables */
-const ENCHANTS = {
-  weapon:"Authority of the Depths / class weapon enchant",
-  chest:"Crystalline Radiance (primary stat)",
-  legs:"Spellthread (caster) / Armor Kit (melee/tank)",
-  boots:"Defender's March / Scout's March",
-  rings:"Radiant [secondary stat] (×2)",
-};
+/* Role-based consumables */
 const CONSUMABLES = {
-  healer:{flask:"Flask of Tempered Versatility",pot:"Tempered Potion (combat)",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
-  tank:  {flask:"Flask of Alchemical Chaos",pot:"Tempered / Healing Potion",food:"Feast — Versatility/Stamina",rune:"Crystallized Augment Rune"},
-  melee: {flask:"Flask of Alchemical Chaos",pot:"Tempered Potion (combat)",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
-  ranged:{flask:"Flask of Alchemical Chaos",pot:"Tempered Potion (combat)",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
+  healer:{flask:"Flask of Tempered Versatility",pot:"Tempered Potion",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
+  tank:  {flask:"Flask of Alchemical Chaos",   pot:"Tempered / Healing Potion",food:"Feast — Versatility/Stamina",rune:"Crystallized Augment Rune"},
+  melee: {flask:"Flask of Alchemical Chaos",   pot:"Tempered Potion",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
+  ranged:{flask:"Flask of Alchemical Chaos",   pot:"Tempered Potion",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
 };
-
 const SLOT_ORDER=["head","neck","shoulder","back","chest","wrist","hands","waist","legs","feet","finger1","finger2","trinket1","trinket2","mainhand","offhand"];
-const SLOT_LABEL={head:"Head",neck:"Neck",shoulder:"Shoulders",back:"Cloak",chest:"Chest",wrist:"Bracers",hands:"Hands",waist:"Waist",legs:"Legs",feet:"Boots",finger1:"Ring 1",finger2:"Ring 2",trinket1:"Trinket 1",trinket2:"Trinket 2",mainhand:"Main Hand",offhand:"Off Hand"};
+const SLOT_LABEL_EN={head:"Head",neck:"Neck",shoulder:"Shoulders",back:"Cloak",chest:"Chest",wrist:"Bracers",hands:"Hands",waist:"Waist",legs:"Legs",feet:"Boots",finger1:"Ring 1",finger2:"Ring 2",trinket1:"Trinket 1",trinket2:"Trinket 2",mainhand:"Main Hand",offhand:"Off Hand"};
+const SLOT_LABEL_ZH={head:"头部",neck:"颈部",shoulder:"肩部",back:"披风",chest:"胸部",wrist:"腕部",hands:"手部",waist:"腰部",legs:"腿部",feet:"靴子",finger1:"戒指1",finger2:"戒指2",trinket1:"饰品1",trinket2:"饰品2",mainhand:"主手",offhand:"副手"};
 const SLOT_ICON={head:"🪖",neck:"📿",shoulder:"💪",back:"🧣",chest:"🛡️",wrist:"⌚",hands:"🧤",waist:"🪡",legs:"👖",feet:"👢",finger1:"💍",finger2:"💍",trinket1:"🔮",trinket2:"🔮",mainhand:"⚡",offhand:"🛡"};
+function slotLabel(key){ return LANG==='zh'?(SLOT_LABEL_ZH[key]||key):(SLOT_LABEL_EN[key]||key); }
 
+/* Tracks */
 const TRACKS=[
-  {n:"Myth 6/6",c:"#a78bfa",bg:"rgba(167,139,250,.12)",bd:"rgba(167,139,250,.3)",min:289,max:999},
-  {n:"Myth",    c:"#a78bfa",bg:"rgba(167,139,250,.12)",bd:"rgba(167,139,250,.3)",min:277,max:289},
-  {n:"Hero",    c:"#f0b429",bg:"rgba(240,180,41,.12)", bd:"rgba(240,180,41,.3)", min:263,max:277},
-  {n:"Champion",c:"#34d39e",bg:"rgba(52,211,158,.12)", bd:"rgba(52,211,158,.3)", min:250,max:263},
-  {n:"Veteran", c:"#5b9ce8",bg:"rgba(91,156,232,.12)", bd:"rgba(91,156,232,.3)", min:237,max:250},
-  {n:"Adv.",    c:"#5a648c",bg:"rgba(90,100,140,.1)",  bd:"rgba(90,100,140,.25)",min:0,  max:237},
+  {n:"Myth 6/6",c:"#7755ee",bg:"rgba(119,85,238,.11)",bd:"rgba(119,85,238,.28)",min:289,max:999},
+  {n:"Myth",    c:"#7755ee",bg:"rgba(119,85,238,.11)",bd:"rgba(119,85,238,.28)",min:277,max:289},
+  {n:"Hero",    c:"#f0b030",bg:"rgba(240,176,48,.11)", bd:"rgba(240,176,48,.28)", min:263,max:277},
+  {n:"Champion",c:"#22c97a",bg:"rgba(34,201,122,.11)", bd:"rgba(34,201,122,.28)", min:250,max:263},
+  {n:"Veteran", c:"#4488dd",bg:"rgba(68,136,221,.11)", bd:"rgba(68,136,221,.28)", min:237,max:250},
+  {n:"Adv.",    c:"#4d6a99",bg:"rgba(77,106,153,.09)", bd:"rgba(77,106,153,.22)", min:0,  max:237},
 ];
 function getTrack(ilvl){return TRACKS.find(t=>ilvl>=t.min&&ilvl<t.max)||null}
 function trkPill(ilvl){const t=getTrack(ilvl);if(!t)return"";return`<span class="p-track" style="background:${t.bg};color:${t.c};border-color:${t.bd}">${t.n}</span>`}
@@ -614,90 +877,80 @@ function getStatus(ilvl,isSame,detectable){
   return"bad";
 }
 
+/* Wowhead item name */
 const _nc={};
 async function getItemName(id){
   if(!id)return null;if(_nc[id])return _nc[id];
-  try{const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(id)}`);const t=await r.text();const m=t.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);if(m&&m[1]){_nc[id]=m[1];return m[1];}}catch(e){}return null;
+  try{const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(id)}`);
+    const tx=await r.text();const m=tx.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);
+    if(m&&m[1]){_nc[id]=m[1];return m[1];}}catch(e){}return null;
 }
 function icoUrl(i){return i?`https://wow.zamimg.com/images/wow/icons/medium/${i.toLowerCase()}.jpg`:null}
 
-function switchTab(id,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');document.getElementById('tab-'+id).classList.add('on');
-}
-
-/* Parse stat priority string into chips */
+/* Stat chips */
 function statChips(prioStr,primary){
   const parts=prioStr.split(">").map(s=>s.trim());
-  return parts.map((p,i)=>{
-    const isPrim=p===primary;
-    return `<span class="stat-chip ${isPrim?'primary':''}"><span class="rank">${i+1}</span>${p}</span>`+
-      (i<parts.length-1?`<span class="statprio-sep">›</span>`:"");
-  }).join("");
+  return parts.map((p,i)=>`<span class="stat-chip ${p===primary?'primary':''}"><span class="rank">${i+1}</span>${p}</span>`+(i<parts.length-1?`<span class="statprio-sep">›</span>`:'')).join('');
 }
 
-/* Render slot with detailed BiS */
+/* Render slot (detailed BiS) */
 function renderSlotBiS(key,item,nameEn,ref,tierKw){
-  const label=SLOT_LABEL[key]||key;
+  const label=slotLabel(key);
   const ilvl=item?.item_level||0;
   const hasEnKey=ref.enKey.length>0;
   let isSame,detectable;
   if(ref.tier&&tierKw){isSame=nameEn.toLowerCase().includes(tierKw);detectable=true;}
   else{isSame=hasEnKey&&nameEn.toLowerCase().includes(ref.enKey.toLowerCase());detectable=hasEnKey;}
   const status=getStatus(ilvl,isSame,detectable);
-  const isVF=VF_SLOTS.has(key);
-  const showVF=isVF&&ilvl>=263;
+  const isVF=VF_SLOTS.has(key); const showVF=isVF&&ilvl>=263;
   const url=icoUrl(item?.icon);
-  const img=url?`<img class="slot-ico" src="${url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=slot-ico-txt>${ref.icon}</div>'">`:`<div class="slot-ico-txt">${ref.icon}</div>`;
-  const display=nameEn||"—";
+  const img=url?`<img class="slot-img" src="${url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=slot-txt>${ref.icon}</div>'">`:`<div class="slot-txt">${ref.icon}</div>`;
   const tierP=ref.tier?`<span class="pill p-tier">Tier</span>`:"";
   const craftP=ref.craft?`<span class="pill p-craft">Craft</span>`:"";
   const vfP=showVF?`<span class="pill p-vf">Voidforge ↑298</span>`:"";
-  const badgeMap={ok:"✓ BiS",notbis:"Not BiS",medium:"Upgrade",bad:"⚠ Priority",missing:"Missing",upgrade:"⬆ Raise ilvl"};
+  const badgeMap={ok:t('badge_ok'),notbis:t('badge_notbis'),medium:t('badge_medium'),bad:t('badge_bad'),missing:t('badge_missing'),upgrade:t('badge_upgrade')};
   const badge=`<span class="badge ${status}">${badgeMap[status]||status}</span>`;
   const trk=ilvl?trkPill(ilvl):"";
-  // Always show BiS name and source regardless of status
-  const isBisConfirmed = (status==="ok"||status==="upgrade") && (isSame||!detectable);
-  const detail = isBisConfirmed
-    ? `<div class="det-row"><span class="det-k">M+ BiS</span><span class="det-v">${ref.en}</span></div><div class="det-row"></div>`
-    : `<div class="det-row"><span class="det-k">M+ BiS (Archon)</span><span class="det-v">${ref.en}</span></div><div class="det-row"><span class="det-k">Source</span><span class="det-src">${ref.src}</span></div>`;
-  let msg="";const t=getTrack(ilvl);const tN=t?t.n:"";const vfNote=showVF?" Voidforge can push it to 298.":"";
-  if(status==="missing")msg=`<div class="det-msg dm-danger">Empty slot.</div>`;
-  else if(status==="bad")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — upgrade with Champion then Hero Dawncrests.</div>`;
-  else if(status==="medium")msg=ref.craft?`<div class="det-msg dm-warn">Crafted ilvl ${ilvl} — re-craft at higher quality.</div>`:`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — upgrade with Hero Dawncrests (M+ ≥4).${vfNote}</div>`;
-  else if(status==="upgrade")msg=ref.craft?`<div class="det-msg dm-teal">✓ Correct crafted item — re-craft higher to raise ilvl.</div>`:`<div class="det-msg dm-teal">✓ Correct item — upgrade with Hero then Myth Dawncrests.${vfNote}</div>`;
-  else if(status==="notbis")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} is fine but this isn't the BiS item. Target the item above.${vfNote}</div>`;
+  const isBisConfirmed=(status==="ok"||status==="upgrade")&&(isSame||!detectable);
+  const detail=isBisConfirmed
+    ?`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}</span></div><div class="d-row"></div>`
+    :`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}</span></div><div class="d-row"><span class="d-k">${t('src_label')}</span><span class="d-src">${ref.src}</span></div>`;
+  const tk=getTrack(ilvl);const tN=tk?tk.n:"??";
+  const vfNote=showVF?` ${LANG==='zh'?'虚空锻造可升至 298。':'Voidforge can push it to 298.'}`:"";
+  let msg="";
+  if(status==="missing")msg=`<div class="d-msg dm-danger">${t('msg_empty')}</div>`;
+  else if(status==="bad")msg=`<div class="d-msg dm-warn">${t('msg_bad',{ilvl,track:tN})}</div>`;
+  else if(status==="medium")msg=ref.craft?`<div class="d-msg dm-warn">${t('msg_medium_craft',{ilvl})}</div>`:`<div class="d-msg dm-warn">${t('msg_medium',{ilvl,track:tN})}${vfNote}</div>`;
+  else if(status==="upgrade")msg=ref.craft?`<div class="d-msg dm-teal">${t('msg_upgrade_craft')}</div>`:`<div class="d-msg dm-teal">${t('msg_upgrade')}${vfNote}</div>`;
+  else if(status==="notbis")msg=`<div class="d-msg dm-warn">${t('msg_notbis',{ilvl})}${vfNote}</div>`;
   else if(status==="ok"){
-    if(ilvl===276)msg=`<div class="det-msg dm-ok">✓ ilvl 276 — Hero 6/6 cap or Myth 1/6. If Hero, get the Myth-track version to keep upgrading.${vfNote}</div>`;
-    else if(ilvl>=289)msg=`<div class="det-msg dm-ok">✓ ${isVF?"Voidforge max":"Max ilvl"} — perfect!</div>`;
-    else msg=`<div class="det-msg dm-ok">✓ Good.${vfNote}</div>`;
+    if(ilvl===276)msg=`<div class="d-msg dm-ok">${t('msg_276')}${vfNote}</div>`;
+    else if(ilvl>=289)msg=`<div class="d-msg dm-ok">${isVF?t('msg_vfmax'):t('msg_max')}</div>`;
+    else msg=`<div class="d-msg dm-ok">${t('msg_good')}${vfNote}</div>`;
   }
-  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-slot">${label}</div><div class="slot-nr"><span class="slot-name">${display}</span>${tierP}${craftP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:'<span style="color:var(--ink-faint)">No item</span>'}</div></div>${badge}<div class="slot-detail">${detail}${msg}</div></div>`;
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${craftP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${detail}${msg}</div></div>`;
 }
 
-/* Render slot structural only */
+/* Render slot (structural only) */
 function renderSlotStruct(key,item,nameEn){
-  const label=SLOT_LABEL[key]||key;
+  const label=slotLabel(key);
   const ilvl=item?.item_level||0;
-  const isTier=TIER_SLOTS.includes(key);
-  const isVF=VF_SLOTS.has(key);
-  const showVF=isVF&&ilvl>=263;
+  const isTier=TIER_SLOTS.includes(key); const isVF=VF_SLOTS.has(key); const showVF=isVF&&ilvl>=263;
   const status=!ilvl?"missing":ilvl>=276?"ok":ilvl>=263?"medium":"bad";
   const url=icoUrl(item?.icon);
-  const img=url?`<img class="slot-ico" src="${url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=slot-ico-txt>${SLOT_ICON[key]}</div>'">`:`<div class="slot-ico-txt">${SLOT_ICON[key]}</div>`;
+  const img=url?`<img class="slot-img" src="${url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=slot-txt>${SLOT_ICON[key]}</div>'">`:`<div class="slot-txt">${SLOT_ICON[key]}</div>`;
   const tierP=isTier?`<span class="pill p-tier">Tier slot</span>`:"";
   const vfP=showVF?`<span class="pill p-vf">Voidforge ↑298</span>`:"";
-  const badgeMap={ok:"✓ Good",medium:"Upgrade",bad:"⚠ Priority",missing:"Missing"};
+  const badgeMap={ok:t('badge_good'),medium:t('badge_medium'),bad:t('badge_bad'),missing:t('badge_missing')};
   const badge=`<span class="badge ${status}">${badgeMap[status]}</span>`;
-  const trk=ilvl?trkPill(ilvl):"";
-  const t=getTrack(ilvl);const tN=t?t.n:"";const vfNote=showVF?" Voidforge can push it to 298.":"";
+  const trk=ilvl?trkPill(ilvl):""; const tk=getTrack(ilvl);const tN=tk?tk.n:"??";
+  const vfNote=showVF?` ${LANG==='zh'?'虚空锻造可升至 298。':'Voidforge can push it to 298.'}`:"";
   let msg;
-  if(status==="missing")msg=`<div class="det-msg dm-danger">Empty slot.</div>`;
-  else if(status==="bad")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — low. Upgrade with Dawncrests.</div>`;
-  else if(status==="medium")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — upgrade toward 276+.${vfNote}</div>`;
-  else msg=`<div class="det-msg dm-ok">✓ ilvl ${ilvl}${ilvl===276?" (Hero 6/6 or Myth 1/6)":""}.${vfNote}</div>`;
-  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-slot">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:'<span style="color:var(--ink-faint)">No item</span>'}</div></div>${badge}<div class="slot-detail">${msg}</div></div>`;
+  if(status==="missing")msg=`<div class="d-msg dm-danger">${t('msg_empty')}</div>`;
+  else if(status==="bad")msg=`<div class="d-msg dm-warn">${t('msg_bad',{ilvl,track:tN})}</div>`;
+  else if(status==="medium")msg=`<div class="d-msg dm-warn">${t('msg_medium',{ilvl,track:tN})}${vfNote}</div>`;
+  else msg=`<div class="d-msg dm-ok">${t('msg_good')}${ilvl===276?` (Hero 6/6 or Myth 1/6)`:""}${vfNote}</div>`;
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${msg}</div></div>`;
 }
 
 /* Build reference tab */
@@ -705,39 +958,40 @@ function buildRefTab(specKey,meta){
   const c=CONSUMABLES[meta.role]||CONSUMABLES.ranged;
   const sp=specKey.split("|");
   document.getElementById("refContent").innerHTML=`
-    <div class="banner ok" style="display:flex;margin-top:0"><span class="bico">✦</span><span>Reference for <strong>${sp[1]} ${sp[0]}</strong> · role: <strong>${meta.role}</strong></span></div>
-    <div class="refgrid">
-      <div class="refcard">
-        <div class="refcard-h"><span class="rhi">📊</span>Stats &amp; Priority</div>
-        <div class="refrow"><div class="refi">⭐</div><div><div class="refn">${meta.primary}</div><div class="refs">Primary stat</div></div></div>
-        <div class="refrow"><div class="refi">📈</div><div><div class="refn">${meta.prio}</div><div class="refs">Secondary priority</div></div></div>
-        <div class="refnote">General Midnight S1 consensus — always sim or check Archon.gg for your exact build.</div>
+    <div class="banner ok" style="display:flex;margin-top:1rem"><span>✦</span><span>${t('ref_title',{class:sp[0],spec:sp[1]})} · ${meta.role}</span></div>
+    <div class="rg" style="margin-top:1rem">
+      <div class="rc">
+        <div class="rc-h">📊 ${t('ref_stats')}</div>
+        <div class="rr"><div class="ri">⭐</div><div><div class="rn">${meta.primary}</div><div class="rs">${t('ref_primary')}</div></div></div>
+        <div class="rr"><div class="ri">📈</div><div><div class="rn">${meta.prio}</div><div class="rs">${t('ref_secondary')}</div></div></div>
+        <div class="rnote">${LANG==='zh'?'通用 Midnight S1 共识 — 建议在 Archon.gg 上模拟确认。':'General Midnight S1 consensus — always sim or check Archon.gg.'}</div>
       </div>
-      <div class="refcard">
-        <div class="refcard-h"><span class="rhi">🧪</span>Consumables</div>
-        <div class="refrow"><div class="refi">🔵</div><div><div class="refn">${c.flask}</div><div class="refs">Flask</div></div></div>
-        <div class="refrow"><div class="refi">⚡</div><div><div class="refn">${c.pot}</div><div class="refs">Combat potion</div></div></div>
-        <div class="refrow"><div class="refi">🍖</div><div><div class="refn">${c.food}</div><div class="refs">Food</div></div></div>
-        <div class="refrow"><div class="refi">🟣</div><div><div class="refn">${c.rune}</div><div class="refs">Augment rune</div></div></div>
+      <div class="rc">
+        <div class="rc-h">🧪 ${t('ref_cons')}</div>
+        <div class="rr"><div class="ri">🔵</div><div><div class="rn">${c.flask}</div><div class="rs">${t('ref_flask')}</div></div></div>
+        <div class="rr"><div class="ri">⚡</div><div><div class="rn">${c.pot}</div><div class="rs">${t('ref_pot')}</div></div></div>
+        <div class="rr"><div class="ri">🍖</div><div><div class="rn">${c.food}</div><div class="rs">${t('ref_food')}</div></div></div>
+        <div class="rr"><div class="ri">🟣</div><div><div class="rn">${c.rune}</div><div class="rs">${t('ref_rune')}</div></div></div>
       </div>
-      <div class="refcard">
-        <div class="refcard-h"><span class="rhi">✨</span>Enchant slots</div>
-        <div class="refrow"><div class="refi">⚡</div><div><div class="refn">${ENCHANTS.weapon}</div><div class="refs">Weapon</div></div></div>
-        <div class="refrow"><div class="refi">🛡️</div><div><div class="refn">${ENCHANTS.chest}</div><div class="refs">Chest</div></div></div>
-        <div class="refrow"><div class="refi">👖</div><div><div class="refn">${ENCHANTS.legs}</div><div class="refs">Legs</div></div></div>
-        <div class="refrow"><div class="refi">👢</div><div><div class="refn">${ENCHANTS.boots}</div><div class="refs">Boots</div></div></div>
-        <div class="refrow"><div class="refi">💍</div><div><div class="refn">${ENCHANTS.rings}</div><div class="refs">Rings</div></div></div>
-        <div class="refnote">Role-generic — check Archon.gg for the exact best enchant per slot.</div>
+      <div class="rc">
+        <div class="rc-h">✨ ${t('ref_ench')}</div>
+        <div class="rr"><div class="ri">⚡</div><div><div class="rn">Authority of the Depths</div><div class="rs">${t('ref_weapon')}</div></div></div>
+        <div class="rr"><div class="ri">🛡️</div><div><div class="rn">Crystalline Radiance</div><div class="rs">${t('ref_chest')}</div></div></div>
+        <div class="rr"><div class="ri">👖</div><div><div class="rn">Spellthread / Armor Kit</div><div class="rs">${t('ref_legs')}</div></div></div>
+        <div class="rr"><div class="ri">👢</div><div><div class="rn">Defender's March</div><div class="rs">${t('ref_boots')}</div></div></div>
+        <div class="rr"><div class="ri">💍</div><div><div class="rn">Radiant [stat] ×2</div><div class="rs">${t('ref_rings')}</div></div></div>
+        <div class="rnote">${LANG==='zh'?'通用附魔 — 请在 Archon.gg 确认专精最优附魔。':'Role-generic — check Archon.gg for exact best enchant per slot.'}</div>
       </div>
-      <div class="refcard">
-        <div class="refcard-h"><span class="rhi">📋</span>Structural</div>
-        <div class="refrow"><div class="refi">🟣</div><div><div class="refn">Head · Shoulders · Chest · Hands · Legs</div><div class="refs">Tier set slots (need 4)</div></div></div>
-        <div class="refrow"><div class="refi">🔥</div><div><div class="refn">Main Hand + Trinket 1 + Trinket 2</div><div class="refs">Voidforge slots only</div></div></div>
-        <div class="refrow"><div class="refi">🎯</div><div><div class="refn">Myth 276+ → Voidforge 298</div><div class="refs">Target item levels</div></div></div>
+      <div class="rc">
+        <div class="rc-h">📋 ${t('ref_struct')}</div>
+        <div class="rr"><div class="ri">🟣</div><div><div class="rn">Head · Shoulders · Chest · Hands · Legs</div><div class="rs">${LANG==='zh'?'T1 套装槽位（需 4 件）':'Tier set slots (need 4)'}</div></div></div>
+        <div class="rr"><div class="ri">🔥</div><div><div class="rn">Main Hand + Trinket 1 + Trinket 2</div><div class="rs">${LANG==='zh'?'虚空锻造槽位':'Voidforge slots only'}</div></div></div>
+        <div class="rr"><div class="ri">🎯</div><div><div class="rn">Myth 276+ → Voidforge 298</div><div class="rs">${LANG==='zh'?'目标装等':'Target ilvls'}</div></div></div>
       </div>
     </div>`;
 }
 
+/* ══ MAIN ══ */
 async function run(){
   const name=document.getElementById("charName").value.trim();
   const realm=document.getElementById("realmName").value.trim().toLowerCase().replace(/\s+/g,"-");
@@ -745,9 +999,9 @@ async function run(){
   const out=document.getElementById("out");
   const btn=document.getElementById("btnGo");
   const banner=document.getElementById("specBanner");
-  if(!name||!realm){alert("Please fill in character name and realm.");return;}
+  if(!name||!realm){alert(LANG==='zh'?"请填写角色名和服务器。":"Please fill in character name and realm.");return;}
   btn.disabled=true;banner.style.display="none";
-  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Reading gear from Raider.IO…</div></div>`;
+  out.innerHTML=`<div class="loader"><div class="spin"></div><div>${LANG==='zh'?'从 Raider.IO 获取数据…':'Fetching from Raider.IO…'}</div></div>`;
 
   const url=`/.netlify/functions/proxy?target=raiderio&region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
   let data;
@@ -756,22 +1010,21 @@ async function run(){
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
     data=await r.json();
   }catch(e){
-    out.innerHTML=`<div class="err"><strong>Character not found</strong><p>${e.message}<br>Check the name (with accents), realm, and that the character is visible on raider.io.</p></div>`;
+    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${e.message}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
     btn.disabled=false;return;
   }
 
-  const className=data.class||"";
-  const specName=data.active_spec_name||"";
+  const className=data.class||""; const specName=data.active_spec_name||"";
   const specKey=`${className}|${specName}`;
-  const meta=SPEC_META[specKey];
-  const detailedBis=SPEC_BIS[specKey];
+  const meta=SPEC_META[specKey]; const detailedBis=SPEC_BIS[specKey];
   if(meta)buildRefTab(specKey,meta);
-  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span class="bico">✓</span><span>Detected <strong>${specName} ${className}</strong> — full BiS data loaded.</span>`;}
-  else if(meta){banner.className="banner warn";banner.innerHTML=`<span class="bico">◈</span><span>Detected <strong>${specName} ${className}</strong> — structural check (ilvl, tier, tracks). Detailed per-slot BiS coming soon. See the Reference tab.</span>`;}
-  else{banner.className="banner warn";banner.innerHTML=`<span class="bico">⚠</span><span>Spec <strong>${specName} ${className}</strong> not recognized — ilvl-only check.</span>`;}
+
+  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>${t('banner_full',{spec:specName,class:className})}</span>`;}
+  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>${t('banner_struct',{spec:specName,class:className})}</span>`;}
+  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>${t('banner_unknown',{spec:specName,class:className})}</span>`;}
   banner.style.display="flex";
 
-  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Loading item names…</div></div>`;
+  out.innerHTML=`<div class="loader"><div class="spin"></div><div>${LANG==='zh'?'加载装备名称…':'Loading item names…'}</div></div>`;
   const gear=data.gear||{};const items=gear.items||{};
   const itemNames={};
   await Promise.all(SLOT_ORDER.map(async k=>{const it=items[k];if(it?.item_id)itemNames[k]=await getItemName(it.item_id);else if(it?.name)itemNames[k]=it.name;}));
@@ -782,40 +1035,32 @@ async function run(){
   const tt=getTrack(ilvlEq);
   const iC=ilvlEq>=276?"cp":ilvlEq>=263?"ca":ilvlEq>=250?"cg":"cr";
   const sC=score>=3000?"cp":score>=2000?"ca":score>=1000?"cg":"cgr";
-
-  // Build hero card with ilvl bar + stat priority
   const barPct=Math.max(2,Math.min(100,((ilvlEq-237)/(298-237))*100));
-  const barColor=tt?tt.c:"#5a648c";
-  const statPrioRow=meta?`<div class="statprio"><span class="statprio-lab">Stat Priority</span><div class="statprio-chain">${statChips(meta.prio,meta.primary)}</div></div>`:"";
+  const barColor=tt?tt.c:"#4d6a99";
+  const statPrioRow=meta?`<div class="statprio"><span class="statprio-lab">${t('stat_priority')}</span><div class="statprio-chain">${statChips(meta.prio,meta.primary)}</div></div>`:"";
 
-  const heroCard=`
-    <div class="hero">
-      <div class="hero-top">
-        <div class="hero-id">
-          <div class="hero-name">${data.name}</div>
-          <div class="hero-meta">
-            <span class="hero-spec-badge">${specName||"?"} ${className||""}</span>
-            <span>${data.realm} · ${(data.region||region).toUpperCase()}</span>
-          </div>
-        </div>
-        <div class="hero-scores">
-          <div class="hero-score"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">Item Level</div></div>
-          <div class="hero-score"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div>
-        </div>
+  const heroCard=`<div class="hero">
+    <div class="hero-top">
+      <div class="hero-id">
+        <div class="hero-name">${data.name}</div>
+        <div class="hero-meta"><span class="spec-badge">${specName} ${className}</span><span>${data.realm} · ${(data.region||region).toUpperCase()}</span></div>
       </div>
-      <div class="ilvl-bar-wrap">
-        <div class="ilvl-bar-head"><span class="lab">Gear progression</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div>
-        <div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}cc)" data-pct="${barPct}"></div></div>
-        <div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div>
+      <div class="hero-scores">
+        <div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">${LANG==='zh'?'装备等级':'Item Level'}</div></div>
+        <div class="hscore"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div>
       </div>
-      ${statPrioRow}
-    </div>`;
+    </div>
+    <div class="ilvl-bar-wrap">
+      <div class="ilvl-bar-head"><span class="lab">${LANG==='zh'?'装备进度':'Gear progression'}</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div>
+      <div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}bb)" data-pct="${barPct}"></div></div>
+      <div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div>
+    </div>
+    ${statPrioRow}
+  </div>`;
 
-  const vfNote=`<div class="vf-note"><div class="vf-ico">🔥</div><div><strong>Voidforge (patch 12.0.5)</strong> — pushes items to ilvl <strong>298</strong> on Hero/Myth track. Eligible slots: <strong>Main Hand · Trinket 1 · Trinket 2</strong>. Not on off-hand, rings, armor, cloak or bracers.</div></div>`;
+  const vfNote=`<div class="vf-note"><div class="vf-ico">🔥</div><div><strong>${t('vf_title')}</strong> — ${t('vf_desc')}</div></div>`;
+  const animBar=()=>{setTimeout(()=>{const f=document.querySelector(".ilvl-bar-fill");if(f)f.style.width=f.dataset.pct+"%"},80)};
 
-  const animateBar=()=>{setTimeout(()=>{const f=document.querySelector(".ilvl-bar-fill");if(f)f.style.width=f.dataset.pct+"%";},80)};
-
-  // ─ DETAILED PATH ─
   if(detailedBis){
     const tierKw=detailedBis.tierKeyword||"";
     const bis=detailedBis.bis;
@@ -840,27 +1085,27 @@ async function run(){
     const good=allSlots.filter(s=>s.status==="ok");
     const tC=tierCount>=4?"cg":tierCount>=2?"ca":"cr";
     const tierBan=tierCount>=4
-      ?`<div class="tier-ban"><div class="tier-ico">✅</div><div><div class="tier-h">Tier Set Complete — 4/4</div><div class="tier-s">2pc: ${detailedBis.tierBonus2}<br>4pc: ${detailedBis.tierBonus4}</div></div></div>`
-      :`<div class="tier-ban"><div class="tier-ico">⚠️</div><div><div class="tier-h">Tier Set Incomplete — ${tierCount}/4</div><div class="tier-s">Missing <strong>${4-tierCount} piece${4-tierCount>1?"s":""}</strong> — top priority. 5 slots available (need 4): Head · Shoulders · Chest · Hands · Legs.</div></div></div>`;
-    const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="section-head"><span class="dot" style="color:${col}"></span><span class="t">${lbl}</span><span class="c">${list.length}</span><span class="rule"></span></div><div class="slots">${list.map(s=>renderSlotBiS(s.key,s.item,s.itemName,s.ref,tierKw)).join("")}</div>`};
+      ?`<div class="tier-ban"><div class="tier-ico">✅</div><div><div class="tier-h">${t('tier_complete')}</div><div class="tier-s">2pc: ${detailedBis.tierBonus2}<br>4pc: ${detailedBis.tierBonus4}</div></div></div>`
+      :`<div class="tier-ban"><div class="tier-ico">⚠️</div><div><div class="tier-h">${t('tier_incomplete',{n:tierCount})}</div><div class="tier-s">${t('tier_incomplete_sub',{x:4-tierCount})}</div></div></div>`;
     const fixCount=bad.length+notbis.length+medium.length;
+    const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="sec-head"><div class="sec-dot" style="color:${col}"></div><span class="sec-t">${lbl}</span><span class="sec-c">${list.length}</span><span class="sec-rule"></span></div><div class="slots">${list.map(s=>renderSlotBiS(s.key,s.item,s.itemName,s.ref,tierKw)).join("")}</div>`};
     out.innerHTML=`${heroCard}
       <div class="summary">
-        <div class="scard"><div class="sl">Tier Set</div><div class="sv ${tC}">${tierCount}/4</div><div class="ss">${tierCount>=4?"4pc active":"incomplete"}</div></div>
-        <div class="scard"><div class="sl">To Fix</div><div class="sv ${fixCount===0?"cg":fixCount<=2?"ca":"cr"}">${fixCount}</div><div class="ss">slots</div></div>
-        <div class="scard"><div class="sl">Optimal</div><div class="sv cg">${good.length}</div><div class="ss">of 16 slots</div></div>
-        <div class="scard"><div class="sl">Track</div><div class="sv ${iC}" style="font-size:15px;margin-top:5px">${tt?tt.n:"—"}</div></div>
+        <div class="sc"><div class="sl">${LANG==='zh'?'T1套装':'Tier Set'}</div><div class="sv ${tC}">${tierCount}/4</div><div class="ss">${tierCount>=4?(LANG==='zh'?'4件激活':'4pc active'):(LANG==='zh'?'不完整':'incomplete')}</div></div>
+        <div class="sc"><div class="sl">${LANG==='zh'?'待处理':'To Fix'}</div><div class="sv ${fixCount===0?"cg":fixCount<=3?"ca":"cr"}">${fixCount}</div><div class="ss">${LANG==='zh'?'个槽位':'slots'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='zh'?'最优':'Optimal'}</div><div class="sv cg">${good.length}</div><div class="ss">${LANG==='zh'?'共 16 槽':'of 16 slots'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='zh'?'档次':'Track'}</div><div class="sv ${iC} sm">${tt?tt.n:"—"}</div></div>
       </div>
       ${vfNote}${tierBan}
-      ${sec(bad,"var(--bad)","High Priority")}
-      ${sec(notbis,"var(--warn)","Not BiS — Swap Item")}
-      ${sec(medium,"var(--warn)","Needs ilvl Upgrade")}
-      ${sec(upgrade,"var(--teal)","Correct Item — Raise ilvl")}
-      ${sec(good,"var(--good)","Optimal Slots")}`;
-    animateBar();btn.disabled=false;return;
+      ${sec(bad,"var(--red)",t('sec_high'))}
+      ${sec(notbis,"var(--amber)",t('sec_notbis'))}
+      ${sec(medium,"var(--amber)",t('sec_needs'))}
+      ${sec(upgrade,"var(--teal)",t('sec_correct'))}
+      ${sec(good,"var(--green)",t('sec_ok'))}`;
+    animBar();btn.disabled=false;return;
   }
 
-  // ─ STRUCTURAL PATH ─
+  // Structural path
   const allSlots=[];
   for(const key of SLOT_ORDER){const item=items[key];const ilvl=item?.item_level||0;const status=!ilvl?"missing":ilvl>=276?"ok":ilvl>=263?"medium":"bad";allSlots.push({key,item,status,itemName:itemNames[key]||item?.name||""});}
   const ord={bad:0,missing:1,medium:2,ok:3};
@@ -868,26 +1113,21 @@ async function run(){
   const bad=allSlots.filter(s=>s.status==="bad"||s.status==="missing");
   const medium=allSlots.filter(s=>s.status==="medium");
   const good=allSlots.filter(s=>s.status==="ok");
-  const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="section-head"><span class="dot" style="color:${col}"></span><span class="t">${lbl}</span><span class="c">${list.length}</span><span class="rule"></span></div><div class="slots">${list.map(s=>renderSlotStruct(s.key,s.item,s.itemName)).join("")}</div>`};
+  const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="sec-head"><div class="sec-dot" style="color:${col}"></div><span class="sec-t">${lbl}</span><span class="sec-c">${list.length}</span><span class="sec-rule"></span></div><div class="slots">${list.map(s=>renderSlotStruct(s.key,s.item,s.itemName)).join("")}</div>`};
   out.innerHTML=`${heroCard}
     <div class="summary">
-      <div class="scard"><div class="sl">To Fix</div><div class="sv ${(bad.length+medium.length)===0?"cg":"ca"}">${bad.length+medium.length}</div><div class="ss">low slots</div></div>
-      <div class="scard"><div class="sl">At 276+</div><div class="sv cg">${good.length}</div><div class="ss">of 16 slots</div></div>
-      <div class="scard"><div class="sl">Track</div><div class="sv ${iC}" style="font-size:15px;margin-top:5px">${tt?tt.n:"—"}</div></div>
+      <div class="sc"><div class="sl">${LANG==='zh'?'待处理':'To Fix'}</div><div class="sv ${(bad.length+medium.length)===0?"cg":"ca"}">${bad.length+medium.length}</div></div>
+      <div class="sc"><div class="sl">276+</div><div class="sv cg">${good.length}</div><div class="ss">${LANG==='zh'?'个槽位':'slots'}</div></div>
+      <div class="sc"><div class="sl">${LANG==='zh'?'档次':'Track'}</div><div class="sv ${iC} sm">${tt?tt.n:"—"}</div></div>
     </div>
     ${vfNote}
-    ${sec(bad,"var(--bad)","High Priority — Low ilvl")}
-    ${sec(medium,"var(--warn)","Needs Upgrade")}
-    ${sec(good,"var(--good)","ilvl 276+")}`;
-  animateBar();btn.disabled=false;
+    ${sec(bad,"var(--red)",t('sec_low'))}
+    ${sec(medium,"var(--amber)",t('sec_needs2'))}
+    ${sec(good,"var(--green)",t('sec_ok2'))}`;
+  animBar();btn.disabled=false;
 }
-</script>
-<script>
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("/service-worker.js").catch(()=>{});
-  });
-}
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js").catch(()=>{});});}
 </script>
 </body>
 </html>
