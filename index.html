@@ -764,12 +764,7 @@ async function run(){
   const specKey=`${className}|${specName}`;
   const meta=SPEC_META[specKey];
   const detailedBis=SPEC_BIS[specKey];
-  // DEBUG — affiche la clé exacte reçue de Raider.IO
-  console.log("DEBUG specKey:", JSON.stringify(specKey));
-  console.log("DEBUG className:", JSON.stringify(className));
-  console.log("DEBUG specName:", JSON.stringify(specName));
-  console.log("DEBUG has meta:", !!meta, "has detailedBis:", !!detailedBis);
-
+  if(meta)buildRefTab(specKey,meta);
   if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span class="bico">✓</span><span>Detected <strong>${specName} ${className}</strong> — full BiS data loaded.</span>`;}
   else if(meta){banner.className="banner warn";banner.innerHTML=`<span class="bico">◈</span><span>Detected <strong>${specName} ${className}</strong> — structural check (ilvl, tier, tracks). Detailed per-slot BiS coming soon. See the Reference tab.</span>`;}
   else{banner.className="banner warn";banner.innerHTML=`<span class="bico">⚠</span><span>Spec <strong>${specName} ${className}</strong> not recognized — ilvl-only check.</span>`;}
