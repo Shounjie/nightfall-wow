@@ -3,7 +3,7 @@
 // Caches the app shell so it loads instantly and works offline (the UI;
 // live data still needs a connection).
 
-const CACHE = "nightfall-v1";
+const CACHE = "nightfall-v3";
 const SHELL = [
   "/",
   "/index.html",
