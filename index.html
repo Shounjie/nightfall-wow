@@ -1264,8 +1264,8 @@ async function run(){
   btn.disabled=false;
 }
 
-async function renderResults(data,items,itemNames){
-
+function renderResults(data,items,itemNames){
+  const out=document.getElementById('out');
   const detailedBis=getActiveBis(`${data.class||""}|${data.active_spec_name||""}`);
   const gear=data.gear||{};
   const ilvlEq=gear.item_level_equipped||0;
@@ -1341,7 +1341,7 @@ async function renderResults(data,items,itemNames){
       ${sec(medium,"var(--amber)",t('sec_needs'))}
       ${sec(upgrade,"var(--teal)",t('sec_correct'))}
       ${sec(good,"var(--green)",t('sec_ok'))}`;
-    animBar();btn.disabled=false;return;
+    animBar();return;
   }
 
   // Structural path
@@ -1363,7 +1363,7 @@ async function renderResults(data,items,itemNames){
     ${sec(bad,"var(--red)",t('sec_low'))}
     ${sec(medium,"var(--amber)",t('sec_needs2'))}
     ${sec(good,"var(--green)",t('sec_ok2'))}`;
-  animBar();btn.disabled=false;
+  animBar();
 }
 
 
