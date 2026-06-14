@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Nightfall — WoW M+ Gear Optimizer</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#05060c">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Void Midnight palette */
+  --void-0:#05060c;      /* deepest bg */
+  --void-1:#0a0c16;      /* panel bg */
+  --void-2:#11142270;    /* card bg translucent */
+  --void-3:#161a2e;      /* raised */
+  --line:#1d2340;        /* hairline */
+  --line-2:#2a3458;
+  --ink:#e8ecfb;         /* primary text */
+  --ink-soft:#9aa6cc;    /* secondary */
+  --ink-dim:#5a648c;     /* tertiary */
+  --ink-faint:#373f63;
+  /* Track colors (gear progression) */
+  --t-champ:#34d39e;
+  --t-hero:#f0b429;
+  --t-myth:#a78bfa;
+  --t-void:#fb6a6a;
+  --t-vet:#5b9ce8;
+  /* Accents */
+  --arcane:#9d7bff;      /* signature void-arcane */
+  --arcane-glow:#7c5cff;
+  --cyan:#3dd6e8;
+  --gold:#f0b429;
+  --good:#34d39e;
+  --warn:#f0b429;
+  --bad:#fb6a6a;
+  --teal:#2dd4bf;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  background:var(--void-0);
+  color:var(--ink);
+  min-height:100vh;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+  overflow-x:hidden;
+}
+/* Ambient void glow background */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,92,255,.14), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(61,214,232,.07), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 5% 30%, rgba(167,139,250,.06), transparent 50%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:radial-gradient(circle at 1px 1px, rgba(157,123,255,.08) 1px, transparent 0);
+  background-size:42px 42px;
+}
+.wrap{position:relative;z-index:1}
+a{color:var(--arcane);text-decoration:none;transition:color .15s}
+a:hover{color:var(--cyan)}
+
+/* ─── HEADER ─── */
+.masthead{
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(124,92,255,.05), transparent);
+  backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:50;
+}
+.masthead-in{max-width:1000px;margin:0 auto;padding:1rem 1.5rem;display:flex;align-items:center;gap:14px}
+.crest{
+  width:46px;height:46px;border-radius:13px;flex-shrink:0;position:relative;
+  background:linear-gradient(135deg,#6532d6,#1b3fb8);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 0 0 1px rgba(157,123,255,.3), 0 8px 24px -8px rgba(124,92,255,.6);
+}
+.crest::after{content:"";position:absolute;inset:0;border-radius:13px;background:radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), transparent 50%)}
+.mast-title h1{font-family:'Cinzel',serif;font-size:18px;font-weight:700;letter-spacing:.02em;line-height:1.1}
+.mast-title .sub{font-size:11px;color:var(--ink-soft);margin-top:3px;letter-spacing:.01em}
+.mast-title .sub strong{color:var(--arcane)}
+.mast-links{margin-left:auto;display:flex;gap:7px}
+.mast-link{font-size:11px;font-weight:600;color:var(--ink-soft);padding:6px 11px;border-radius:8px;border:1px solid var(--line);transition:.18s;background:var(--void-2)}
+.mast-link:hover{border-color:var(--line-2);color:var(--ink);transform:translateY(-1px)}
+
+/* ─── TABS ─── */
+.tabs{max-width:1000px;margin:0 auto;padding:0 1.5rem;display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tab{
+  padding:.7rem 1.1rem;font-size:12.5px;font-weight:600;color:var(--ink-dim);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:.18s;display:flex;align-items:center;gap:6px;
+}
+.tab:hover{color:var(--ink-soft)}
+.tab.on{color:var(--arcane);border-bottom-color:var(--arcane)}
+.tc{display:none;animation:fadeIn .35s ease}
+.tc.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.page{max-width:1000px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+
+/* ─── SEARCH ─── */
+.search{
+  background:var(--void-1);border:1px solid var(--line);border-radius:16px;
+  padding:1.25rem 1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden;
+}
+.search::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(157,123,255,.5),transparent)}
+.search-label{font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:.875rem;text-transform:uppercase}
+.search-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.field{position:relative;flex:1;min-width:130px}
+.field input,.field select,.search-row>select{
+  width:100%;background:var(--void-0);border:1px solid var(--line-2);border-radius:10px;
+  color:var(--ink);padding:11px 14px;font-size:14px;font-family:inherit;outline:none;transition:.18s;
+}
+.field input::placeholder{color:var(--ink-faint)}
+.field input:focus,.search-row select:focus{border-color:var(--arcane);box-shadow:0 0 0 3px rgba(124,92,255,.15)}
+.search-row>select{min-width:72px;flex:0 0 auto}
+.btn{
+  background:linear-gradient(135deg,var(--arcane),var(--arcane-glow));color:#fff;border:none;border-radius:10px;
+  padding:11px 26px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0;
+  transition:.18s;box-shadow:0 4px 16px -4px rgba(124,92,255,.5);letter-spacing:.01em;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px -4px rgba(124,92,255,.7)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.4;cursor:default;transform:none}
+
+/* ─── SPEC BANNER ─── */
+.banner{border-radius:12px;padding:.8rem 1.1rem;margin-bottom:1.25rem;font-size:12.5px;display:none;align-items:center;gap:10px;line-height:1.5}
+.banner.ok{background:rgba(52,211,158,.06);border:1px solid rgba(52,211,158,.2);color:var(--ink-soft)}
+.banner.warn{background:rgba(240,180,41,.05);border:1px solid rgba(240,180,41,.18);color:var(--ink-soft)}
+.banner strong{color:var(--ink)}
+.banner .bico{font-size:17px;flex-shrink:0}
+
+/* ─── HERO CARD (signature) ─── */
+.hero{
+  background:linear-gradient(135deg, var(--void-1), rgba(22,26,46,.6));
+  border:1px solid var(--line);border-radius:18px;padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden;
+}
+.hero::before{content:"";position:absolute;top:-40%;right:-10%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.12),transparent 65%);pointer-events:none}
+.hero-top{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.hero-id{flex:1;min-width:200px}
+.hero-name{font-family:'Cinzel',serif;font-size:26px;font-weight:700;line-height:1.1;letter-spacing:.01em}
+.hero-meta{font-size:13px;color:var(--ink-soft);margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hero-spec-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(124,92,255,.12);border:1px solid rgba(124,92,255,.3);color:var(--arcane);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.hero-scores{display:flex;gap:1.5rem;flex-wrap:wrap}
+.hero-score{text-align:right}
+.hero-score .v{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;line-height:1}
+.hero-score .l{font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;font-weight:600}
+
+/* Signature: ilvl track bar */
+.ilvl-bar-wrap{margin-top:.5rem}
+.ilvl-bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.ilvl-bar-head .lab{font-size:11px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.ilvl-bar-head .cur{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--ink)}
+.ilvl-bar{height:10px;border-radius:6px;background:var(--void-0);border:1px solid var(--line);position:relative;overflow:hidden}
+.ilvl-bar-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.2,.8,.2,1);position:relative}
+.ilvl-bar-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:shimmer 2.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.ilvl-ticks{display:flex;justify-content:space-between;margin-top:6px}
+.ilvl-tick{font-size:9px;color:var(--ink-faint);font-family:'JetBrains Mono',monospace;font-weight:500}
+
+/* Stat priority row (NEW) */
+.statprio{display:flex;align-items:center;gap:10px;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--line);flex-wrap:wrap}
+.statprio-lab{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-dim);flex-shrink:0}
+.statprio-chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.stat-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:8px;background:var(--void-3);border:1px solid var(--line-2)}
+.stat-chip.primary{background:rgba(157,123,255,.13);border-color:rgba(157,123,255,.35);color:var(--arcane)}
+.stat-chip .rank{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);font-weight:700}
+.statprio-sep{color:var(--ink-faint);font-size:11px}
+
+/* ─── STAT GRID (mini summary) ─── */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:9px;margin-bottom:1.25rem}
+.scard{background:var(--void-1);border:1px solid var(--line);border-radius:13px;padding:.85rem 1rem;transition:.18s}
+.scard:hover{border-color:var(--line-2)}
+.scard .sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:7px}
+.scard .sv{font-family:'JetBrains Mono',monospace;font-size:23px;font-weight:700;line-height:1}
+.scard .ss{font-size:11px;color:var(--ink-soft);margin-top:3px}
+.cg{color:var(--good)}.ca{color:var(--warn)}.cr{color:var(--bad)}.cp{color:var(--t-myth)}.cb{color:var(--t-vet)}.ct{color:var(--teal)}.cgr{color:var(--ink-dim)}
+
+/* ─── VOIDFORGE NOTE ─── */
+.vf-note{display:flex;gap:11px;background:rgba(251,106,106,.04);border:1px solid rgba(251,106,106,.16);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1.25rem;font-size:11.5px;color:var(--ink-soft);line-height:1.65}
+.vf-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.vf-note strong{color:var(--bad)}
+
+/* ─── TIER BANNER ─── */
+.tier-ban{border-radius:13px;padding:.95rem 1.1rem;margin-bottom:1.25rem;border:1px solid rgba(167,139,250,.25);background:linear-gradient(135deg,rgba(167,139,250,.07),rgba(124,92,255,.03));display:flex;gap:12px;align-items:flex-start}
+.tier-ico{font-size:22px;flex-shrink:0}
+.tier-h{font-family:'Cinzel',serif;font-weight:600;color:var(--t-myth);font-size:14px;margin-bottom:3px}
+.tier-s{color:var(--ink-soft);font-size:11.5px;line-height:1.6}
+
+/* ─── SECTIONS ─── */
+.section-head{display:flex;align-items:center;gap:9px;margin:1.5rem 0 .65rem}
+.section-head .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+.section-head .t{font-family:'Cinzel',serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft)}
+.section-head .c{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);font-weight:700;background:var(--void-3);padding:2px 8px;border-radius:20px}
+.section-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+/* ─── SLOT ITEMS ─── */
+.slots{display:flex;flex-direction:column;gap:6px}
+.slot{
+  background:var(--void-1);border:1px solid var(--line);border-radius:14px;padding:.9rem 1.05rem;
+  display:grid;grid-template-columns:46px 1fr auto;gap:0 13px;transition:.18s;position:relative;overflow:hidden;
+}
+.slot::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.slot:hover{border-color:var(--line-2);transform:translateX(2px)}
+.slot.bad::before{background:var(--bad)}
+.slot.medium::before,.slot.notbis::before{background:var(--warn)}
+.slot.ok::before{background:var(--good)}
+.slot.upgrade::before{background:var(--teal)}
+.slot.missing::before{background:var(--ink-faint)}
+.slot-ico{width:44px;height:44px;border-radius:10px;border:1px solid var(--line-2);object-fit:cover;background:var(--void-3);display:block}
+.slot-ico-txt{width:44px;height:44px;border-radius:10px;background:var(--void-3);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--line-2)}
+.slot-slot{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-dim);margin-bottom:3px}
+.slot-nr{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+.slot-name{font-size:14px;font-weight:700;letter-spacing:.005em}
+.slot-ilvl{display:flex;align-items:center;gap:6px;font-size:12px}
+.slot-ilvl strong{font-family:'JetBrains Mono',monospace;font-weight:700}
+.pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid transparent;letter-spacing:.02em;text-transform:uppercase}
+.p-tier{background:rgba(167,139,250,.14);color:var(--t-myth);border-color:rgba(167,139,250,.3)}
+.p-craft{background:rgba(61,214,232,.1);color:var(--cyan);border-color:rgba(61,214,232,.25)}
+.p-vf{background:rgba(251,106,106,.1);color:var(--bad);border-color:rgba(251,106,106,.25)}
+.p-track{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid transparent;font-family:'JetBrains Mono',monospace}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:4px 11px;border-radius:20px;border:1px solid transparent;white-space:nowrap;align-self:start}
+.badge.ok{background:rgba(52,211,158,.1);color:var(--good);border-color:rgba(52,211,158,.25)}
+.badge.notbis{background:rgba(240,180,41,.1);color:var(--warn);border-color:rgba(240,180,41,.25)}
+.badge.medium{background:rgba(240,180,41,.09);color:var(--warn);border-color:rgba(240,180,41,.2)}
+.badge.bad{background:rgba(251,106,106,.09);color:var(--bad);border-color:rgba(251,106,106,.2)}
+.badge.missing{background:rgba(55,63,99,.3);color:var(--ink-dim);border-color:var(--line)}
+.badge.upgrade{background:rgba(45,212,191,.09);color:var(--teal);border-color:rgba(45,212,191,.2)}
+.slot-detail{grid-column:1/-1;border-top:1px solid var(--line);margin-top:.8rem;padding-top:.8rem;display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:11.5px}
+.det-row{display:flex;flex-direction:column;gap:1px}
+.det-k{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint)}
+.det-v{color:var(--ink)}
+.det-src{color:var(--arcane)}
+.det-msg{margin-top:7px;grid-column:1/-1;font-size:11px;padding:6px 11px;border-radius:8px;line-height:1.55}
+.dm-ok{background:rgba(52,211,158,.06);color:var(--good);border-left:2px solid var(--good)}
+.dm-teal{background:rgba(45,212,191,.06);color:var(--teal);border-left:2px solid var(--teal)}
+.dm-warn{background:rgba(240,180,41,.06);color:var(--warn);border-left:2px solid var(--warn)}
+.dm-danger{background:rgba(251,106,106,.06);color:var(--bad);border-left:2px solid var(--bad)}
+
+/* ─── LOADER / ERR ─── */
+.loader{text-align:center;padding:3.5rem 1rem;color:var(--ink-soft);font-size:14px}
+.spin{display:inline-block;width:34px;height:34px;border:2.5px solid var(--line);border-top-color:var(--arcane);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:1rem}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{background:rgba(251,106,106,.05);border:1px solid rgba(251,106,106,.22);border-radius:13px;padding:1.25rem 1.5rem}
+.err strong{display:block;color:var(--bad);margin-bottom:6px;font-size:15px;font-family:'Cinzel',serif}
+.err p{font-size:12.5px;color:var(--ink-soft);line-height:1.65}
+
+/* ─── REFERENCE TAB ─── */
+.refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:11px;margin-bottom:1.25rem}
+.refcard{background:var(--void-1);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.refcard-h{padding:.8rem 1.1rem;border-bottom:1px solid var(--line);font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:8px;background:rgba(124,92,255,.03)}
+.refcard-h .rhi{font-size:16px}
+.refrow{display:flex;align-items:center;gap:11px;padding:.5rem 1.1rem;font-size:12px;transition:.15s;border-top:1px solid rgba(29,35,64,.5)}
+.refrow:first-of-type{border-top:none}
+.refrow:hover{background:var(--void-3)}
+.refi{width:30px;height:30px;border-radius:7px;background:var(--void-3);border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.refn{font-weight:600;flex:1}.refs{font-size:10px;color:var(--ink-soft);margin-top:1px}
+.refp{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--arcane)}
+.refnote{font-size:10.5px;color:var(--ink-dim);padding:.5rem 1.1rem;font-style:italic;line-height:1.5;border-top:1px solid rgba(29,35,64,.5)}
+
+/* ─── EMPTY STATE ─── */
+.empty{text-align:center;padding:4rem 1.5rem}
+.empty-ico{font-size:48px;margin-bottom:1rem;opacity:.5}
+.empty-h{font-family:'Cinzel',serif;font-size:18px;font-weight:600;color:var(--ink-soft);margin-bottom:.5rem}
+.empty-p{font-size:13px;color:var(--ink-dim);max-width:340px;margin:0 auto;line-height:1.6}
+
+.foot{border-top:1px solid var(--line);padding:1.5rem;text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2rem}
+.foot a{color:var(--ink-dim)}
+
+@media(max-width:560px){
+  .slot-detail,.refgrid{grid-template-columns:1fr}
+  .summary{grid-template-columns:repeat(2,1fr)}
+  .hero-scores{width:100%;justify-content:space-between}
+  .hero-score{text-align:left}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="masthead">
+  <div class="masthead-in">
+    <div class="crest">🌙</div>
+    <div class="mast-title">
+      <h1>Nightfall</h1>
+      <div class="sub">M+ Gear Optimizer · <strong>Midnight Season 1</strong> · auto-detects class &amp; spec</div>
+    </div>
+    <div class="mast-links">
+      <a class="mast-link" href="https://www.archon.gg" target="_blank">Archon</a>
+      <a class="mast-link" href="https://www.icy-veins.com/wow/class-guides" target="_blank">Icy Veins</a>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="switchTab('gear',this)">⚔ Gear Check</div>
+  <div class="tab" onclick="switchTab('ref',this)">✦ Reference</div>
+</div>
+
+<div class="page">
+  <div id="tab-gear" class="tc on">
+    <div class="search">
+      <div class="search-label">Summon a character</div>
+      <div class="search-row">
+        <div class="field"><input id="charName" type="text" placeholder="Character name"/></div>
+        <div class="field"><input id="realmName" type="text" placeholder="Realm"/></div>
+        <select id="regionSel"><option value="eu" selected>EU</option><option value="us">US</option><option value="kr">KR</option><option value="tw">TW</option></select>
+        <button class="btn" id="btnGo" onclick="run()">Analyze</button>
+      </div>
+    </div>
+    <div id="specBanner" class="banner"></div>
+    <div id="out">
+      <div class="empty">
+        <div class="empty-ico">🌙</div>
+        <div class="empty-h">Awaiting your champion</div>
+        <div class="empty-p">Enter any character name and realm. Nightfall reads their live gear from Raider.IO and compares it to the current Mythic+ meta. Works for every class and spec.</div>
+      </div>
+    </div>
+  </div>
+  <div id="tab-ref" class="tc">
+    <div id="refContent">
+      <div class="empty">
+        <div class="empty-ico">✦</div>
+        <div class="empty-h">No spec loaded yet</div>
+        <div class="empty-p">Analyze a character first — this tab will fill with their spec's stat priority, enchants, gems and consumables.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  Live gear · <a href="https://raider.io/api" target="_blank">Raider.IO</a> &nbsp;·&nbsp;
+  Item names · <a href="https://www.wowhead.com" target="_blank">Wowhead</a> &nbsp;·&nbsp;
+  BiS data · <a href="https://www.archon.gg" target="_blank">Archon.gg</a> &nbsp;·&nbsp;
+  Midnight S1 · patch 12.0.5
+</div>
+</div><!-- /wrap -->
+<script>
+/* ═══════════════════════════════════════════════════════════
+   NIGHTFALL — WoW M+ Gear Optimizer
+   Structural data: all 40 specs. Detailed BiS: verified specs only.
+   ═══════════════════════════════════════════════════════════ */
+
+const TIER_SLOTS = ["head","shoulder","chest","hands","legs"];
+const VF_SLOTS = new Set(["mainhand","trinket1","trinket2"]);
+
+const SPEC_META = {
+  // ── DEATH KNIGHT ──
+  "Death Knight|Blood":        {role:"tank",  primary:"Strength",  prio:"Strength > Haste > Crit > Vers > Mastery"},
+  "Death Knight|Frost":        {role:"melee", primary:"Strength",  prio:"Strength > Crit > Haste > Mastery > Vers"},
+  "Death Knight|Unholy":       {role:"melee", primary:"Strength",  prio:"Strength > Haste > Mastery > Crit > Vers"},
+  // ── DEMON HUNTER ──
+  "Demon Hunter|Havoc":        {role:"melee", primary:"Agility",   prio:"Agility > Crit > Haste > Vers > Mastery"},
+  "Demon Hunter|Vengeance":    {role:"tank",  primary:"Agility",   prio:"Agility > Haste > Vers > Crit > Mastery"},
+  // ── DRUID ──
+  "Druid|Balance":             {role:"ranged",primary:"Intellect", prio:"Intellect > Haste > Mastery > Crit > Vers"},
+  "Druid|Feral":               {role:"melee", primary:"Agility",   prio:"Agility > Crit > Mastery > Haste > Vers"},
+  "Druid|Guardian":            {role:"tank",  primary:"Agility",   prio:"Agility > Haste > Vers > Mastery > Crit"},
+  "Druid|Restoration":         {role:"healer",primary:"Intellect", prio:"Intellect > Haste > Mastery > Crit > Vers"},
+  // ── EVOKER ──
+  "Evoker|Devastation":        {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Haste > Mastery > Vers"},
+  "Evoker|Preservation":       {role:"healer",primary:"Intellect", prio:"Intellect > Crit > Haste > Vers > Mastery"},
+  "Evoker|Augmentation":       {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Mastery > Haste > Vers"},
+  // ── HUNTER ──
+  "Hunter|Beast Mastery":      {role:"ranged",primary:"Agility",   prio:"Agility > Crit > Haste > Mastery > Vers"},
+  "Hunter|Marksmanship":       {role:"ranged",primary:"Agility",   prio:"Agility > Crit > Mastery > Haste > Vers"},
+  "Hunter|Survival":           {role:"melee", primary:"Agility",   prio:"Agility > Crit > Haste > Vers > Mastery"},
+  // ── MAGE ──
+  "Mage|Arcane":               {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Haste > Mastery > Vers"},
+  "Mage|Fire":                 {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Haste > Vers > Mastery"},
+  "Mage|Frost":                {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Haste > Mastery > Vers"},
+  // ── MONK ──
+  "Monk|Brewmaster":           {role:"tank",  primary:"Agility",   prio:"Agility > Vers > Crit > Haste > Mastery"},
+  "Monk|Mistweaver":           {role:"healer",primary:"Intellect", prio:"Intellect > Crit > Haste > Vers > Mastery"},
+  "Monk|Windwalker":           {role:"melee", primary:"Agility",   prio:"Agility > Crit > Haste > Vers > Mastery"},
+  // ── PALADIN ──
+  "Paladin|Holy":              {role:"healer",primary:"Intellect", prio:"Intellect > Crit > Haste > Mastery > Vers"},
+  "Paladin|Protection":        {role:"tank",  primary:"Strength",  prio:"Strength > Haste > Vers > Mastery > Crit"},
+  "Paladin|Retribution":       {role:"melee", primary:"Strength",  prio:"Strength > Haste > Crit > Mastery > Vers"},
+  // ── PRIEST ──
+  "Priest|Discipline":         {role:"healer",primary:"Intellect", prio:"Intellect > Crit > Haste > Vers > Mastery"},
+  "Priest|Holy":               {role:"healer",primary:"Intellect", prio:"Intellect > Crit > Mastery > Haste > Vers"},
+  "Priest|Shadow":             {role:"ranged",primary:"Intellect", prio:"Intellect > Haste > Mastery > Crit > Vers"},
+  // ── ROGUE ──
+  "Rogue|Assassination":       {role:"melee", primary:"Agility",   prio:"Agility > Crit > Mastery > Haste > Vers"},
+  "Rogue|Outlaw":              {role:"melee", primary:"Agility",   prio:"Agility > Crit > Haste > Vers > Mastery"},
+  "Rogue|Subtlety":            {role:"melee", primary:"Agility",   prio:"Agility > Crit > Haste > Mastery > Vers"},
+  // ── SHAMAN ──
+  "Shaman|Elemental":          {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Haste > Mastery > Vers"},
+  "Shaman|Enhancement":        {role:"melee", primary:"Agility",   prio:"Agility > Crit > Haste > Mastery > Vers"},
+  "Shaman|Restoration":        {role:"healer",primary:"Intellect", prio:"Intellect > Crit > Haste > Vers > Mastery"},
+  // ── WARLOCK ──
+  "Warlock|Affliction":        {role:"ranged",primary:"Intellect", prio:"Intellect > Mastery > Crit > Haste > Vers"},
+  "Warlock|Demonology":        {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Haste > Mastery > Vers"},
+  "Warlock|Destruction":       {role:"ranged",primary:"Intellect", prio:"Intellect > Crit > Haste > Mastery > Vers"},
+  // ── WARRIOR ──
+  "Warrior|Arms":              {role:"melee", primary:"Strength",  prio:"Strength > Crit > Haste > Mastery > Vers"},
+  "Warrior|Fury":              {role:"melee", primary:"Strength",  prio:"Strength > Haste > Crit > Mastery > Vers"},
+  "Warrior|Protection":        {role:"tank",  primary:"Strength",  prio:"Strength > Haste > Vers > Crit > Mastery"},
+};
+
+const SPEC_BIS = {
+  "Shaman|Restoration": {
+    tierKeyword:"primal core",
+    tierBonus2:"Unleash Life — CD −3s & direct healing +100%",
+    tierBonus4:"Unleash Life grants 2 additional heal stacks",
+    bis: {
+      mainhand: {en:"Surgeon's Needle",       enKey:"Surgeon",       icon:"⚡",tier:false,craft:false,src:"Pit of Saron — Forgemaster Garfrost",prio:1},
+      offhand:  {en:"Spellbreaker's Rebuke",  enKey:"Spellbreaker",  icon:"🛡",tier:false,craft:true, src:"Crafted / Reflux Reflector — Nexus-Point Xenas",prio:2},
+      head:     {en:"Locus of the Primal Core",   enKey:"Primal Core",icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Barbed Ymirheim Choker", enKey:"Ymirheim",      icon:"📿",tier:false,craft:false,src:"Pit of Saron — Forgemaster Garfrost",prio:4},
+      shoulder: {en:"Tempests of the Primal Core",enKey:"Primal Core",icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Cloak of the Fallen Cardinal",enKey:"Fallen Cardinal",icon:"🧣",tier:false,craft:false,src:"Pit of Saron — Forgemaster Garfrost",prio:5},
+      chest:    {en:"Embrace of the Primal Core", enKey:"Primal Core",icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider", icon:"⌚",tier:false,craft:true, src:"Crafted — Thalassian Missive of the Quickblade",prio:2},
+      hands:    {en:"Earthgrips of the Primal Core",enKey:"Primal Core",icon:"🧤",tier:true,craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best crit/vers belt",     enKey:"",              icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon — max ilvl",prio:5},
+      legs:     {en:"Leggings of the Primal Core",enKey:"Primal Core",icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",    enKey:"",              icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",enKey:"Eredath",       icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate — Zuraal the Ascended",prio:2},
+      finger2:  {en:"Purloined Wedding Ring",  enKey:"Purloined",     icon:"💍",tier:false,craft:false,src:"Pit of Saron — Krick",prio:3},
+      trinket1: {en:"Heart of Wind",           enKey:"Heart of Wind", icon:"🔮",tier:false,craft:false,src:"M+ dungeon (25.3%)",prio:1},
+      trinket2: {en:"Gaze of the Alnseer",     enKey:"Alnseer",       icon:"🔮",tier:false,craft:false,src:"M+ dungeon drop",prio:1},
+    }
+  },
+
+  "Druid|Guardian": {
+    tierKeyword:"luminous bloom",
+    tierBonus2:"Maul/Ravage damage +10%, Moonfire damage +10%",
+    tierBonus4:"Maul/Ravage have 5% chance for Galactic Guardian; Moonfire periodic can make next Maul/Ravage strike twice",
+    bis: {
+      // Verified on Archon.gg (343k parses) + Icy Veins + Method.gg — Midnight S1
+      mainhand: {en:"Aln'hara Pikestaff",      enKey:"Aln'hara",      icon:"⚡",tier:false,craft:true, src:"Crafted — Darkmoon Sigil: Void/Hunt (early-season weapon)",prio:1},
+      head:     {en:"Tier piece — Helm",       enKey:"",              icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — Pit of Saron",enKey:"",              icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",  enKey:"",              icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak (craft)",enKey:"",             icon:"🧣",tier:false,craft:true, src:"Crafted — Arcanoweave Lining embellishment",prio:5},
+      chest:    {en:"Tier piece — Chest",      enKey:"",              icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Silvermoon Agent's Deflectors",enKey:"Deflectors",icon:"⌚",tier:false,craft:true,src:"Crafted (45.2%) — Thalassian Missive of the Aurora",prio:2},
+      hands:    {en:"Tier piece — Gloves",     enKey:"",              icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",     enKey:"",              icon:"🪡",tier:false,craft:false,src:"Magisters' Terrace or any M+",prio:5},
+      legs:     {en:"Tier piece — Legs",       enKey:"",              icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Silvermoon Agent's Sneakers",enKey:"Sneakers",   icon:"👢",tier:false,craft:true, src:"Crafted (alt) or Maisara Caverns",prio:4},
+      finger1:  {en:"Best ring — Nexus-Point Xenas",enKey:"",         icon:"💍",tier:false,craft:false,src:"Nexus-Point Xenas",prio:3},
+      finger2:  {en:"Best ring — Algeth'ar / Seat",enKey:"",          icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy or Seat of the Triumvirate",prio:3},
+      trinket1: {en:"Crucible of Erratic Energies",enKey:"Crucible",  icon:"🔮",tier:false,craft:false,src:"Singularity reputation (27.5% usage)",prio:1},
+      trinket2: {en:"Heart of Wind",           enKey:"Heart of Wind", icon:"🔮",tier:false,craft:false,src:"M+ dungeon (23.4% usage)",prio:1},
+    }
+  },
+};
+
+/* Role-based enchants & consumables */
+const ENCHANTS = {
+  weapon:"Authority of the Depths / class weapon enchant",
+  chest:"Crystalline Radiance (primary stat)",
+  legs:"Spellthread (caster) / Armor Kit (melee/tank)",
+  boots:"Defender's March / Scout's March",
+  rings:"Radiant [secondary stat] (×2)",
+};
+const CONSUMABLES = {
+  healer:{flask:"Flask of Tempered Versatility",pot:"Tempered Potion (combat)",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
+  tank:  {flask:"Flask of Alchemical Chaos",pot:"Tempered / Healing Potion",food:"Feast — Versatility/Stamina",rune:"Crystallized Augment Rune"},
+  melee: {flask:"Flask of Alchemical Chaos",pot:"Tempered Potion (combat)",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
+  ranged:{flask:"Flask of Alchemical Chaos",pot:"Tempered Potion (combat)",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
+};
+
+const SLOT_ORDER=["head","neck","shoulder","back","chest","wrist","hands","waist","legs","feet","finger1","finger2","trinket1","trinket2","mainhand","offhand"];
+const SLOT_LABEL={head:"Head",neck:"Neck",shoulder:"Shoulders",back:"Cloak",chest:"Chest",wrist:"Bracers",hands:"Hands",waist:"Waist",legs:"Legs",feet:"Boots",finger1:"Ring 1",finger2:"Ring 2",trinket1:"Trinket 1",trinket2:"Trinket 2",mainhand:"Main Hand",offhand:"Off Hand"};
+const SLOT_ICON={head:"🪖",neck:"📿",shoulder:"💪",back:"🧣",chest:"🛡️",wrist:"⌚",hands:"🧤",waist:"🪡",legs:"👖",feet:"👢",finger1:"💍",finger2:"💍",trinket1:"🔮",trinket2:"🔮",mainhand:"⚡",offhand:"🛡"};
+
+const TRACKS=[
+  {n:"Myth 6/6",c:"#a78bfa",bg:"rgba(167,139,250,.12)",bd:"rgba(167,139,250,.3)",min:289,max:999},
+  {n:"Myth",    c:"#a78bfa",bg:"rgba(167,139,250,.12)",bd:"rgba(167,139,250,.3)",min:277,max:289},
+  {n:"Hero",    c:"#f0b429",bg:"rgba(240,180,41,.12)", bd:"rgba(240,180,41,.3)", min:263,max:277},
+  {n:"Champion",c:"#34d39e",bg:"rgba(52,211,158,.12)", bd:"rgba(52,211,158,.3)", min:250,max:263},
+  {n:"Veteran", c:"#5b9ce8",bg:"rgba(91,156,232,.12)", bd:"rgba(91,156,232,.3)", min:237,max:250},
+  {n:"Adv.",    c:"#5a648c",bg:"rgba(90,100,140,.1)",  bd:"rgba(90,100,140,.25)",min:0,  max:237},
+];
+function getTrack(ilvl){return TRACKS.find(t=>ilvl>=t.min&&ilvl<t.max)||null}
+function trkPill(ilvl){const t=getTrack(ilvl);if(!t)return"";return`<span class="p-track" style="background:${t.bg};color:${t.c};border-color:${t.bd}">${t.n}</span>`}
+
+function getStatus(ilvl,isSame,detectable){
+  if(!ilvl)return"missing";
+  if(ilvl>=276){if(!detectable)return"ok";return isSame?"ok":"notbis";}
+  if(ilvl>=263){if(isSame)return"upgrade";return"medium";}
+  return"bad";
+}
+
+const _nc={};
+async function getItemName(id){
+  if(!id)return null;if(_nc[id])return _nc[id];
+  try{const r=await fetch(`/api/wowhead?item=${encodeURIComponent(id)}`);const t=await r.text();const m=t.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);if(m&&m[1]){_nc[id]=m[1];return m[1];}}catch(e){}return null;
+}
+function icoUrl(i){return i?`https://wow.zamimg.com/images/wow/icons/medium/${i.toLowerCase()}.jpg`:null}
+
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');document.getElementById('tab-'+id).classList.add('on');
+}
+
+/* Parse stat priority string into chips */
+function statChips(prioStr,primary){
+  const parts=prioStr.split(">").map(s=>s.trim());
+  return parts.map((p,i)=>{
+    const isPrim=p===primary;
+    return `<span class="stat-chip ${isPrim?'primary':''}"><span class="rank">${i+1}</span>${p}</span>`+
+      (i<parts.length-1?`<span class="statprio-sep">›</span>`:"");
+  }).join("");
+}
+
+/* Render slot with detailed BiS */
+function renderSlotBiS(key,item,nameEn,ref,tierKw){
+  const label=SLOT_LABEL[key]||key;
+  const ilvl=item?.item_level||0;
+  const hasEnKey=ref.enKey.length>0;
+  let isSame,detectable;
+  if(ref.tier&&tierKw){isSame=nameEn.toLowerCase().includes(tierKw);detectable=true;}
+  else{isSame=hasEnKey&&nameEn.toLowerCase().includes(ref.enKey.toLowerCase());detectable=hasEnKey;}
+  const status=getStatus(ilvl,isSame,detectable);
+  const isVF=VF_SLOTS.has(key);
+  const showVF=isVF&&ilvl>=263;
+  const url=icoUrl(item?.icon);
+  const img=url?`<img class="slot-ico" src="${url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=slot-ico-txt>${ref.icon}</div>'">`:`<div class="slot-ico-txt">${ref.icon}</div>`;
+  const display=nameEn||"—";
+  const tierP=ref.tier?`<span class="pill p-tier">Tier</span>`:"";
+  const craftP=ref.craft?`<span class="pill p-craft">Craft</span>`:"";
+  const vfP=showVF?`<span class="pill p-vf">Voidforge ↑298</span>`:"";
+  const badgeMap={ok:"✓ BiS",notbis:"Not BiS",medium:"Upgrade",bad:"⚠ Priority",missing:"Missing",upgrade:"⬆ Raise ilvl"};
+  const badge=`<span class="badge ${status}">${badgeMap[status]||status}</span>`;
+  const trk=ilvl?trkPill(ilvl):"";
+  const isBis=status==="ok"||status==="upgrade";
+  const detail=isBis&&(isSame||!detectable)
+    ?`<div class="det-row"><span class="det-k">M+ BiS</span><span class="det-v">${ref.en}</span></div><div class="det-row"></div>`
+    :`<div class="det-row"><span class="det-k">M+ BiS (Archon)</span><span class="det-v">${ref.en}</span></div><div class="det-row"><span class="det-k">Source</span><span class="det-src">${ref.src}</span></div>`;
+  let msg="";const t=getTrack(ilvl);const tN=t?t.n:"";const vfNote=showVF?" Voidforge can push it to 298.":"";
+  if(status==="missing")msg=`<div class="det-msg dm-danger">Empty slot.</div>`;
+  else if(status==="bad")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — upgrade with Champion then Hero Dawncrests.</div>`;
+  else if(status==="medium")msg=ref.craft?`<div class="det-msg dm-warn">Crafted ilvl ${ilvl} — re-craft at higher quality.</div>`:`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — upgrade with Hero Dawncrests (M+ ≥4).${vfNote}</div>`;
+  else if(status==="upgrade")msg=ref.craft?`<div class="det-msg dm-teal">✓ Correct crafted item — re-craft higher to raise ilvl.</div>`:`<div class="det-msg dm-teal">✓ Correct item — upgrade with Hero then Myth Dawncrests.${vfNote}</div>`;
+  else if(status==="notbis")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} is fine but this isn't the BiS item. Target the item above.${vfNote}</div>`;
+  else if(status==="ok"){
+    if(ilvl===276)msg=`<div class="det-msg dm-ok">✓ ilvl 276 — Hero 6/6 cap or Myth 1/6. If Hero, get the Myth-track version to keep upgrading.${vfNote}</div>`;
+    else if(ilvl>=289)msg=`<div class="det-msg dm-ok">✓ ${isVF?"Voidforge max":"Max ilvl"} — perfect!</div>`;
+    else msg=`<div class="det-msg dm-ok">✓ Good.${vfNote}</div>`;
+  }
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-slot">${label}</div><div class="slot-nr"><span class="slot-name">${display}</span>${tierP}${craftP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:'<span style="color:var(--ink-faint)">No item</span>'}</div></div>${badge}<div class="slot-detail">${detail}${msg}</div></div>`;
+}
+
+/* Render slot structural only */
+function renderSlotStruct(key,item,nameEn){
+  const label=SLOT_LABEL[key]||key;
+  const ilvl=item?.item_level||0;
+  const isTier=TIER_SLOTS.includes(key);
+  const isVF=VF_SLOTS.has(key);
+  const showVF=isVF&&ilvl>=263;
+  const status=!ilvl?"missing":ilvl>=276?"ok":ilvl>=263?"medium":"bad";
+  const url=icoUrl(item?.icon);
+  const img=url?`<img class="slot-ico" src="${url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=slot-ico-txt>${SLOT_ICON[key]}</div>'">`:`<div class="slot-ico-txt">${SLOT_ICON[key]}</div>`;
+  const tierP=isTier?`<span class="pill p-tier">Tier slot</span>`:"";
+  const vfP=showVF?`<span class="pill p-vf">Voidforge ↑298</span>`:"";
+  const badgeMap={ok:"✓ Good",medium:"Upgrade",bad:"⚠ Priority",missing:"Missing"};
+  const badge=`<span class="badge ${status}">${badgeMap[status]}</span>`;
+  const trk=ilvl?trkPill(ilvl):"";
+  const t=getTrack(ilvl);const tN=t?t.n:"";const vfNote=showVF?" Voidforge can push it to 298.":"";
+  let msg;
+  if(status==="missing")msg=`<div class="det-msg dm-danger">Empty slot.</div>`;
+  else if(status==="bad")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — low. Upgrade with Dawncrests.</div>`;
+  else if(status==="medium")msg=`<div class="det-msg dm-warn">ilvl ${ilvl} (${tN}) — upgrade toward 276+.${vfNote}</div>`;
+  else msg=`<div class="det-msg dm-ok">✓ ilvl ${ilvl}${ilvl===276?" (Hero 6/6 or Myth 1/6)":""}.${vfNote}</div>`;
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-slot">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:'<span style="color:var(--ink-faint)">No item</span>'}</div></div>${badge}<div class="slot-detail">${msg}</div></div>`;
+}
+
+/* Build reference tab */
+function buildRefTab(specKey,meta){
+  const c=CONSUMABLES[meta.role]||CONSUMABLES.ranged;
+  const sp=specKey.split("|");
+  document.getElementById("refContent").innerHTML=`
+    <div class="banner ok" style="display:flex;margin-top:0"><span class="bico">✦</span><span>Reference for <strong>${sp[1]} ${sp[0]}</strong> · role: <strong>${meta.role}</strong></span></div>
+    <div class="refgrid">
+      <div class="refcard">
+        <div class="refcard-h"><span class="rhi">📊</span>Stats &amp; Priority</div>
+        <div class="refrow"><div class="refi">⭐</div><div><div class="refn">${meta.primary}</div><div class="refs">Primary stat</div></div></div>
+        <div class="refrow"><div class="refi">📈</div><div><div class="refn">${meta.prio}</div><div class="refs">Secondary priority</div></div></div>
+        <div class="refnote">General Midnight S1 consensus — always sim or check Archon.gg for your exact build.</div>
+      </div>
+      <div class="refcard">
+        <div class="refcard-h"><span class="rhi">🧪</span>Consumables</div>
+        <div class="refrow"><div class="refi">🔵</div><div><div class="refn">${c.flask}</div><div class="refs">Flask</div></div></div>
+        <div class="refrow"><div class="refi">⚡</div><div><div class="refn">${c.pot}</div><div class="refs">Combat potion</div></div></div>
+        <div class="refrow"><div class="refi">🍖</div><div><div class="refn">${c.food}</div><div class="refs">Food</div></div></div>
+        <div class="refrow"><div class="refi">🟣</div><div><div class="refn">${c.rune}</div><div class="refs">Augment rune</div></div></div>
+      </div>
+      <div class="refcard">
+        <div class="refcard-h"><span class="rhi">✨</span>Enchant slots</div>
+        <div class="refrow"><div class="refi">⚡</div><div><div class="refn">${ENCHANTS.weapon}</div><div class="refs">Weapon</div></div></div>
+        <div class="refrow"><div class="refi">🛡️</div><div><div class="refn">${ENCHANTS.chest}</div><div class="refs">Chest</div></div></div>
+        <div class="refrow"><div class="refi">👖</div><div><div class="refn">${ENCHANTS.legs}</div><div class="refs">Legs</div></div></div>
+        <div class="refrow"><div class="refi">👢</div><div><div class="refn">${ENCHANTS.boots}</div><div class="refs">Boots</div></div></div>
+        <div class="refrow"><div class="refi">💍</div><div><div class="refn">${ENCHANTS.rings}</div><div class="refs">Rings</div></div></div>
+        <div class="refnote">Role-generic — check Archon.gg for the exact best enchant per slot.</div>
+      </div>
+      <div class="refcard">
+        <div class="refcard-h"><span class="rhi">📋</span>Structural</div>
+        <div class="refrow"><div class="refi">🟣</div><div><div class="refn">Head · Shoulders · Chest · Hands · Legs</div><div class="refs">Tier set slots (need 4)</div></div></div>
+        <div class="refrow"><div class="refi">🔥</div><div><div class="refn">Main Hand + Trinket 1 + Trinket 2</div><div class="refs">Voidforge slots only</div></div></div>
+        <div class="refrow"><div class="refi">🎯</div><div><div class="refn">Myth 276+ → Voidforge 298</div><div class="refs">Target item levels</div></div></div>
+      </div>
+    </div>`;
+}
+
+async function run(){
+  const name=document.getElementById("charName").value.trim();
+  const realm=document.getElementById("realmName").value.trim().toLowerCase().replace(/\s+/g,"-");
+  const region=document.getElementById("regionSel").value;
+  const out=document.getElementById("out");
+  const btn=document.getElementById("btnGo");
+  const banner=document.getElementById("specBanner");
+  if(!name||!realm){alert("Please fill in character name and realm.");return;}
+  btn.disabled=true;banner.style.display="none";
+  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Reading gear from Raider.IO…</div></div>`;
+
+  const url=`/api/raiderio?region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
+  let data;
+  try{
+    const r=await fetch(url);
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
+    data=await r.json();
+  }catch(e){
+    out.innerHTML=`<div class="err"><strong>Character not found</strong><p>${e.message}<br>Check the name (with accents), realm, and that the character is visible on raider.io.</p></div>`;
+    btn.disabled=false;return;
+  }
+
+  const className=data.class||"";
+  const specName=data.active_spec_name||"";
+  const specKey=`${className}|${specName}`;
+  const meta=SPEC_META[specKey];
+  const detailedBis=SPEC_BIS[specKey];
+  if(meta)buildRefTab(specKey,meta);
+
+  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span class="bico">✓</span><span>Detected <strong>${specName} ${className}</strong> — full BiS data loaded.</span>`;}
+  else if(meta){banner.className="banner warn";banner.innerHTML=`<span class="bico">◈</span><span>Detected <strong>${specName} ${className}</strong> — structural check (ilvl, tier, tracks). Detailed per-slot BiS coming soon. See the Reference tab.</span>`;}
+  else{banner.className="banner warn";banner.innerHTML=`<span class="bico">⚠</span><span>Spec <strong>${specName} ${className}</strong> not recognized — ilvl-only check.</span>`;}
+  banner.style.display="flex";
+
+  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Loading item names…</div></div>`;
+  const gear=data.gear||{};const items=gear.items||{};
+  const itemNames={};
+  await Promise.all(SLOT_ORDER.map(async k=>{const it=items[k];if(it?.item_id)itemNames[k]=await getItemName(it.item_id);else if(it?.name)itemNames[k]=it.name;}));
+
+  const ilvlEq=gear.item_level_equipped||0;
+  const sc=data.mythic_plus_scores_by_season?.[0]?.scores;
+  const score=sc?.all?Math.round(sc.all):null;
+  const tt=getTrack(ilvlEq);
+  const iC=ilvlEq>=276?"cp":ilvlEq>=263?"ca":ilvlEq>=250?"cg":"cr";
+  const sC=score>=3000?"cp":score>=2000?"ca":score>=1000?"cg":"cgr";
+
+  // Build hero card with ilvl bar + stat priority
+  const barPct=Math.max(2,Math.min(100,((ilvlEq-237)/(298-237))*100));
+  const barColor=tt?tt.c:"#5a648c";
+  const statPrioRow=meta?`<div class="statprio"><span class="statprio-lab">Stat Priority</span><div class="statprio-chain">${statChips(meta.prio,meta.primary)}</div></div>`:"";
+
+  const heroCard=`
+    <div class="hero">
+      <div class="hero-top">
+        <div class="hero-id">
+          <div class="hero-name">${data.name}</div>
+          <div class="hero-meta">
+            <span class="hero-spec-badge">${specName||"?"} ${className||""}</span>
+            <span>${data.realm} · ${(data.region||region).toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="hero-scores">
+          <div class="hero-score"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">Item Level</div></div>
+          <div class="hero-score"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div>
+        </div>
+      </div>
+      <div class="ilvl-bar-wrap">
+        <div class="ilvl-bar-head"><span class="lab">Gear progression</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div>
+        <div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}cc)" data-pct="${barPct}"></div></div>
+        <div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div>
+      </div>
+      ${statPrioRow}
+    </div>`;
+
+  const vfNote=`<div class="vf-note"><div class="vf-ico">🔥</div><div><strong>Voidforge (patch 12.0.5)</strong> — pushes items to ilvl <strong>298</strong> on Hero/Myth track. Eligible slots: <strong>Main Hand · Trinket 1 · Trinket 2</strong>. Not on off-hand, rings, armor, cloak or bracers.</div></div>`;
+
+  const animateBar=()=>{setTimeout(()=>{const f=document.querySelector(".ilvl-bar-fill");if(f)f.style.width=f.dataset.pct+"%";},80)};
+
+  // ─ DETAILED PATH ─
+  if(detailedBis){
+    const tierKw=detailedBis.tierKeyword||"";
+    const bis=detailedBis.bis;
+    let tierCount=0;
+    for(const key of TIER_SLOTS){const it=items[key];const il=it?.item_level||0;const nm=(itemNames[key]||it?.name||"").toLowerCase();if(tierKw&&il>0&&nm.includes(tierKw))tierCount++;}
+    const allSlots=[];
+    for(const key of SLOT_ORDER){
+      const item=items[key];const ref=bis[key];if(!ref)continue;
+      const ilvl=item?.item_level||0;const nameEn=(itemNames[key]||item?.name||"").toLowerCase();
+      const hasEnKey=ref.enKey.length>0;
+      let isSame,detectable;
+      if(ref.tier&&tierKw){isSame=nameEn.includes(tierKw);detectable=true;}
+      else{isSame=hasEnKey&&nameEn.includes(ref.enKey.toLowerCase());detectable=hasEnKey;}
+      allSlots.push({key,item,status:getStatus(ilvl,isSame,detectable),ref,itemName:itemNames[key]||item?.name||""});
+    }
+    const ord={bad:0,missing:1,notbis:2,medium:3,upgrade:4,ok:5};
+    allSlots.sort((a,b)=>(ord[a.status]??6)-(ord[b.status]??6)||(a.ref.prio||9)-(b.ref.prio||9));
+    const bad=allSlots.filter(s=>s.status==="bad"||s.status==="missing");
+    const notbis=allSlots.filter(s=>s.status==="notbis");
+    const medium=allSlots.filter(s=>s.status==="medium");
+    const upgrade=allSlots.filter(s=>s.status==="upgrade");
+    const good=allSlots.filter(s=>s.status==="ok");
+    const tC=tierCount>=4?"cg":tierCount>=2?"ca":"cr";
+    const tierBan=tierCount>=4
+      ?`<div class="tier-ban"><div class="tier-ico">✅</div><div><div class="tier-h">Tier Set Complete — 4/4</div><div class="tier-s">2pc: ${detailedBis.tierBonus2}<br>4pc: ${detailedBis.tierBonus4}</div></div></div>`
+      :`<div class="tier-ban"><div class="tier-ico">⚠️</div><div><div class="tier-h">Tier Set Incomplete — ${tierCount}/4</div><div class="tier-s">Missing <strong>${4-tierCount} piece${4-tierCount>1?"s":""}</strong> — top priority. 5 slots available (need 4): Head · Shoulders · Chest · Hands · Legs.</div></div></div>`;
+    const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="section-head"><span class="dot" style="color:${col}"></span><span class="t">${lbl}</span><span class="c">${list.length}</span><span class="rule"></span></div><div class="slots">${list.map(s=>renderSlotBiS(s.key,s.item,s.itemName,s.ref,tierKw)).join("")}</div>`};
+    const fixCount=bad.length+notbis.length+medium.length;
+    out.innerHTML=`${heroCard}
+      <div class="summary">
+        <div class="scard"><div class="sl">Tier Set</div><div class="sv ${tC}">${tierCount}/4</div><div class="ss">${tierCount>=4?"4pc active":"incomplete"}</div></div>
+        <div class="scard"><div class="sl">To Fix</div><div class="sv ${fixCount===0?"cg":fixCount<=2?"ca":"cr"}">${fixCount}</div><div class="ss">slots</div></div>
+        <div class="scard"><div class="sl">Optimal</div><div class="sv cg">${good.length}</div><div class="ss">of 16 slots</div></div>
+        <div class="scard"><div class="sl">Track</div><div class="sv ${iC}" style="font-size:15px;margin-top:5px">${tt?tt.n:"—"}</div></div>
+      </div>
+      ${vfNote}${tierBan}
+      ${sec(bad,"var(--bad)","High Priority")}
+      ${sec(notbis,"var(--warn)","Not BiS — Swap Item")}
+      ${sec(medium,"var(--warn)","Needs ilvl Upgrade")}
+      ${sec(upgrade,"var(--teal)","Correct Item — Raise ilvl")}
+      ${sec(good,"var(--good)","Optimal Slots")}`;
+    animateBar();btn.disabled=false;return;
+  }
+
+  // ─ STRUCTURAL PATH ─
+  const allSlots=[];
+  for(const key of SLOT_ORDER){const item=items[key];const ilvl=item?.item_level||0;const status=!ilvl?"missing":ilvl>=276?"ok":ilvl>=263?"medium":"bad";allSlots.push({key,item,status,itemName:itemNames[key]||item?.name||""});}
+  const ord={bad:0,missing:1,medium:2,ok:3};
+  allSlots.sort((a,b)=>(ord[a.status]??4)-(ord[b.status]??4));
+  const bad=allSlots.filter(s=>s.status==="bad"||s.status==="missing");
+  const medium=allSlots.filter(s=>s.status==="medium");
+  const good=allSlots.filter(s=>s.status==="ok");
+  const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="section-head"><span class="dot" style="color:${col}"></span><span class="t">${lbl}</span><span class="c">${list.length}</span><span class="rule"></span></div><div class="slots">${list.map(s=>renderSlotStruct(s.key,s.item,s.itemName)).join("")}</div>`};
+  out.innerHTML=`${heroCard}
+    <div class="summary">
+      <div class="scard"><div class="sl">To Fix</div><div class="sv ${(bad.length+medium.length)===0?"cg":"ca"}">${bad.length+medium.length}</div><div class="ss">low slots</div></div>
+      <div class="scard"><div class="sl">At 276+</div><div class="sv cg">${good.length}</div><div class="ss">of 16 slots</div></div>
+      <div class="scard"><div class="sl">Track</div><div class="sv ${iC}" style="font-size:15px;margin-top:5px">${tt?tt.n:"—"}</div></div>
+    </div>
+    ${vfNote}
+    ${sec(bad,"var(--bad)","High Priority — Low ilvl")}
+    ${sec(medium,"var(--warn)","Needs Upgrade")}
+    ${sec(good,"var(--good)","ilvl 276+")}`;
+  animateBar();btn.disabled=false;
+}
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("/service-worker.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

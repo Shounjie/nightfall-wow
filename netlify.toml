@@ -1,0 +1,24 @@
+# Nightfall — Netlify configuration
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Map friendly /api/ URLs to the proxy function
+[[redirects]]
+  from = "/api/raiderio"
+  to = "/.netlify/functions/proxy?target=raiderio"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/wowhead"
+  to = "/.netlify/functions/proxy?target=wowhead"
+  status = 200
+  force = true
+
+# SPA-style fallback (everything else serves index.html)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,30 @@
+{
+  "name": "Nightfall — WoW M+ Gear Optimizer",
+  "short_name": "Nightfall",
+  "description": "Check your World of Warcraft Mythic+ gear against the current meta. Auto-detects class and spec from Raider.IO.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05060c",
+  "theme_color": "#05060c",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
