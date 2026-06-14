@@ -1266,6 +1266,7 @@ async function run(){
 
 function renderResults(data,items,itemNames){
   const out=document.getElementById('out');
+  try{
   const detailedBis=getActiveBis(`${data.class||""}|${data.active_spec_name||""}`);
   const gear=data.gear||{};
   const ilvlEq=gear.item_level_equipped||0;
@@ -1364,6 +1365,10 @@ function renderResults(data,items,itemNames){
     ${sec(medium,"var(--amber)",t('sec_needs2'))}
     ${sec(good,"var(--green)",t('sec_ok2'))}`;
   animBar();
+  }catch(err){
+    console.error("renderResults error:", err);
+    out.innerHTML=`<div class="err"><strong>Render error</strong><p>${err.message}</p></div>`;
+  }
 }
 
 
