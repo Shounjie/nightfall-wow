@@ -991,7 +991,7 @@ function setProfile(profile, el) {
     note.textContent = t('profile_note_raid') + ' ' + t('profile_note_catalyst');
   }
   // If a result is already displayed, re-run
-  if(window._lastData) renderResults(window._lastData, window._lastItems, window._lastItemNames);
+  if(window._lastData) renderResults(window._lastData, window._lastItems, window._lastItemNames, window._lastMeta, window._lastSpecKey);
 }
 
 function getActiveBis(specKey) {
@@ -1259,12 +1259,12 @@ async function run(){
   await Promise.all(SLOT_ORDER.map(async k=>{const it=items[k];if(it?.item_id)itemNames[k]=await getItemName(it.item_id);else if(it?.name)itemNames[k]=it.name;}));
 
   // Store for profile switching
-  window._lastData=data; window._lastItems=items; window._lastItemNames=itemNames;
-  renderResults(data,items,itemNames);
+  window._lastData=data; window._lastItems=items; window._lastItemNames=itemNames; window._lastMeta=meta; window._lastSpecKey=specKey;
+  renderResults(data,items,itemNames,meta,specKey);
   btn.disabled=false;
 }
 
-function renderResults(data,items,itemNames){
+function renderResults(data,items,itemNames,meta,specKey){
   const out=document.getElementById('out');
   try{
   const detailedBis=getActiveBis(`${data.class||""}|${data.active_spec_name||""}`);
