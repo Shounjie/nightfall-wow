@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Nightfall — WoW M+ Gear Optimizer</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4857959643759243" crossorigin="anonymous"></script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#04060e">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -304,6 +305,14 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
   .about-title{font-size:24px}
 }
 
+
+/* ── PROFILE TOGGLE ── */
+.profile-toggle{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:1.25rem}
+.profile-btn{flex:1;padding:7px 12px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:.18s;font-family:inherit;text-align:center;color:var(--muted);background:transparent}
+.profile-btn.active{background:linear-gradient(135deg,var(--grad-a),var(--grad-b));color:#fff;box-shadow:0 4px 12px -4px rgba(119,85,238,.5)}
+.profile-btn:not(.active):hover{color:var(--text);background:var(--bg4)}
+.profile-note{font-size:10px;color:var(--muted);text-align:center;margin-bottom:1rem;padding:.5rem 1rem;background:rgba(119,85,238,.04);border:1px solid rgba(119,85,238,.12);border-radius:8px}
+
 /* ── CONTACT ── */
 .contact-group{margin-bottom:1rem}
 .contact-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
@@ -358,6 +367,12 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
     </div>
   </div>
   <div id="specBanner" class="banner"></div>
+  <div id="profileToggle" class="profile-toggle" style="display:none">
+    <button class="profile-btn active" onclick="setProfile('mplus',this)" id="btn-mplus">⚔ <span data-i18n="profile_mplus">Mythic+ & Craft</span></button>
+    <button class="profile-btn" onclick="setProfile('raid',this)" id="btn-raid">🏰 <span data-i18n="profile_raid">Raid Mythic + Craft</span></button>
+  </div>
+  <div id="profileNote" class="profile-note" style="display:none"></div>
+
   <div class="track-bar">
     <span class="track-lbl" data-i18n="tracks_label">Tracks:</span>
     <div class="tp"><span class="td" style="background:#22c97a"></span>Champion 250–263</div>
@@ -561,6 +576,12 @@ const I18N = {
     data_voidforge_t:"Voidforge (patch 12.0.5)", data_voidforge_d:"Pushes Main Hand and Trinkets to ilvl 298 on Hero/Myth track. Not available on other slots.",
     ref_empty_title:"No spec loaded", ref_empty_desc:"Analyze a character first to see their spec's enchants, gems and consumables.",
 
+
+    profile_mplus:"Mythic+ & Craft",
+    profile_raid:"Raid Mythic + Craft",
+    profile_note_mplus:"Showing BiS for Mythic+ dungeons and crafted gear only. Items from raid are not considered.",
+    profile_note_raid:"Showing BiS for Mythic Raid and crafted gear. Dungeon items are shown when they beat raid options.",
+    profile_note_catalyst:"Tier slots (Head/Shoulders/Chest/Hands/Legs): any dungeon piece can be transformed via the Catalyst.",
     tab_contact:"Contact",
     contact_title:"Contact & Feedback",
     contact_sub:"Have an idea, a bug report, or a BiS correction? Send us a message — we read everything.",
@@ -636,6 +657,12 @@ const I18N = {
     data_voidforge_t:"虚空锻造（12.0.5 版本）", data_voidforge_d:"可将主手武器和饰品提升至 298 装等（英雄/神话档次）。不适用于其他部位。",
     ref_empty_title:"尚未加载专精", ref_empty_desc:"请先分析一个角色，以查看该专精的属性优先级、附魔、宝石和消耗品。",
 
+
+    profile_mplus:"Mythic+ 与制造",
+    profile_raid:"神话团本 + 制造",
+    profile_note_mplus:"仅显示神话+副本和制造装备的 BiS。不考虑团本装备。",
+    profile_note_raid:"显示神话团本和制造装备的 BiS。当副本装备优于团本时也会显示。",
+    profile_note_catalyst:"套装槽位（头/肩/胸/手/腿）：任何副本装备都可通过催化剂转换为套装。",
     tab_contact:"联系我们",
     contact_title:"联系与反馈",
     contact_sub:"有想法、Bug 报告或 BiS 纠正？发消息给我们——我们会认真阅读每一条。",
@@ -947,6 +974,83 @@ const SPEC_BIS = {
 
 };
 
+
+/* ══════════════════════════════════════════════════
+   ACTIVE PROFILE — 'mplus' or 'raid'
+   ══════════════════════════════════════════════════ */
+let ACTIVE_PROFILE = 'mplus';
+
+function setProfile(profile, el) {
+  ACTIVE_PROFILE = profile;
+  document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const note = document.getElementById('profileNote');
+  if(profile === 'mplus') {
+    note.textContent = t('profile_note_mplus');
+  } else {
+    note.textContent = t('profile_note_raid') + ' ' + t('profile_note_catalyst');
+  }
+  // If a result is already displayed, re-run
+  if(window._lastData) renderResults(window._lastData, window._lastItems, window._lastItemNames);
+}
+
+function getActiveBis(specKey) {
+  if(ACTIVE_PROFILE === 'raid' && SPEC_BIS_RAID[specKey]) return SPEC_BIS_RAID[specKey];
+  return SPEC_BIS[specKey] || null;
+}
+
+/* ══════════════════════════════════════════════════
+   SPEC_BIS_RAID — Raid Mythique + Craft
+   Sources : Archon.gg Raid Mythique (top 50%, 39k parses)
+             Icy Veins / Method.gg
+   Règle Catalyseur : pour les slots tier (head/shoulder/
+   chest/hands/legs), tout item de donjon peut être
+   transformé en pièce de set via le Catalyseur.
+   enKey vide sur ces slots = toujours BiS si c'est le bon slot.
+   ══════════════════════════════════════════════════ */
+const SPEC_BIS_RAID = {
+
+  "Shaman|Restoration": {
+    tierKeyword:"primal core",
+    tierBonus2:"Unleash Life — CD −3s & direct healing +100%",
+    tierBonus4:"Unleash Life grants 2 additional heal stacks",
+    bis: {
+      // Archon Raid Mythique #1: Aln'hara Cane (craft 37.3%) > Magister's Valediction (raid 16.3%)
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",      icon:"⚡",tier:false,craft:true, vf:true, src:"✦ Craft (37.3%) — Darkmoon Sigil: Hunt",prio:1},
+      // Archon Raid #1 off-hand: Bulwark of Noble Resolve (raid 17.3%)
+      offhand:  {en:"Bulwark of Noble Resolve",   enKey:"Bulwark of Noble",icon:"🛡",tier:false,craft:false,vf:false,src:"Midnight Falls Raid — Noble Resolve",prio:2},
+      // Tier set — all 5 slots via Catalog or raid
+      head:     {en:"Locus of the Primal Core",   enKey:"Primal Core",   icon:"🪖",tier:true, craft:false,vf:false,src:"Class Catalog or Great Vault / Raid",prio:1},
+      neck:     {en:"Barbed Ymirheim Choker",      enKey:"Ymirheim",      icon:"📿",tier:false,craft:false,vf:false,src:"Pit of Saron — Forgemaster Garfrost",prio:4},
+      shoulder: {en:"Tempests of the Primal Core", enKey:"Primal Core",   icon:"💪",tier:true, craft:false,vf:false,src:"Class Catalog or Great Vault / Raid",prio:1},
+      // Icy Veins: Rigid Scale Greatcloak (Skyreach) or crafted
+      back:     {en:"Rigid Scale Greatcloak",      enKey:"Rigid Scale",   icon:"🧣",tier:false,craft:false,vf:false,src:"Skyreach — Viryx the Eternal",prio:4},
+      chest:    {en:"Embrace of the Primal Core",  enKey:"Primal Core",   icon:"🛡️",tier:true, craft:false,vf:false,src:"Class Catalog or Great Vault / Raid",prio:1},
+      // Crafted: Farstrider's Plated Bracers 54.1% in raid
+      wrist:    {en:"Farstrider's Plated Bracers", enKey:"Farstrider",    icon:"⌚",tier:false,craft:true, vf:false,src:"✦ Craft (54.1%) — Thalassian Missive of the Quickblade",prio:2},
+      hands:    {en:"Earthgrips of the Primal Core",enKey:"Primal Core",  icon:"🧤",tier:true, craft:false,vf:false,src:"Class Catalog or Great Vault / Raid",prio:1},
+      waist:    {en:"Best belt available",          enKey:"",              icon:"🪡",tier:false,craft:false,vf:false,src:"Raid or any M+ dungeon — max ilvl",prio:5},
+      legs:     {en:"Leggings of the Primal Core",  enKey:"Primal Core",  icon:"👖",tier:true, craft:false,vf:false,src:"Class Catalog or Great Vault / Raid",prio:1},
+      // Icy Veins: Rigid Scale Boots (Skyreach)
+      feet:     {en:"Rigid Scale Boots",            enKey:"Rigid Scale",  icon:"👢",tier:false,craft:false,vf:false,src:"Skyreach — Viryx the Eternal",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",     enKey:"Eredath",      icon:"💍",tier:false,craft:false,vf:false,src:"Seat of the Triumvirate — Zuraal the Ascended",prio:2},
+      finger2:  {en:"Purloined Wedding Ring",        enKey:"Purloined",    icon:"💍",tier:false,craft:false,vf:false,src:"Pit of Saron — Krick",prio:3},
+      // Archon Raid trinkets #1 combo: Gaze of the Alnseer + Locus-Walker's Ribbon (16.5%)
+      trinket1: {en:"Gaze of the Alnseer",          enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,vf:true, src:"M+ dungeon. Voidforge → 298",prio:1},
+      trinket2: {en:"Locus-Walker's Ribbon",         enKey:"Locus-Walker", icon:"🔮",tier:false,craft:false,vf:true, src:"Midnight Falls Raid. Voidforge → 298",prio:1},
+    }
+  },
+
+  // For other specs in raid profile, fall back to M+ BiS
+  // (to be filled per spec as data is verified)
+  "Monk|Mistweaver":      null,
+  "Monk|Brewmaster":      null,
+  "Demon Hunter|Devourer":null,
+  "Death Knight|Unholy":  null,
+  "Evoker|Augmentation":  null,
+  "Druid|Guardian":       null,
+};
+
 /* Role-based consumables */
 const CONSUMABLES = {
   healer:{flask:"Flask of Tempered Versatility",pot:"Tempered Potion",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
@@ -1126,7 +1230,8 @@ async function run(){
 
   const className=data.class||""; const specName=data.active_spec_name||"";
   const specKey=`${className}|${specName}`;
-  const meta=SPEC_META[specKey]; const detailedBis=SPEC_BIS[specKey];
+  const meta=SPEC_META[specKey];
+  const detailedBis=getActiveBis(specKey);
   if(meta)buildRefTab(specKey,meta);
 
   if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>${t('banner_full',{spec:specName,class:className})}</span>`;}
@@ -1134,11 +1239,35 @@ async function run(){
   else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>${t('banner_unknown',{spec:specName,class:className})}</span>`;}
   banner.style.display="flex";
 
+  // Show profile toggle if spec has detailed BiS
+  const toggle=document.getElementById('profileToggle');
+  const note=document.getElementById('profileNote');
+  if(detailedBis){
+    toggle.style.display='flex';
+    note.style.display='block';
+    note.textContent=t(ACTIVE_PROFILE==='raid'?'profile_note_raid':'profile_note_mplus')+(ACTIVE_PROFILE==='raid'?' '+t('profile_note_catalyst'):'');
+    // Update profile buttons i18n
+    document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(I18N[LANG][k])el.textContent=I18N[LANG][k];});
+  } else {
+    toggle.style.display='none';
+    note.style.display='none';
+  }
+
   out.innerHTML=`<div class="loader"><div class="spin"></div><div>${LANG==='zh'?'加载装备名称…':'Loading item names…'}</div></div>`;
   const gear=data.gear||{};const items=gear.items||{};
   const itemNames={};
   await Promise.all(SLOT_ORDER.map(async k=>{const it=items[k];if(it?.item_id)itemNames[k]=await getItemName(it.item_id);else if(it?.name)itemNames[k]=it.name;}));
 
+  // Store for profile switching
+  window._lastData=data; window._lastItems=items; window._lastItemNames=itemNames;
+  renderResults(data,items,itemNames);
+  btn.disabled=false;
+}
+
+async function renderResults(data,items,itemNames){
+
+  const detailedBis=getActiveBis(`${data.class||""}|${data.active_spec_name||""}`);
+  const gear=data.gear||{};
   const ilvlEq=gear.item_level_equipped||0;
   const sc=data.mythic_plus_scores_by_season?.[0]?.scores;
   const score=sc?.all?Math.round(sc.all):null;
