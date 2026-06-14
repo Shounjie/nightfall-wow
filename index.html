@@ -495,7 +495,7 @@ function getStatus(ilvl,isSame,detectable){
 const _nc={};
 async function getItemName(id){
   if(!id)return null;if(_nc[id])return _nc[id];
-  try{const r=await fetch(`/api/wowhead?item=${encodeURIComponent(id)}`);const t=await r.text();const m=t.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);if(m&&m[1]){_nc[id]=m[1];return m[1];}}catch(e){}return null;
+  try{const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(id)}`);const t=await r.text();const m=t.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);if(m&&m[1]){_nc[id]=m[1];return m[1];}}catch(e){}return null;
 }
 function icoUrl(i){return i?`https://wow.zamimg.com/images/wow/icons/medium/${i.toLowerCase()}.jpg`:null}
 
@@ -626,7 +626,7 @@ async function run(){
   btn.disabled=true;banner.style.display="none";
   out.innerHTML=`<div class="loader"><div class="spin"></div><div>Reading gear from Raider.IO…</div></div>`;
 
-  const url=`/api/raiderio?region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
+  const url=`/.netlify/functions/proxy?target=raiderio&region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
   let data;
   try{
     const r=await fetch(url);
