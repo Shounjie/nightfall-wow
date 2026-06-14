@@ -186,6 +186,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .slot.bad{border-left-color:var(--red)}.slot.medium{border-left-color:var(--amber)}
 .slot.ok{border-left-color:var(--green)}.slot.notbis{border-left-color:var(--amber)}
 .slot.upgrade{border-left-color:var(--teal)}.slot.missing{border-left-color:var(--dim)}
+.slot.raidok{border-left-color:var(--green)}
 .slot-img{width:42px;height:42px;border-radius:9px;border:1px solid var(--border2);
   object-fit:cover;background:var(--bg3);display:block}
 .slot-txt{width:42px;height:42px;border-radius:9px;background:var(--bg3);
@@ -208,6 +209,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .badge.medium{background:rgba(240,176,48,.09);color:var(--amber);border-color:rgba(240,176,48,.18)}
 .badge.bad{background:rgba(224,72,72,.09);color:var(--red);border-color:rgba(224,72,72,.18)}
 .badge.missing{background:rgba(37,53,80,.3);color:var(--muted);border-color:var(--border)}
+.badge.raidok{background:rgba(34,201,122,.1);color:var(--green);border-color:rgba(34,201,122,.22)}
 .badge.upgrade{background:rgba(24,184,176,.09);color:var(--teal);border-color:rgba(24,184,176,.18)}
 .slot-detail{grid-column:1/-1;border-top:1px solid var(--border);margin-top:.75rem;
   padding-top:.75rem;display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:11.5px}
@@ -301,6 +303,16 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
   .hscore{text-align:left}
   .about-title{font-size:24px}
 }
+
+/* ── CONTACT ── */
+.contact-group{margin-bottom:1rem}
+.contact-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem}
+.contact-textarea{width:100%;min-height:140px;resize:vertical;font-family:inherit;
+  line-height:1.6;padding:10px 14px}
+.contact-success{text-align:center;background:rgba(34,201,122,.06);border:1px solid rgba(34,201,122,.2);
+  border-radius:14px;padding:2rem;margin-top:1rem}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -321,15 +333,16 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 </div>
 
 <div class="tabs">
-  <div class="tab on" onclick="switchTab('gear',this)">⚔ <span data-i18n="tab_gear">Gear Check</span></div>
-  <div class="tab" onclick="switchTab('about',this)">📖 <span data-i18n="tab_about">About</span></div>
+  <div class="tab on" onclick="switchTab('about',this)">🏠 <span data-i18n="tab_about">Home</span></div>
+  <div class="tab" onclick="switchTab('gear',this)">⚔ <span data-i18n="tab_gear">Gear Check</span></div>
   <div class="tab" onclick="switchTab('ref',this)">✦ <span data-i18n="tab_ref">Reference</span></div>
+  <div class="tab" onclick="switchTab('contact',this)">✉ <span data-i18n="tab_contact">Contact</span></div>
 </div>
 
 <div class="page">
 
 <!-- TAB: GEAR -->
-<div id="tab-gear" class="tc on">
+<div id="tab-gear" class="tc">
   <div class="search-wrap">
     <div class="search-label" data-i18n="search_label">Summon a character</div>
     <div class="search-row">
@@ -362,7 +375,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 </div>
 
 <!-- TAB: ABOUT -->
-<div id="tab-about" class="tc">
+<div id="tab-about" class="tc on">
   <div class="about-hero">
     <div class="about-logo">🌙</div>
     <div class="about-title">Nightfall</div>
@@ -445,6 +458,67 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
   </div>
 </div>
 
+
+<!-- TAB: CONTACT -->
+<div id="tab-contact" class="tc">
+  <div class="about-hero" style="padding:2rem 1rem 1.5rem">
+    <div class="about-logo" style="width:60px;height:60px;font-size:28px">✉</div>
+    <div class="about-title" style="font-size:24px" data-i18n="contact_title">Contact & Feedback</div>
+    <div class="about-sub" data-i18n="contact_sub">Have an idea, a bug report, or a BiS correction? Send us a message — we read everything.</div>
+  </div>
+
+  <div style="max-width:580px;margin:0 auto">
+    <!-- netlify attribute activates Netlify Forms -->
+    <form name="nightfall-contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactForm" onsubmit="handleSubmit(event)">
+      <input type="hidden" name="form-name" value="nightfall-contact"/>
+      <!-- Honeypot anti-spam -->
+      <p style="display:none"><input name="bot-field"/></p>
+
+      <div class="contact-group">
+        <label class="contact-label" data-i18n="form_name">Name</label>
+        <input class="s-input" type="text" name="name" required placeholder="Your name" data-i18n-ph="form_ph_name" style="width:100%"/>
+      </div>
+
+      <div class="contact-group">
+        <label class="contact-label" data-i18n="form_email">Email (optional)</label>
+        <input class="s-input" type="email" name="email" placeholder="your@email.com" style="width:100%"/>
+      </div>
+
+      <div class="contact-group">
+        <label class="contact-label" data-i18n="form_type">Request type</label>
+        <select class="s-select" name="type" style="width:100%;min-width:unset">
+          <option value="bug" data-i18n="form_type_bug">Bug report</option>
+          <option value="bis" data-i18n="form_type_bis">BiS correction</option>
+          <option value="spec" data-i18n="form_type_spec">New spec request</option>
+          <option value="idea" data-i18n="form_type_idea">Feature idea</option>
+          <option value="other" data-i18n="form_type_other">Other</option>
+        </select>
+      </div>
+
+      <div class="contact-group">
+        <label class="contact-label" data-i18n="form_msg">Message</label>
+        <textarea class="s-input contact-textarea" name="message" required placeholder="Describe your request..." data-i18n-ph="form_ph_msg"></textarea>
+      </div>
+
+      <button type="submit" class="s-btn" style="width:100%;justify-content:center" id="submitBtn">
+        <span data-i18n="form_send">Send message</span>
+      </button>
+    </form>
+
+    <div id="contactSuccess" style="display:none" class="contact-success">
+      <div style="font-size:32px;margin-bottom:.75rem">✅</div>
+      <div class="about-card-title" data-i18n="form_success_title">Message sent!</div>
+      <div class="about-card-text" data-i18n="form_success_desc">Thanks for reaching out. We'll get back to you as soon as possible.</div>
+    </div>
+
+    <div class="about-warning" style="margin-top:1.5rem">
+      <div style="font-size:18px;flex-shrink:0">💡</div>
+      <div><strong data-i18n="contact_tip_title">BiS correction?</strong><br>
+      <span data-i18n="contact_tip_desc">Please include: spec name, slot, current BiS listed, correct BiS, and the Archon.gg source link. This helps us update the database accurately.</span></div>
+    </div>
+  </div>
+</div>
+
 </div><!-- /page -->
 
 <div class="foot">
@@ -486,6 +560,19 @@ const I18N = {
     data_archon:"BiS sourced from 275,000+ Mythic+ parses. Keys +7 to +24. Updated each season patch.",
     data_voidforge_t:"Voidforge (patch 12.0.5)", data_voidforge_d:"Pushes Main Hand and Trinkets to ilvl 298 on Hero/Myth track. Not available on other slots.",
     ref_empty_title:"No spec loaded", ref_empty_desc:"Analyze a character first to see their spec's enchants, gems and consumables.",
+
+    tab_contact:"Contact",
+    contact_title:"Contact & Feedback",
+    contact_sub:"Have an idea, a bug report, or a BiS correction? Send us a message — we read everything.",
+    form_name:"Name", form_email:"Email (optional)", form_type:"Request type", form_msg:"Message",
+    form_ph_name:"Your name", form_ph_msg:"Describe your request...",
+    form_type_bug:"Bug report", form_type_bis:"BiS correction", form_type_spec:"New spec request",
+    form_type_idea:"Feature idea", form_type_other:"Other",
+    form_send:"Send message",
+    form_success_title:"Message sent!",
+    form_success_desc:"Thanks for reaching out. We\'ll get back to you as soon as possible.",
+    contact_tip_title:"BiS correction?",
+    contact_tip_desc:"Please include: spec name, slot, current BiS listed, correct BiS, and the Archon.gg source link.",
     foot_data:"Live gear", foot_bis:"BiS data",
     banner_full:"Detected {spec} {class} — full BiS data loaded.",
     banner_struct:"Detected {spec} {class} — structural check (ilvl, tier, tracks). Detailed BiS coming soon.",
@@ -496,7 +583,7 @@ const I18N = {
     sec_high:"High Priority", sec_notbis:"Not BiS — Swap Item", sec_needs:"Needs ilvl Upgrade",
     sec_correct:"Correct Item — Raise ilvl", sec_ok:"Optimal Slots",
     sec_low:"High Priority — Low ilvl", sec_needs2:"Needs Upgrade", sec_ok2:"ilvl 276+",
-    badge_ok:"✓ BiS", badge_notbis:"Not BiS", badge_medium:"Upgrade", badge_bad:"⚠ Priority",
+    badge_ok:"✓ BiS", badge_raidok:"✓ Good", badge_notbis:"Not BiS", badge_medium:"Upgrade", badge_bad:"⚠ Priority",
     badge_missing:"Missing", badge_upgrade:"⬆ Raise ilvl", badge_good:"✓ Good",
     vf_title:"Voidforge (patch 12.0.5)",
     vf_desc:"Pushes items to ilvl 298 on Hero/Myth track. Eligible slots: Main Hand · Trinket 1 · Trinket 2. Not on rings, armor, cloak or bracers.",
@@ -511,6 +598,7 @@ const I18N = {
     msg_vfmax:"✓ Voidforge max — perfect!",
     msg_max:"✓ Max ilvl — perfect!",
     msg_good:"✓ Good.",
+    msg_raidok:"✓ ilvl {ilvl} — high ilvl item, no need to replace. Voidforge available on trinkets & weapon.",
     bis_label:"M+ BiS (Archon)", src_label:"Source",
     stat_priority:"Stat Priority",
     ref_title:"Reference for {spec} {class}",
@@ -547,6 +635,19 @@ const I18N = {
     data_archon:"BiS 数据来源于超过 27.5 万条 M+ 解析记录，涵盖 +7 至 +24 钥石，每个赛季版本更新。",
     data_voidforge_t:"虚空锻造（12.0.5 版本）", data_voidforge_d:"可将主手武器和饰品提升至 298 装等（英雄/神话档次）。不适用于其他部位。",
     ref_empty_title:"尚未加载专精", ref_empty_desc:"请先分析一个角色，以查看该专精的属性优先级、附魔、宝石和消耗品。",
+
+    tab_contact:"联系我们",
+    contact_title:"联系与反馈",
+    contact_sub:"有想法、Bug 报告或 BiS 纠正？发消息给我们——我们会认真阅读每一条。",
+    form_name:"姓名", form_email:"邮箱（可选）", form_type:"请求类型", form_msg:"消息内容",
+    form_ph_name:"你的名字", form_ph_msg:"描述你的请求...",
+    form_type_bug:"Bug 报告", form_type_bis:"BiS 纠正", form_type_spec:"新专精请求",
+    form_type_idea:"功能建议", form_type_other:"其他",
+    form_send:"发送消息",
+    form_success_title:"消息已发送！",
+    form_success_desc:"感谢你的反馈，我们会尽快回复。",
+    contact_tip_title:"BiS 纠正？",
+    contact_tip_desc:"请注明：专精名称、槽位、当前列出的 BiS、正确的 BiS 以及 Archon.gg 来源链接。",
     foot_data:"实时装备", foot_bis:"BiS 数据",
     banner_full:"检测到 {class} {spec} — 完整 BiS 数据已加载。",
     banner_struct:"检测到 {class} {spec} — 结构检查（装等、套装、档次）。详细 BiS 即将推出。",
@@ -557,7 +658,7 @@ const I18N = {
     sec_high:"高优先级", sec_notbis:"非 BiS — 替换装备", sec_needs:"需提升装等",
     sec_correct:"正确装备 — 提升装等", sec_ok:"最优槽位",
     sec_low:"高优先级 — 装等过低", sec_needs2:"需要提升", sec_ok2:"装等 276+",
-    badge_ok:"✓ BiS", badge_notbis:"非 BiS", badge_medium:"需升级", badge_bad:"⚠ 优先",
+    badge_ok:"✓ BiS", badge_raidok:"✓ 良好", badge_notbis:"非 BiS", badge_medium:"需升级", badge_bad:"⚠ 优先",
     badge_missing:"缺失", badge_upgrade:"⬆ 提升装等", badge_good:"✓ 良好",
     vf_title:"虚空锻造（12.0.5）",
     vf_desc:"可将英雄/神话档次装备推升至 298 装等。仅限：主手武器 · 饰品1 · 饰品2。不适用于副手、戒指、护甲等部位。",
@@ -572,6 +673,7 @@ const I18N = {
     msg_vfmax:"✓ 虚空锻造最大值 — 完美！",
     msg_max:"✓ 装等已满 — 完美！",
     msg_good:"✓ 良好。",
+    msg_raidok:"✓ 装等 {ilvl} — 高装等装备，无需替换。饰品和武器可使用虚空锻造。",
     bis_label:"M+ BiS（Archon）", src_label:"来源",
     stat_priority:"属性优先级",
     ref_title:"{class} {spec} 参考",
@@ -872,7 +974,14 @@ function trkPill(ilvl){const t=getTrack(ilvl);if(!t)return"";return`<span class=
 
 function getStatus(ilvl,isSame,detectable){
   if(!ilvl)return"missing";
-  if(ilvl>=276){if(!detectable)return"ok";return isSame?"ok":"notbis";}
+  if(ilvl>=276){
+    if(!detectable)return"ok";
+    if(isSame)return"ok";
+    // Item is not the listed M+ BiS, but if ilvl >= 289 (Myth 6/6 or Voidforge)
+    // it's likely from raid or Great Vault and is as good or better — validate it
+    if(ilvl>=289)return"raidok";
+    return"notbis";
+  }
   if(ilvl>=263){if(isSame)return"upgrade";return"medium";}
   return"bad";
 }
@@ -908,10 +1017,10 @@ function renderSlotBiS(key,item,nameEn,ref,tierKw){
   const tierP=ref.tier?`<span class="pill p-tier">Tier</span>`:"";
   const craftP=ref.craft?`<span class="pill p-craft">Craft</span>`:"";
   const vfP=showVF?`<span class="pill p-vf">Voidforge ↑298</span>`:"";
-  const badgeMap={ok:t('badge_ok'),notbis:t('badge_notbis'),medium:t('badge_medium'),bad:t('badge_bad'),missing:t('badge_missing'),upgrade:t('badge_upgrade')};
+  const badgeMap={ok:t('badge_ok'),raidok:t('badge_raidok'),notbis:t('badge_notbis'),medium:t('badge_medium'),bad:t('badge_bad'),missing:t('badge_missing'),upgrade:t('badge_upgrade')};
   const badge=`<span class="badge ${status}">${badgeMap[status]||status}</span>`;
   const trk=ilvl?trkPill(ilvl):"";
-  const isBisConfirmed=(status==="ok"||status==="upgrade")&&(isSame||!detectable);
+  const isBisConfirmed=(status==="ok"||status==="upgrade"||status==="raidok")&&(isSame||!detectable||status==="raidok");
   const detail=isBisConfirmed
     ?`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}</span></div><div class="d-row"></div>`
     :`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}</span></div><div class="d-row"><span class="d-k">${t('src_label')}</span><span class="d-src">${ref.src}</span></div>`;
@@ -923,6 +1032,7 @@ function renderSlotBiS(key,item,nameEn,ref,tierKw){
   else if(status==="medium")msg=ref.craft?`<div class="d-msg dm-warn">${t('msg_medium_craft',{ilvl})}</div>`:`<div class="d-msg dm-warn">${t('msg_medium',{ilvl,track:tN})}${vfNote}</div>`;
   else if(status==="upgrade")msg=ref.craft?`<div class="d-msg dm-teal">${t('msg_upgrade_craft')}</div>`:`<div class="d-msg dm-teal">${t('msg_upgrade')}${vfNote}</div>`;
   else if(status==="notbis")msg=`<div class="d-msg dm-warn">${t('msg_notbis',{ilvl})}${vfNote}</div>`;
+  else if(status==="raidok")msg=`<div class="d-msg dm-ok">${t('msg_raidok',{ilvl})}</div>`;
   else if(status==="ok"){
     if(ilvl===276)msg=`<div class="d-msg dm-ok">${t('msg_276')}${vfNote}</div>`;
     else if(ilvl>=289)msg=`<div class="d-msg dm-ok">${isVF?t('msg_vfmax'):t('msg_max')}</div>`;
@@ -1076,13 +1186,13 @@ async function run(){
       else{isSame=hasEnKey&&nameEn.includes(ref.enKey.toLowerCase());detectable=hasEnKey;}
       allSlots.push({key,item,status:getStatus(ilvl,isSame,detectable),ref,itemName:itemNames[key]||item?.name||""});
     }
-    const ord={bad:0,missing:1,notbis:2,medium:3,upgrade:4,ok:5};
+    const ord={bad:0,missing:1,notbis:2,medium:3,upgrade:4,ok:5,raidok:5};
     allSlots.sort((a,b)=>(ord[a.status]??6)-(ord[b.status]??6)||(a.ref.prio||9)-(b.ref.prio||9));
     const bad=allSlots.filter(s=>s.status==="bad"||s.status==="missing");
     const notbis=allSlots.filter(s=>s.status==="notbis");
     const medium=allSlots.filter(s=>s.status==="medium");
     const upgrade=allSlots.filter(s=>s.status==="upgrade");
-    const good=allSlots.filter(s=>s.status==="ok");
+    const good=allSlots.filter(s=>s.status==="ok"||s.status==="raidok");
     const tC=tierCount>=4?"cg":tierCount>=2?"ca":"cr";
     const tierBan=tierCount>=4
       ?`<div class="tier-ban"><div class="tier-ico">✅</div><div><div class="tier-h">${t('tier_complete')}</div><div class="tier-s">2pc: ${detailedBis.tierBonus2}<br>4pc: ${detailedBis.tierBonus4}</div></div></div>`
@@ -1112,7 +1222,7 @@ async function run(){
   allSlots.sort((a,b)=>(ord[a.status]??4)-(ord[b.status]??4));
   const bad=allSlots.filter(s=>s.status==="bad"||s.status==="missing");
   const medium=allSlots.filter(s=>s.status==="medium");
-  const good=allSlots.filter(s=>s.status==="ok");
+  const good=allSlots.filter(s=>s.status==="ok"||s.status==="raidok");
   const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="sec-head"><div class="sec-dot" style="color:${col}"></div><span class="sec-t">${lbl}</span><span class="sec-c">${list.length}</span><span class="sec-rule"></span></div><div class="slots">${list.map(s=>renderSlotStruct(s.key,s.item,s.itemName)).join("")}</div>`};
   out.innerHTML=`${heroCard}
     <div class="summary">
@@ -1125,6 +1235,27 @@ async function run(){
     ${sec(medium,"var(--amber)",t('sec_needs2'))}
     ${sec(good,"var(--green)",t('sec_ok2'))}`;
   animBar();btn.disabled=false;
+}
+
+
+/* Contact form */
+async function handleSubmit(e){
+  e.preventDefault();
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  btn.querySelector('[data-i18n]').textContent=LANG==='zh'?'发送中...':'Sending...';
+  try{
+    const form=document.getElementById('contactForm');
+    const data=new FormData(form);
+    await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams(data).toString()});
+    form.style.display='none';
+    document.getElementById('contactSuccess').style.display='block';
+  }catch(err){
+    btn.disabled=false;
+    btn.querySelector('[data-i18n]').textContent=LANG==='zh'?'发送消息':'Send message';
+    alert(LANG==='zh'?'发送失败，请重试。':'Failed to send. Please try again.');
+  }
 }
 
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js").catch(()=>{});});}
