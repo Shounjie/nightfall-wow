@@ -1129,9 +1129,14 @@ function getStatus(ilvl,isSame,detectable){
 const _nc={};
 async function getItemName(id){
   if(!id)return null;if(_nc[id])return _nc[id];
-  try{const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(id)}`);
+  try{
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),5000);
+    const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(id)}`,{signal:controller.signal});
+    clearTimeout(timeout);
     const tx=await r.text();const m=tx.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);
-    if(m&&m[1]){_nc[id]=m[1];return m[1];}}catch(e){}return null;
+    if(m&&m[1]){_nc[id]=m[1];return m[1];}
+  }catch(e){}return null;
 }
 function icoUrl(i){return i?`https://wow.zamimg.com/images/wow/icons/medium/${i.toLowerCase()}.jpg`:null}
 
@@ -1409,11 +1414,11 @@ async function run(){
 
   // Store for profile switching
   window._lastData=data; window._lastItems=items; window._lastItemNames=itemNames; window._lastMeta=meta; window._lastSpecKey=specKey; window._lastClassName=data.class||''; window._lastSpecName=data.active_spec_name||'';
-  renderResults(data,items,itemNames,meta,specKey,data.class||'',data.active_spec_name||'');
+  await renderResults(data,items,itemNames,meta,specKey,data.class||'',data.active_spec_name||'');
   btn.disabled=false;
 }
 
-function renderResults(data,items,itemNames,meta,specKey,className,specName){
+async function renderResults(data,items,itemNames,meta,specKey,className,specName){
   const out=document.getElementById('out');
   try{
   const detailedBis=getActiveBis(`${data.class||""}|${data.active_spec_name||""}`);
