@@ -313,6 +313,38 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .profile-btn:not(.active):hover{color:var(--text);background:var(--bg4)}
 .profile-note{font-size:10px;color:var(--muted);text-align:center;margin-bottom:1rem;padding:.5rem 1rem;background:rgba(119,85,238,.04);border:1px solid rgba(119,85,238,.12);border-radius:8px}
 
+
+/* ── DUNGEON SUMMARY ── */
+.dungeon-section{margin-top:1.5rem}
+.dungeon-section-title{font-family:'Cinzel',serif;font-size:13px;font-weight:600;
+  color:var(--text);margin-bottom:.875rem;padding-bottom:.625rem;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.dungeon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.dungeon-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;transition:.15s}
+.dungeon-card:hover{border-color:var(--border2)}
+.dungeon-card-head{padding:.625rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;background:rgba(119,85,238,.04)}
+.dungeon-card-name{font-size:12px;font-weight:700;color:var(--text)}
+.dungeon-card-count{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  color:var(--purple);background:rgba(119,85,238,.12);padding:2px 7px;border-radius:20px;margin-left:auto}
+.dungeon-item{display:flex;align-items:center;gap:9px;padding:.4rem 1rem;
+  font-size:11.5px;border-top:1px solid rgba(22,35,58,.5);transition:.15s}
+.dungeon-item:first-of-type{border-top:none}
+.dungeon-item:hover{background:var(--bg3)}
+.dungeon-item-slot{font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);width:70px;flex-shrink:0}
+.dungeon-item-name{flex:1;font-weight:600}
+.dungeon-item-status{font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;
+  flex-shrink:0;white-space:nowrap}
+.dis-missing{background:rgba(224,72,72,.1);color:var(--red);border:1px solid rgba(224,72,72,.2)}
+.dis-upgrade{background:rgba(26,176,168,.1);color:var(--teal);border:1px solid rgba(26,176,168,.2)}
+.dis-notbis{background:rgba(240,176,48,.1);color:var(--amber);border:1px solid rgba(240,176,48,.2)}
+.dungeon-catalyst{background:rgba(119,85,238,.05);border:1px solid rgba(119,85,238,.15);
+  border-radius:var(--r);padding:.625rem 1rem;font-size:11px;color:var(--muted);
+  margin-bottom:.875rem;line-height:1.6}
+.dungeon-catalyst strong{color:var(--purple)}
+.dungeon-no-items{text-align:center;padding:2rem;color:var(--muted);font-size:13px}
+
 /* ── CONTACT ── */
 .contact-group{margin-bottom:1rem}
 .contact-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
@@ -995,7 +1027,11 @@ function setProfile(profile, el) {
 }
 
 function getActiveBis(specKey) {
-  if(ACTIVE_PROFILE === 'raid' && SPEC_BIS_RAID[specKey]) return SPEC_BIS_RAID[specKey];
+  if(ACTIVE_PROFILE === 'raid') {
+    // If raid data exists and is not null, use it
+    if(SPEC_BIS_RAID[specKey] != null) return SPEC_BIS_RAID[specKey];
+    // Fallback to M+ data for specs not yet in raid database
+  }
   return SPEC_BIS[specKey] || null;
 }
 
@@ -1204,6 +1240,132 @@ function buildRefTab(specKey,meta){
       </div>
     </div>`;
 }
+
+
+/* ══ DUNGEON SUMMARY ══ */
+// Known dungeon names in Midnight S1
+const DUNGEON_NAMES = {
+  "Pit of Saron":                  {icon:"❄️", short:"Pit of Saron"},
+  "Seat of the Triumvirate":       {icon:"🌌", short:"Seat of Triumvirate"},
+  "Skyreach":                      {icon:"🦅", short:"Skyreach"},
+  "Algeth'ar Academy":             {icon:"🐉", short:"Algeth'ar Academy"},
+  "Nexus-Point Xenas":             {icon:"⚡", short:"Nexus-Point Xenas"},
+  "Windrunner Spire":              {icon:"🏹", short:"Windrunner Spire"},
+  "Maisara Caverns":               {icon:"🌊", short:"Maisara Caverns"},
+  "Magisters' Terrace":            {icon:"🏛️", short:"Magisters' Terrace"},
+  "Midnight Falls Raid":           {icon:"🌙", short:"Midnight Falls (Raid)"},
+  "Class Catalog or Great Vault":  {icon:"📚", short:"Class Catalog / Great Vault"},
+  "Class Catalog or Great Vault / Raid": {icon:"📚", short:"Class Catalog / Great Vault"},
+};
+
+function getDungeonKey(src) {
+  if(!src) return null;
+  if(src.startsWith("✦")) return null; // crafted
+  for(const key of Object.keys(DUNGEON_NAMES)) {
+    if(src.includes(key)) return key;
+  }
+  // Generic M+ dungeon
+  if(src.toLowerCase().includes("m+ dungeon") || src.toLowerCase().includes("any m+")) return "any_mplus";
+  return "other";
+}
+
+function buildDungeonSummary(allSlots, tierKw, lang) {
+  // Gather slots that need farming (bad, medium, missing, notbis, upgrade)
+  const needFarm = allSlots.filter(s => 
+    s.status === "bad" || s.status === "missing" || 
+    s.status === "medium" || s.status === "notbis" ||
+    s.status === "upgrade"
+  );
+
+  if(!needFarm.length) return '';
+
+  // Group by dungeon
+  const byDungeon = {};
+  for(const slot of needFarm) {
+    if(!slot.ref) continue;
+    const src = slot.ref.src || '';
+    
+    // Tier slots — any dungeon is valid (Catalyst rule)
+    if(slot.ref.tier) {
+      const key = "catalyst";
+      if(!byDungeon[key]) byDungeon[key] = {name:"Renewal Catalyst (any dungeon)", icon:"⚗️", items:[]};
+      byDungeon[key].items.push({slot, label: slotLabel(slot.key), reason: slot.status});
+      continue;
+    }
+
+    // Crafted — skip (can't farm a specific dungeon for crafts)
+    if(slot.ref.craft) continue;
+
+    const key = getDungeonKey(src);
+    if(!key) continue;
+
+    if(key === "any_mplus") {
+      if(!byDungeon["any_mplus"]) byDungeon["any_mplus"] = {name:"Any M+ Dungeon", icon:"⚔️", items:[]};
+      byDungeon["any_mplus"].items.push({slot, label:slotLabel(slot.key), reason:slot.status});
+    } else if(key === "other") {
+      if(!byDungeon["other"]) byDungeon["other"] = {name:"Other Source", icon:"❓", items:[]};
+      byDungeon["other"].items.push({slot, label:slotLabel(slot.key), reason:slot.status});
+    } else {
+      if(!byDungeon[key]) byDungeon[key] = {...DUNGEON_NAMES[key], items:[]};
+      byDungeon[key].items.push({slot, label:slotLabel(slot.key), reason:slot.status});
+    }
+  }
+
+  if(!Object.keys(byDungeon).length) return '';
+
+  const statusLabel = {
+    missing: lang==='zh'?'缺失':'Missing',
+    bad:     lang==='zh'?'装等过低':'Low ilvl',
+    medium:  lang==='zh'?'需升级':'Upgrade',
+    notbis:  lang==='zh'?'非BiS':'Not BiS',
+    upgrade: lang==='zh'?'提升装等':'Raise ilvl',
+  };
+  const statusClass = {missing:'dis-missing',bad:'dis-missing',medium:'dis-upgrade',notbis:'dis-notbis',upgrade:'dis-upgrade'};
+
+  const hasTier = !!byDungeon["catalyst"];
+  const catalystNote = hasTier ? `<div class="dungeon-catalyst">
+    <strong>⚗️ Renewal Catalyst rule:</strong> For tier slots (Head · Shoulders · Chest · Hands · Legs), 
+    any dungeon piece on that slot can be converted into a tier set piece via the Renewal Catalyst. 
+    Farm any dungeon for these slots — you don't need a specific drop.
+  </div>` : '';
+
+  // Sort: raid/catalog last, catalyst first
+  const order = ["catalyst","any_mplus"];
+  const keys = Object.keys(byDungeon).sort((a,b) => {
+    const ai = order.indexOf(a), bi = order.indexOf(b);
+    if(ai !== -1 && bi !== -1) return ai - bi;
+    if(ai !== -1) return -1;
+    if(bi !== -1) return 1;
+    return 0;
+  });
+
+  const cards = keys.map(k => {
+    const d = byDungeon[k];
+    const items = d.items.map(({slot,label,reason}) => `
+      <div class="dungeon-item">
+        <span class="dungeon-item-slot">${label}</span>
+        <span class="dungeon-item-name">${slot.ref?.en || slot.itemName || "—"}</span>
+        <span class="dungeon-item-status ${statusClass[reason]||'dis-upgrade'}">${statusLabel[reason]||reason}</span>
+      </div>`).join('');
+    return `<div class="dungeon-card">
+      <div class="dungeon-card-head">
+        <span>${d.icon}</span>
+        <span class="dungeon-card-name">${d.name}</span>
+        <span class="dungeon-card-count">${d.items.length}</span>
+      </div>
+      ${items}
+    </div>`;
+  }).join('');
+
+  const title = lang==='zh' ? '🗺️ 副本攻略路线' : '🗺️ Dungeons to Farm';
+
+  return `<div class="dungeon-section">
+    <div class="dungeon-section-title">${title}</div>
+    ${catalystNote}
+    <div class="dungeon-grid">${cards}</div>
+  </div>`;
+}
+
 
 /* ══ MAIN ══ */
 async function run(){
