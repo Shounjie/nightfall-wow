@@ -1386,11 +1386,15 @@ async function run(){
   const url=`/.netlify/functions/proxy?target=raiderio&region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
   let data;
   try{
-    const r=await fetch(url);
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),15000);
+    const r=await fetch(url,{signal:controller.signal});
+    clearTimeout(timeout);
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
     data=await r.json();
   }catch(e){
-    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${e.message}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
+    const msg=e.name==='AbortError'?(LANG==='zh'?'请求超时，请重试。':'Request timed out. Please try again.'):e.message;
+    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${msg}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
     btn.disabled=false;return;
   }
 
