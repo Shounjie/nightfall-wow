@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <title>Nightfall — WoW M+ Gear Optimizer</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4857959643759243" crossorigin="anonymous"></script>
 <link rel="manifest" href="/manifest.json">
@@ -315,6 +315,105 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
   border-radius:14px;padding:2rem;margin-top:1rem}
 
 
+
+/* ── MOBILE APP LAYOUT ── */
+html, body {
+  height: 100%;
+  overflow: hidden; /* prevent page-level scroll */
+  overscroll-behavior: none;
+}
+.wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* dynamic viewport for mobile */
+  overflow: hidden;
+}
+/* Topbar stays fixed at top */
+.topbar {
+  flex-shrink: 0;
+  position: relative; /* not sticky anymore, it's in flex flow */
+}
+/* Tab bar moves to BOTTOM on mobile */
+.tabs {
+  order: 999; /* push to end in flex */
+  flex-shrink: 0;
+  padding: 0;
+  border-bottom: none;
+  border-top: 1px solid var(--border);
+  background: rgba(4,6,14,.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: env(safe-area-inset-bottom); /* iPhone notch */
+  position: relative;
+  z-index: 50;
+}
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: .625rem .25rem;
+  font-size: 10px;
+  gap: 3px;
+  border-bottom: none;
+  border-top: 2px solid transparent;
+  margin-bottom: 0;
+  margin-top: -1px;
+  min-height: 52px; /* big touch target */
+}
+.tab.on {
+  border-top-color: var(--purple);
+  border-bottom: none;
+  color: var(--purple);
+}
+.tab-icon { font-size: 18px; line-height: 1; }
+/* Page scrollable area */
+.page-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+/* On desktop, restore normal layout */
+@media (min-width: 768px) {
+  html, body { overflow: auto; height: auto; }
+  .wrap { height: auto; overflow: visible; display: block; }
+  .page-wrap { overflow: visible; flex: none; }
+  .tabs {
+    order: 0;
+    border-top: none;
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    justify-content: flex-start;
+    padding-bottom: 0;
+  }
+  .tab {
+    flex-direction: row;
+    gap: 6px;
+    padding: .5rem 1.125rem;
+    font-size: 12.5px;
+    min-height: auto;
+    border-top: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    margin-top: 0;
+    flex: none;
+  }
+  .tab.on { border-bottom-color: var(--purple); border-top: none; }
+  .tab-icon { font-size: 14px; }
+  .topbar { position: sticky; top: 0; z-index: 100; }
+}
+
 /* ── COMPARE ── */
 .cmp-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin-bottom:1rem}
 .cmp-player{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
@@ -381,14 +480,14 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 </div>
 
 <div class="tabs">
-  <div class="tab on" onclick="switchTab('about',this)">🏠 <span data-i18n="tab_about">Home</span></div>
-  <div class="tab" onclick="switchTab('gear',this)">⚔ <span data-i18n="tab_gear">Gear Check</span></div>
-  <div class="tab" onclick="switchTab('ref',this)">✦ <span data-i18n="tab_ref">Reference</span></div>
-  <div class="tab" onclick="switchTab('compare',this)">⚖ <span data-i18n="tab_compare">Compare</span></div>
-  <div class="tab" onclick="switchTab('contact',this)">✉ <span data-i18n="tab_contact">Contact</span></div>
+  <div class="tab on" onclick="switchTab('about',this)"><span class="tab-icon">🏠</span><span data-i18n="tab_about">Home</span></div>
+  <div class="tab" onclick="switchTab('gear',this)"><span class="tab-icon">⚔</span><span data-i18n="tab_gear">Gear</span></div>
+  <div class="tab" onclick="switchTab('ref',this)"><span class="tab-icon">✦</span><span data-i18n="tab_ref">Ref</span></div>
+  <div class="tab" onclick="switchTab('compare',this)"><span class="tab-icon">⚖</span><span data-i18n="tab_compare">Compare</span></div>
+  <div class="tab" onclick="switchTab('contact',this)"><span class="tab-icon">✉</span><span data-i18n="tab_contact">Contact</span></div>
 </div>
 
-<div class="page">
+<div class="page-wrap"><div class="page">
 
 <!-- TAB: GEAR -->
 <div id="tab-gear" class="tc">
@@ -601,6 +700,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 
 </div><!-- /page -->
 
+</div></div>
 <div class="foot">
   <span data-i18n="foot_data">Live gear</span> · <a href="https://raider.io/api" target="_blank">Raider.IO</a> &nbsp;·&nbsp;
   <span data-i18n="foot_bis">BiS data</span> · <a href="https://www.archon.gg" target="_blank">Archon.gg</a> &nbsp;·&nbsp;
