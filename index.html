@@ -305,38 +305,14 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
   .about-title{font-size:24px}
 }
 
-
-
-/* ── DUNGEON SUMMARY ── */
-.dungeon-section{margin-top:1.5rem}
-.dungeon-section-title{font-family:'Cinzel',serif;font-size:13px;font-weight:600;
-  color:var(--text);margin-bottom:.875rem;padding-bottom:.625rem;
-  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.dungeon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-.dungeon-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;transition:.15s}
-.dungeon-card:hover{border-color:var(--border2)}
-.dungeon-card-head{padding:.625rem 1rem;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:8px;background:rgba(119,85,238,.04)}
-.dungeon-card-name{font-size:12px;font-weight:700;color:var(--text)}
-.dungeon-card-count{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;
-  color:var(--purple);background:rgba(119,85,238,.12);padding:2px 7px;border-radius:20px;margin-left:auto}
-.dungeon-item{display:flex;align-items:center;gap:9px;padding:.4rem 1rem;
-  font-size:11.5px;border-top:1px solid rgba(22,35,58,.5);transition:.15s}
-.dungeon-item:first-of-type{border-top:none}
-.dungeon-item:hover{background:var(--bg3)}
-.dungeon-item-slot{font-size:9px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.06em;color:var(--muted);width:70px;flex-shrink:0}
-.dungeon-item-name{flex:1;font-weight:600}
-.dungeon-item-status{font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;
-  flex-shrink:0;white-space:nowrap}
-.dis-missing{background:rgba(224,72,72,.1);color:var(--red);border:1px solid rgba(224,72,72,.2)}
-.dis-upgrade{background:rgba(26,176,168,.1);color:var(--teal);border:1px solid rgba(26,176,168,.2)}
-.dis-notbis{background:rgba(240,176,48,.1);color:var(--amber);border:1px solid rgba(240,176,48,.2)}
-.dungeon-catalyst{background:rgba(119,85,238,.05);border:1px solid rgba(119,85,238,.15);
-  border-radius:var(--r);padding:.625rem 1rem;font-size:11px;color:var(--muted);
-  margin-bottom:.875rem;line-height:1.6}
-.dungeon-catalyst strong{color:var(--purple)}
-.dungeon-no-items{text-align:center;padding:2rem;color:var(--muted);font-size:13px}
+/* ── CONTACT ── */
+.contact-group{margin-bottom:1rem}
+.contact-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem}
+.contact-textarea{width:100%;min-height:140px;resize:vertical;font-family:inherit;
+  line-height:1.6;padding:10px 14px}
+.contact-success{text-align:center;background:rgba(34,201,122,.06);border:1px solid rgba(34,201,122,.2);
+  border-radius:14px;padding:2rem;margin-top:1rem}
 
 
 /* ── COMPARE ── */
@@ -361,20 +337,29 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .cmp-slot-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .cmp-winner{background:rgba(34,201,122,.06)}
 .cmp-loser{background:rgba(224,72,72,.04)}
-.cmp-equal{}
 .cmp-slot-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;flex-shrink:0}
 .cmp-sb-win{background:rgba(34,201,122,.15);color:var(--green)}
-.cmp-sb-lose{background:rgba(224,72,72,.1);color:var(--red)}
 .cmp-slots-head{display:flex;align-items:center;padding:.5rem .875rem;background:var(--bg3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border)}
-
-/* ── CONTACT ── */
-.contact-group{margin-bottom:1rem}
-.contact-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem}
-.contact-textarea{width:100%;min-height:140px;resize:vertical;font-family:inherit;
-  line-height:1.6;padding:10px 14px}
-.contact-success{text-align:center;background:rgba(34,201,122,.06);border:1px solid rgba(34,201,122,.2);
-  border-radius:14px;padding:2rem;margin-top:1rem}
+/* ── DUNGEON SUMMARY ── */
+.dungeon-section{margin-top:1.5rem}
+.dungeon-section-title{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:.875rem;padding-bottom:.625rem;border-bottom:1px solid var(--border)}
+.dungeon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.dungeon-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.dungeon-card:hover{border-color:var(--border2)}
+.dungeon-card-head{padding:.625rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:rgba(119,85,238,.04)}
+.dungeon-card-name{font-size:12px;font-weight:700;color:var(--text)}
+.dungeon-card-count{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--purple);background:rgba(119,85,238,.12);padding:2px 7px;border-radius:20px;margin-left:auto}
+.dungeon-item{display:flex;align-items:center;gap:9px;padding:.4rem 1rem;font-size:11.5px;border-top:1px solid rgba(22,35,58,.5)}
+.dungeon-item:first-of-type{border-top:none}
+.dungeon-item:hover{background:var(--bg3)}
+.dungeon-item-slot{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);width:70px;flex-shrink:0}
+.dungeon-item-name{flex:1;font-weight:600}
+.dungeon-item-status{font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;flex-shrink:0}
+.dis-missing{background:rgba(224,72,72,.1);color:var(--red);border:1px solid rgba(224,72,72,.2)}
+.dis-upgrade{background:rgba(26,176,168,.1);color:var(--teal);border:1px solid rgba(26,176,168,.2)}
+.dis-notbis{background:rgba(240,176,48,.1);color:var(--amber);border:1px solid rgba(240,176,48,.2)}
+.dungeon-catalyst{background:rgba(119,85,238,.05);border:1px solid rgba(119,85,238,.15);border-radius:var(--r);padding:.625rem 1rem;font-size:11px;color:var(--muted);margin-bottom:.875rem;line-height:1.6}
+.dungeon-catalyst strong{color:var(--purple)}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -422,7 +407,6 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
     </div>
   </div>
   <div id="specBanner" class="banner"></div>
-
   <div class="track-bar">
     <span class="track-lbl" data-i18n="tracks_label">Tracks:</span>
     <div class="tp"><span class="td" style="background:#22c97a"></span>Champion 250–263</div>
@@ -528,12 +512,10 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <!-- TAB: COMPARE -->
 <div id="tab-compare" class="tc">
   <div style="max-width:960px;margin:0 auto;padding-top:1.5rem">
-
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-      <!-- Player 1 -->
       <div class="search-wrap">
         <div class="search-label">⚔ Player 1</div>
-        <div class="search-row" style="flex-direction:column;gap:7px">
+        <div style="display:flex;flex-direction:column;gap:7px">
           <input id="cmp-name1" class="s-input" type="text" placeholder="Character name" style="width:100%"/>
           <div style="display:flex;gap:7px">
             <input id="cmp-realm1" class="s-input" type="text" placeholder="Realm" style="flex:1"/>
@@ -541,10 +523,9 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
           </div>
         </div>
       </div>
-      <!-- Player 2 -->
       <div class="search-wrap">
         <div class="search-label">⚔ Player 2</div>
-        <div class="search-row" style="flex-direction:column;gap:7px">
+        <div style="display:flex;flex-direction:column;gap:7px">
           <input id="cmp-name2" class="s-input" type="text" placeholder="Character name" style="width:100%"/>
           <div style="display:flex;gap:7px">
             <input id="cmp-realm2" class="s-input" type="text" placeholder="Realm" style="flex:1"/>
@@ -553,18 +534,8 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
         </div>
       </div>
     </div>
-
-    <button class="s-btn" onclick="runCompare()" id="btnCompare" style="width:100%;justify-content:center;margin-bottom:1.5rem">
-      <span data-i18n="btn_compare">Compare</span>
-    </button>
-
-    <div id="cmp-out">
-      <div class="empty">
-        <div class="empty-ico">⚖</div>
-        <div class="empty-h" data-i18n="compare_empty_title">Compare two players</div>
-        <div class="empty-p" data-i18n="compare_empty_desc">Enter two characters to see a side-by-side comparison of their gear, ilvl, M+ score and BiS progression.</div>
-      </div>
-    </div>
+    <button class="s-btn" onclick="runCompare()" id="btnCompare" style="width:100%;margin-bottom:1.5rem">Compare</button>
+    <div id="cmp-out"><div class="empty"><div class="empty-ico">⚖</div><div class="empty-h">Compare two players</div><div class="empty-p">Enter two characters to compare their gear side by side.</div></div></div>
   </div>
 </div>
 
@@ -670,20 +641,7 @@ const I18N = {
     data_voidforge_t:"Voidforge (patch 12.0.5)", data_voidforge_d:"Pushes Main Hand and Trinkets to ilvl 298 on Hero/Myth track. Not available on other slots.",
     ref_empty_title:"No spec loaded", ref_empty_desc:"Analyze a character first to see their spec's enchants, gems and consumables.",
 
-
-    profile_mplus:"Mythic+ & Craft",
-    profile_raid:"Raid Mythic + Craft",
-    profile_note_mplus:"Showing BiS for Mythic+ dungeons and crafted gear only. Items from raid are not considered.",
-    profile_note_raid:"Showing BiS for Mythic Raid and crafted gear. Dungeon items are shown when they beat raid options.",
-    profile_note_catalyst:"Tier slots (Head/Shoulders/Chest/Hands/Legs): any dungeon piece can be transformed via the Catalyst.",
-
     tab_compare:"Compare",
-    btn_compare:"Compare players",
-    compare_empty_title:"Compare two players",
-    compare_empty_desc:"Enter two characters to see a side-by-side gear comparison, ilvl, M+ score and BiS progression.",
-    cmp_score:"M+ Score", cmp_ilvl:"Item Level", cmp_spec:"Spec", cmp_tier:"T1 Set", cmp_slots:"Slots",
-    cmp_optimal:"Optimal", cmp_tofix:"To fix",
-    cmp_vs:"vs",
     tab_contact:"Contact",
     contact_title:"Contact & Feedback",
     contact_sub:"Have an idea, a bug report, or a BiS correction? Send us a message — we read everything.",
@@ -759,20 +717,7 @@ const I18N = {
     data_voidforge_t:"虚空锻造（12.0.5 版本）", data_voidforge_d:"可将主手武器和饰品提升至 298 装等（英雄/神话档次）。不适用于其他部位。",
     ref_empty_title:"尚未加载专精", ref_empty_desc:"请先分析一个角色，以查看该专精的属性优先级、附魔、宝石和消耗品。",
 
-
-    profile_mplus:"Mythic+ 与制造",
-    profile_raid:"神话团本 + 制造",
-    profile_note_mplus:"仅显示神话+副本和制造装备的 BiS。不考虑团本装备。",
-    profile_note_raid:"显示神话团本和制造装备的 BiS。当副本装备优于团本时也会显示。",
-    profile_note_catalyst:"套装槽位（头/肩/胸/手/腿）：任何副本装备都可通过催化剂转换为套装。",
-
     tab_compare:"对比",
-    btn_compare:"对比玩家",
-    compare_empty_title:"对比两名玩家",
-    compare_empty_desc:"输入两个角色，查看装备、装等、M+ 分数和 BiS 进度的并排对比。",
-    cmp_score:"M+ 分数", cmp_ilvl:"装备等级", cmp_spec:"专精", cmp_tier:"T1 套装", cmp_slots:"槽位",
-    cmp_optimal:"最优", cmp_tofix:"待处理",
-    cmp_vs:"对战",
     tab_contact:"联系我们",
     contact_title:"联系与反馈",
     contact_sub:"有想法、Bug 报告或 BiS 纠正？发消息给我们——我们会认真阅读每一条。",
@@ -1084,8 +1029,6 @@ const SPEC_BIS = {
 
 };
 
-
-
 /* Role-based consumables */
 const CONSUMABLES = {
   healer:{flask:"Flask of Tempered Versatility",pot:"Tempered Potion",food:"Feast — primary stat",rune:"Crystallized Augment Rune"},
@@ -1129,14 +1072,9 @@ function getStatus(ilvl,isSame,detectable){
 const _nc={};
 async function getItemName(id){
   if(!id)return null;if(_nc[id])return _nc[id];
-  try{
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),5000);
-    const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(id)}`,{signal:controller.signal});
-    clearTimeout(timeout);
+  try{const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(id)}`);
     const tx=await r.text();const m=tx.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);
-    if(m&&m[1]){_nc[id]=m[1];return m[1];}
-  }catch(e){}return null;
+    if(m&&m[1]){_nc[id]=m[1];return m[1];}}catch(e){}return null;
 }
 function icoUrl(i){return i?`https://wow.zamimg.com/images/wow/icons/medium/${i.toLowerCase()}.jpg`:null}
 
@@ -1245,132 +1183,6 @@ function buildRefTab(specKey,meta){
     </div>`;
 }
 
-
-/* ══ DUNGEON SUMMARY ══ */
-// Known dungeon names in Midnight S1
-const DUNGEON_NAMES = {
-  "Pit of Saron":                  {icon:"❄️", short:"Pit of Saron"},
-  "Seat of the Triumvirate":       {icon:"🌌", short:"Seat of Triumvirate"},
-  "Skyreach":                      {icon:"🦅", short:"Skyreach"},
-  "Algeth'ar Academy":             {icon:"🐉", short:"Algeth'ar Academy"},
-  "Nexus-Point Xenas":             {icon:"⚡", short:"Nexus-Point Xenas"},
-  "Windrunner Spire":              {icon:"🏹", short:"Windrunner Spire"},
-  "Maisara Caverns":               {icon:"🌊", short:"Maisara Caverns"},
-  "Magisters' Terrace":            {icon:"🏛️", short:"Magisters' Terrace"},
-  "Midnight Falls Raid":           {icon:"🌙", short:"Midnight Falls (Raid)"},
-  "Class Catalog or Great Vault":  {icon:"📚", short:"Class Catalog / Great Vault"},
-  "Class Catalog or Great Vault / Raid": {icon:"📚", short:"Class Catalog / Great Vault"},
-};
-
-function getDungeonKey(src) {
-  if(!src) return null;
-  if(src.startsWith("✦")) return null; // crafted
-  for(const key of Object.keys(DUNGEON_NAMES)) {
-    if(src.includes(key)) return key;
-  }
-  // Generic M+ dungeon
-  if(src.toLowerCase().includes("m+ dungeon") || src.toLowerCase().includes("any m+")) return "any_mplus";
-  return "other";
-}
-
-function buildDungeonSummary(allSlots, tierKw, lang) {
-  // Gather slots that need farming (bad, medium, missing, notbis, upgrade)
-  const needFarm = allSlots.filter(s => 
-    s.status === "bad" || s.status === "missing" || 
-    s.status === "medium" || s.status === "notbis" ||
-    s.status === "upgrade"
-  );
-
-  if(!needFarm.length) return '';
-
-  // Group by dungeon
-  const byDungeon = {};
-  for(const slot of needFarm) {
-    if(!slot.ref) continue;
-    const src = slot.ref.src || '';
-    
-    // Tier slots — any dungeon is valid (Catalyst rule)
-    if(slot.ref.tier) {
-      const key = "catalyst";
-      if(!byDungeon[key]) byDungeon[key] = {name:"Renewal Catalyst (any dungeon)", icon:"⚗️", items:[]};
-      byDungeon[key].items.push({slot, label: slotLabel(slot.key), reason: slot.status});
-      continue;
-    }
-
-    // Crafted — skip (can't farm a specific dungeon for crafts)
-    if(slot.ref.craft) continue;
-
-    const key = getDungeonKey(src);
-    if(!key) continue;
-
-    if(key === "any_mplus") {
-      if(!byDungeon["any_mplus"]) byDungeon["any_mplus"] = {name:"Any M+ Dungeon", icon:"⚔️", items:[]};
-      byDungeon["any_mplus"].items.push({slot, label:slotLabel(slot.key), reason:slot.status});
-    } else if(key === "other") {
-      if(!byDungeon["other"]) byDungeon["other"] = {name:"Other Source", icon:"❓", items:[]};
-      byDungeon["other"].items.push({slot, label:slotLabel(slot.key), reason:slot.status});
-    } else {
-      if(!byDungeon[key]) byDungeon[key] = {...DUNGEON_NAMES[key], items:[]};
-      byDungeon[key].items.push({slot, label:slotLabel(slot.key), reason:slot.status});
-    }
-  }
-
-  if(!Object.keys(byDungeon).length) return '';
-
-  const statusLabel = {
-    missing: lang==='zh'?'缺失':'Missing',
-    bad:     lang==='zh'?'装等过低':'Low ilvl',
-    medium:  lang==='zh'?'需升级':'Upgrade',
-    notbis:  lang==='zh'?'非BiS':'Not BiS',
-    upgrade: lang==='zh'?'提升装等':'Raise ilvl',
-  };
-  const statusClass = {missing:'dis-missing',bad:'dis-missing',medium:'dis-upgrade',notbis:'dis-notbis',upgrade:'dis-upgrade'};
-
-  const hasTier = !!byDungeon["catalyst"];
-  const catalystNote = hasTier ? `<div class="dungeon-catalyst">
-    <strong>⚗️ Renewal Catalyst rule:</strong> For tier slots (Head · Shoulders · Chest · Hands · Legs), 
-    any dungeon piece on that slot can be converted into a tier set piece via the Renewal Catalyst. 
-    Farm any dungeon for these slots — you don't need a specific drop.
-  </div>` : '';
-
-  // Sort: raid/catalog last, catalyst first
-  const order = ["catalyst","any_mplus"];
-  const keys = Object.keys(byDungeon).sort((a,b) => {
-    const ai = order.indexOf(a), bi = order.indexOf(b);
-    if(ai !== -1 && bi !== -1) return ai - bi;
-    if(ai !== -1) return -1;
-    if(bi !== -1) return 1;
-    return 0;
-  });
-
-  const cards = keys.map(k => {
-    const d = byDungeon[k];
-    const items = d.items.map(({slot,label,reason}) => `
-      <div class="dungeon-item">
-        <span class="dungeon-item-slot">${label}</span>
-        <span class="dungeon-item-name">${slot.ref?.en || slot.itemName || "—"}</span>
-        <span class="dungeon-item-status ${statusClass[reason]||'dis-upgrade'}">${statusLabel[reason]||reason}</span>
-      </div>`).join('');
-    return `<div class="dungeon-card">
-      <div class="dungeon-card-head">
-        <span>${d.icon}</span>
-        <span class="dungeon-card-name">${d.name}</span>
-        <span class="dungeon-card-count">${d.items.length}</span>
-      </div>
-      ${items}
-    </div>`;
-  }).join('');
-
-  const title = lang==='zh' ? '🗺️ 副本攻略路线' : '🗺️ Dungeons to Farm';
-
-  return `<div class="dungeon-section">
-    <div class="dungeon-section-title">${title}</div>
-    ${catalystNote}
-    <div class="dungeon-grid">${cards}</div>
-  </div>`;
-}
-
-
 /* ══ MAIN ══ */
 async function run(){
   const name=document.getElementById("charName").value.trim();
@@ -1386,22 +1198,17 @@ async function run(){
   const url=`/.netlify/functions/proxy?target=raiderio&region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
   let data;
   try{
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),15000);
-    const r=await fetch(url,{signal:controller.signal});
-    clearTimeout(timeout);
+    const r=await fetch(url);
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
     data=await r.json();
   }catch(e){
-    const msg=e.name==='AbortError'?(LANG==='zh'?'请求超时，请重试。':'Request timed out. Please try again.'):e.message;
-    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${msg}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
+    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${e.message}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
     btn.disabled=false;return;
   }
 
   const className=data.class||""; const specName=data.active_spec_name||"";
   const specKey=`${className}|${specName}`;
-  const meta=SPEC_META[specKey];
-  const detailedBis=getActiveBis(specKey);
+  const meta=SPEC_META[specKey]; const detailedBis=SPEC_BIS[specKey];
   if(meta)buildRefTab(specKey,meta);
 
   if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>${t('banner_full',{spec:specName,class:className})}</span>`;}
@@ -1409,24 +1216,11 @@ async function run(){
   else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>${t('banner_unknown',{spec:specName,class:className})}</span>`;}
   banner.style.display="flex";
 
-
-
   out.innerHTML=`<div class="loader"><div class="spin"></div><div>${LANG==='zh'?'加载装备名称…':'Loading item names…'}</div></div>`;
   const gear=data.gear||{};const items=gear.items||{};
   const itemNames={};
   await Promise.all(SLOT_ORDER.map(async k=>{const it=items[k];if(it?.item_id)itemNames[k]=await getItemName(it.item_id);else if(it?.name)itemNames[k]=it.name;}));
 
-  // Store for profile switching
-  window._lastData=data; window._lastItems=items; window._lastItemNames=itemNames; window._lastMeta=meta; window._lastSpecKey=specKey; window._lastClassName=data.class||''; window._lastSpecName=data.active_spec_name||'';
-  await renderResults(data,items,itemNames,meta,specKey,data.class||'',data.active_spec_name||'');
-  btn.disabled=false;
-}
-
-async function renderResults(data,items,itemNames,meta,specKey,className,specName){
-  const out=document.getElementById('out');
-  try{
-  const detailedBis=getActiveBis(`${data.class||""}|${data.active_spec_name||""}`);
-  const gear=data.gear||{};
   const ilvlEq=gear.item_level_equipped||0;
   const sc=data.mythic_plus_scores_by_season?.[0]?.scores;
   const score=sc?.all?Math.round(sc.all):null;
@@ -1499,9 +1293,8 @@ async function renderResults(data,items,itemNames,meta,specKey,className,specNam
       ${sec(notbis,"var(--amber)",t('sec_notbis'))}
       ${sec(medium,"var(--amber)",t('sec_needs'))}
       ${sec(upgrade,"var(--teal)",t('sec_correct'))}
-      ${sec(good,"var(--green)",t('sec_ok'))}
-      ${buildDungeonSummary(allSlots,tierKw,LANG)}`;
-    animBar();return;
+      ${sec(good,"var(--green)",t('sec_ok'))}`;
+    animBar();btn.disabled=false;return;
   }
 
   // Structural path
@@ -1523,118 +1316,9 @@ async function renderResults(data,items,itemNames,meta,specKey,className,specNam
     ${sec(bad,"var(--red)",t('sec_low'))}
     ${sec(medium,"var(--amber)",t('sec_needs2'))}
     ${sec(good,"var(--green)",t('sec_ok2'))}`;
-  animBar();
-  }catch(err){
-    console.error("renderResults error:", err);
-    out.innerHTML=`<div class="err"><strong>Render error</strong><p>${err.message}</p></div>`;
-  }
+  animBar();btn.disabled=false;
 }
 
-
-
-/* ══ COMPARE TWO PLAYERS ══ */
-async function runCompare(){
-  const btn=document.getElementById('btnCompare');
-  const out=document.getElementById('cmp-out');
-  const n1=document.getElementById('cmp-name1').value.trim();
-  const r1=document.getElementById('cmp-realm1').value.trim().toLowerCase().replace(/\s+/g,'-');
-  const reg1=document.getElementById('cmp-region1').value;
-  const n2=document.getElementById('cmp-name2').value.trim();
-  const r2=document.getElementById('cmp-realm2').value.trim().toLowerCase().replace(/\s+/g,'-');
-  const reg2=document.getElementById('cmp-region2').value;
-  if(!n1||!r1||!n2||!r2){alert('Please fill in both characters.');return;}
-  btn.disabled=true;
-  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Fetching both characters…</div></div>`;
-
-  async function fetchChar(name,realm,region){
-    const url=`/.netlify/functions/proxy?target=raiderio&region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
-    const r=await fetch(url);
-    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
-    return r.json();
-  }
-
-  let d1,d2;
-  try{
-    [d1,d2]=await Promise.all([fetchChar(n1,r1,reg1),fetchChar(n2,r2,reg2)]);
-  }catch(e){
-    out.innerHTML=`<div class="err"><strong>Error</strong><p>${e.message}</p></div>`;
-    btn.disabled=false;return;
-  }
-
-  const g1=d1.gear||{},g2=d2.gear||{};
-  const i1=g1.items||{},i2=g2.items||{};
-  const il1=g1.item_level_equipped||0,il2=g2.item_level_equipped||0;
-  const sc1=d1.mythic_plus_scores_by_season?.[0]?.scores?.all||0;
-  const sc2=d2.mythic_plus_scores_by_season?.[0]?.scores?.all||0;
-  const spec1=`${d1.class||''} ${d1.active_spec_name||''}`;
-  const spec2=`${d2.class||''} ${d2.active_spec_name||''}`;
-
-  // Build slot comparison
-  const slotRows = SLOT_ORDER.map(key=>{
-    const item1=i1[key], item2=i2[key];
-    const ilvl1=item1?.item_level||0, ilvl2=item2?.item_level||0;
-    const name1=item1?.name||'—', name2=item2?.name||'—';
-    const icon1=item1?.icon?`<img class="cmp-slot-img" src="${icoUrl(item1.icon)}" alt="" onerror="this.style.display='none'">`:'<div class="cmp-slot-img" style="font-size:14px;display:flex;align-items:center;justify-content:center">'+SLOT_ICON[key]+'</div>';
-    const icon2=item2?.icon?`<img class="cmp-slot-img" src="${icoUrl(item2.icon)}" alt="" onerror="this.style.display='none'">`:'<div class="cmp-slot-img" style="font-size:14px;display:flex;align-items:center;justify-content:center">'+SLOT_ICON[key]+'</div>';
-    const trk1=ilvl1?trkPill(ilvl1):'';
-    const trk2=ilvl2?trkPill(ilvl2):'';
-    const label=slotLabel(key);
-    
-    let cls1='cmp-equal',cls2='cmp-equal',badge1='',badge2='';
-    if(ilvl1>ilvl2){
-      cls1='cmp-winner';cls2='cmp-loser';
-      badge1=`<span class="cmp-slot-badge cmp-sb-win">+${ilvl1-ilvl2}</span>`;
-    } else if(ilvl2>ilvl1){
-      cls2='cmp-winner';cls1='cmp-loser';
-      badge2=`<span class="cmp-slot-badge cmp-sb-win">+${ilvl2-ilvl1}</span>`;
-    }
-    return`<div class="cmp-slot-row">
-      <div class="cmp-slot-cell ${cls1}">${icon1}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${label}</div><div class="cmp-slot-name">${name1}</div><div class="cmp-slot-ilvl">${ilvl1?ilvl1:'—'} ${trk1}</div></div>${badge1}</div>
-      <div class="cmp-slot-cell ${cls2}">${icon2}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${label}</div><div class="cmp-slot-name">${name2}</div><div class="cmp-slot-ilvl">${ilvl2?ilvl2:'—'} ${trk2}</div></div>${badge2}</div>
-    </div>`;
-  }).join('');
-
-  const ilC1=il1>=il2?'cg':'cr', ilC2=il2>=il1?'cg':'cr';
-  const scC1=sc1>=sc2?'cg':'cr', scC2=sc2>=sc1?'cg':'cr';
-  const p1wins=SLOT_ORDER.filter(k=>(i1[k]?.item_level||0)>(i2[k]?.item_level||0)).length;
-  const p2wins=SLOT_ORDER.filter(k=>(i2[k]?.item_level||0)>(i1[k]?.item_level||0)).length;
-
-  out.innerHTML=`
-    <div class="cmp-grid">
-      <div class="cmp-player">
-        <div class="cmp-player-head">
-          <div class="cmp-player-name">${d1.name}</div>
-          <div class="cmp-player-sub">${d1.realm} · ${d1.active_spec_name||''} ${d1.class||''}</div>
-        </div>
-        <div class="cmp-stats">
-          <div class="cmp-stat"><div class="v ${ilC1}">${il1}</div><div class="l">ilvl</div></div>
-          <div class="cmp-stat"><div class="v ${scC1}">${Math.round(sc1)||'—'}</div><div class="l">M+ Score</div></div>
-          <div class="cmp-stat"><div class="v cg">${p1wins}</div><div class="l">Slots won</div></div>
-          <div class="cmp-stat"><div class="v cgr">${SLOT_ORDER.length-p1wins-p2wins}</div><div class="l">Equal</div></div>
-        </div>
-      </div>
-      <div class="cmp-vs">VS</div>
-      <div class="cmp-player">
-        <div class="cmp-player-head">
-          <div class="cmp-player-name">${d2.name}</div>
-          <div class="cmp-player-sub">${d2.realm} · ${d2.active_spec_name||''} ${d2.class||''}</div>
-        </div>
-        <div class="cmp-stats">
-          <div class="cmp-stat"><div class="v ${ilC2}">${il2}</div><div class="l">ilvl</div></div>
-          <div class="cmp-stat"><div class="v ${scC2}">${Math.round(sc2)||'—'}</div><div class="l">M+ Score</div></div>
-          <div class="cmp-stat"><div class="v cg">${p2wins}</div><div class="l">Slots won</div></div>
-          <div class="cmp-stat"><div class="v cgr">${SLOT_ORDER.length-p1wins-p2wins}</div><div class="l">Equal</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="cmp-player" style="margin-bottom:1rem">
-      <div class="cmp-slots-head" style="display:grid;grid-template-columns:1fr 1fr">
-        <span>${d1.name}</span><span>${d2.name}</span>
-      </div>
-      ${slotRows}
-    </div>`;
-  btn.disabled=false;
-}
 
 /* Contact form */
 async function handleSubmit(e){
@@ -1655,6 +1339,218 @@ async function handleSubmit(e){
     alert(LANG==='zh'?'发送失败，请重试。':'Failed to send. Please try again.');
   }
 }
+
+
+/* ══ BiS lookup ══ */
+function getActiveBis(specKey){ return SPEC_BIS[specKey]||null; }
+
+/* ══ Dungeon names ══ */
+const DUNGEON_NAMES={
+  "Pit of Saron":               {icon:"❄️", name:"Pit of Saron"},
+  "Seat of the Triumvirate":    {icon:"🌌", name:"Seat of Triumvirate"},
+  "Skyreach":                   {icon:"🦅", name:"Skyreach"},
+  "Algeth'ar Academy":          {icon:"🐉", name:"Algeth'ar Academy"},
+  "Nexus-Point Xenas":          {icon:"⚡", name:"Nexus-Point Xenas"},
+  "Windrunner Spire":           {icon:"🏹", name:"Windrunner Spire"},
+  "Maisara Caverns":            {icon:"🌊", name:"Maisara Caverns"},
+  "Magisters' Terrace":         {icon:"🏛️", name:"Magisters' Terrace"},
+  "Class Catalog or Great Vault":{icon:"📚",name:"Class Catalog / Great Vault"},
+};
+function getDungeonKey(src){
+  if(!src||src.startsWith("✦"))return null;
+  for(const k of Object.keys(DUNGEON_NAMES)){if(src.includes(k))return k;}
+  if(src.toLowerCase().includes("m+ dungeon")||src.toLowerCase().includes("any m+"))return "any_mplus";
+  return null;
+}
+function buildDungeonSummary(allSlots,tierKw){
+  const needFarm=allSlots.filter(s=>s.status==="bad"||s.status==="missing"||s.status==="medium"||s.status==="notbis"||s.status==="upgrade");
+  if(!needFarm.length)return"";
+  const byDungeon={};
+  for(const slot of needFarm){
+    if(!slot.ref)continue;
+    if(slot.ref.tier){
+      if(!byDungeon["catalyst"])byDungeon["catalyst"]={icon:"⚗️",name:"Renewal Catalyst (any dungeon)",items:[]};
+      byDungeon["catalyst"].items.push(slot);continue;
+    }
+    if(slot.ref.craft)continue;
+    const k=getDungeonKey(slot.ref.src||"");
+    if(!k)continue;
+    if(k==="any_mplus"){if(!byDungeon["any_mplus"])byDungeon["any_mplus"]={icon:"⚔️",name:"Any M+ Dungeon",items:[]};byDungeon["any_mplus"].items.push(slot);}
+    else{if(!byDungeon[k])byDungeon[k]={...DUNGEON_NAMES[k],items:[]};byDungeon[k].items.push(slot);}
+  }
+  if(!Object.keys(byDungeon).length)return"";
+  const stC={missing:"dis-missing",bad:"dis-missing",medium:"dis-upgrade",notbis:"dis-notbis",upgrade:"dis-upgrade"};
+  const stL={missing:"Missing",bad:"Low ilvl",medium:"Upgrade",notbis:"Not BiS",upgrade:"Raise ilvl"};
+  const catalystNote=byDungeon["catalyst"]?`<div class="dungeon-catalyst"><strong>⚗️ Renewal Catalyst:</strong> For tier slots (Head·Shoulders·Chest·Hands·Legs), any dungeon piece can be converted into a tier piece. Farm any dungeon for these slots.</div>`:"";
+  const cards=Object.entries(byDungeon).map(([k,d])=>{
+    const items=d.items.map(s=>`<div class="dungeon-item"><span class="dungeon-item-slot">${slotLabel(s.key)}</span><span class="dungeon-item-name">${s.ref?.en||s.itemName||"—"}</span><span class="dungeon-item-status ${stC[s.status]||"dis-upgrade"}">${stL[s.status]||s.status}</span></div>`).join("");
+    return`<div class="dungeon-card"><div class="dungeon-card-head"><span>${d.icon}</span><span class="dungeon-card-name">${d.name}</span><span class="dungeon-card-count">${d.items.length}</span></div>${items}</div>`;
+  }).join("");
+  return`<div class="dungeon-section"><div class="dungeon-section-title">🗺️ Dungeons to Farm</div>${catalystNote}<div class="dungeon-grid">${cards}</div></div>`;
+}
+
+/* ══ RENDER RESULTS (async) ══ */
+async function renderResults(data,items,itemNames,meta,specKey,className,specName){
+  const out=document.getElementById("out");
+  try{
+    const detailedBis=getActiveBis(specKey);
+    const gear=data.gear||{};
+    const ilvlEq=gear.item_level_equipped||0;
+    const sc=data.mythic_plus_scores_by_season?.[0]?.scores;
+    const score=sc?.all?Math.round(sc.all):null;
+    const tt=getTrack(ilvlEq);
+    const iC=ilvlEq>=276?"cp":ilvlEq>=263?"ca":ilvlEq>=250?"cg":"cr";
+    const sC=score>=3000?"cp":score>=2000?"ca":score>=1000?"cg":"cgr";
+    const barPct=Math.max(2,Math.min(100,((ilvlEq-237)/(298-237))*100));
+    const barColor=tt?tt.c:"#4d6a99";
+    const statPrioRow=meta?`<div class="statprio"><span class="statprio-lab">${t("stat_priority")}</span><div class="statprio-chain">${statChips(meta.prio,meta.primary)}</div></div>`:"";
+    const heroCard=`<div class="hero"><div class="hero-top"><div class="hero-id"><div class="hero-name">${data.name}</div><div class="hero-meta"><span class="spec-badge">${specName} ${className}</span><span>${data.realm} · ${(data.region||"").toUpperCase()}</span></div></div><div class="hero-scores"><div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">Item Level</div></div><div class="hscore"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div></div></div><div class="ilvl-bar-wrap"><div class="ilvl-bar-head"><span class="lab">Gear progression</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div><div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}bb)" data-pct="${barPct}"></div></div><div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div></div>${statPrioRow}</div>`;
+    const vfNote=`<div class="vf-note"><div class="vf-ico">🔥</div><div><strong>Voidforge (patch 12.0.5)</strong> — Pushes to ilvl 298 on Hero/Myth track. Eligible: Main Hand · Trinket 1 · Trinket 2 only.</div></div>`;
+    const animBar=()=>{setTimeout(()=>{const f=document.querySelector(".ilvl-bar-fill");if(f)f.style.width=f.dataset.pct+"%"},80)};
+
+    if(detailedBis){
+      const tierKw=detailedBis.tierKeyword||"";
+      const bis=detailedBis.bis;
+      let tierCount=0;
+      for(const key of TIER_SLOTS){const it=items[key];const il=it?.item_level||0;const nm=(itemNames[key]||it?.name||"").toLowerCase();if(tierKw&&il>0&&nm.includes(tierKw))tierCount++;}
+      const allSlots=[];
+      for(const key of SLOT_ORDER){
+        const item=items[key];const ref=bis[key];if(!ref)continue;
+        const ilvl=item?.item_level||0;const nameEn=(itemNames[key]||item?.name||"").toLowerCase();
+        const hasEnKey=ref.enKey.length>0;
+        let isSame,detectable;
+        if(ref.tier&&tierKw){isSame=nameEn.includes(tierKw);detectable=true;}
+        else{isSame=hasEnKey&&nameEn.includes(ref.enKey.toLowerCase());detectable=hasEnKey;}
+        allSlots.push({key,item,status:getStatus(ilvl,isSame,detectable),ref,itemName:itemNames[key]||item?.name||""});
+      }
+      const ord={bad:0,missing:1,notbis:2,medium:3,upgrade:4,ok:5};
+      allSlots.sort((a,b)=>(ord[a.status]??6)-(ord[b.status]??6)||(a.ref.prio||9)-(b.ref.prio||9));
+      const bad=allSlots.filter(s=>s.status==="bad"||s.status==="missing");
+      const notbis=allSlots.filter(s=>s.status==="notbis");
+      const medium=allSlots.filter(s=>s.status==="medium");
+      const upgrade=allSlots.filter(s=>s.status==="upgrade");
+      const good=allSlots.filter(s=>s.status==="ok");
+      const tC=tierCount>=4?"cg":tierCount>=2?"ca":"cr";
+      const tierBan=tierCount>=4
+        ?`<div class="tier-ban"><div class="tier-ico">✅</div><div><div class="tier-h">T1 Set Complete — 4/4</div><div class="tier-s">2pc: ${detailedBis.tierBonus2} · 4pc: ${detailedBis.tierBonus4}</div></div></div>`
+        :`<div class="tier-ban"><div class="tier-ico">⚠️</div><div><div class="tier-h">T1 Set Incomplete — ${tierCount}/4</div><div class="tier-s">Missing ${4-tierCount} piece${4-tierCount>1?"s":""} — top priority! Slots: Head·Shoulders·Chest·Hands·Legs.</div></div></div>`;
+      const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="sec-head"><div class="sec-dot" style="color:${col}"></div><span class="sec-t">${lbl}</span><span class="sec-c">${list.length}</span><span class="sec-rule"></span></div><div class="slots">${list.map(s=>renderSlotBiS(s.key,s.item,s.itemName,s.ref,tierKw)).join("")}</div>`;};
+      const fixCount=bad.length+notbis.length+medium.length;
+      out.innerHTML=`${heroCard}<div class="summary"><div class="sc"><div class="sl">Tier Set</div><div class="sv ${tC}">${tierCount}/4</div></div><div class="sc"><div class="sl">To Fix</div><div class="sv ${fixCount===0?"cg":fixCount<=3?"ca":"cr"}">${fixCount}</div></div><div class="sc"><div class="sl">Optimal</div><div class="sv cg">${good.length}</div></div><div class="sc"><div class="sl">Track</div><div class="sv ${iC} sm">${tt?tt.n:"—"}</div></div></div>${vfNote}${tierBan}${sec(bad,"var(--red)","High Priority")}${sec(notbis,"var(--amber)","Not BiS — Swap")}${sec(medium,"var(--amber)","Needs Upgrade")}${sec(upgrade,"var(--teal)","Correct Item — Raise ilvl")}${sec(good,"var(--green)","Optimal")}${buildDungeonSummary(allSlots,tierKw)}`;
+      animBar();return;
+    }
+    // Structural path
+    const allSlots=[];
+    for(const key of SLOT_ORDER){const item=items[key];const ilvl=item?.item_level||0;const status=!ilvl?"missing":ilvl>=276?"ok":ilvl>=263?"medium":"bad";allSlots.push({key,item,status,itemName:itemNames[key]||item?.name||""});}
+    allSlots.sort((a,b)=>({bad:0,missing:1,medium:2,ok:3}[a.status]??4)-({bad:0,missing:1,medium:2,ok:3}[b.status]??4));
+    const bad=allSlots.filter(s=>s.status==="bad"||s.status==="missing");
+    const medium=allSlots.filter(s=>s.status==="medium");
+    const good=allSlots.filter(s=>s.status==="ok");
+    const sec=(list,col,lbl)=>{if(!list.length)return"";return`<div class="sec-head"><div class="sec-dot" style="color:${col}"></div><span class="sec-t">${lbl}</span><span class="sec-c">${list.length}</span><span class="sec-rule"></span></div><div class="slots">${list.map(s=>renderSlotStruct(s.key,s.item,s.itemName)).join("")}</div>`;};
+    out.innerHTML=`${heroCard}<div class="summary"><div class="sc"><div class="sl">To Fix</div><div class="sv ${(bad.length+medium.length)===0?"cg":"ca"}">${bad.length+medium.length}</div></div><div class="sc"><div class="sl">276+</div><div class="sv cg">${good.length}</div></div><div class="sc"><div class="sl">Track</div><div class="sv ${iC} sm">${tt?tt.n:"—"}</div></div></div>${vfNote}${sec(bad,"var(--red)","High Priority")}${sec(medium,"var(--amber)","Needs Upgrade")}${sec(good,"var(--green)","ilvl 276+")}`;
+    animBar();
+  }catch(err){
+    out.innerHTML=`<div class="err"><strong>Render error</strong><p>${err.message}</p></div>`;
+    console.error(err);
+  }
+}
+
+/* ══ MAIN run() ══ */
+async function run(){
+  const name=document.getElementById("charName").value.trim();
+  const realm=document.getElementById("realmName").value.trim().toLowerCase().replace(/\s+/g,"-");
+  const region=document.getElementById("regionSel").value;
+  const out=document.getElementById("out");
+  const btn=document.getElementById("btnGo");
+  const banner=document.getElementById("specBanner");
+  if(!name||!realm){alert("Please fill in character name and realm.");return;}
+  btn.disabled=true;
+  banner.style.display="none";
+  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Fetching from Raider.IO…</div></div>`;
+  let data;
+  try{
+    const ctrl=new AbortController();
+    setTimeout(()=>ctrl.abort(),15000);
+    const r=await fetch(`/.netlify/functions/proxy?target=raiderio&region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`,{signal:ctrl.signal});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
+    data=await r.json();
+  }catch(e){
+    out.innerHTML=`<div class="err"><strong>Character not found</strong><p>${e.name==="AbortError"?"Request timed out. Please try again.":e.message}</p></div>`;
+    btn.disabled=false;return;
+  }
+  const className=data.class||"",specName=data.active_spec_name||"",specKey=`${className}|${specName}`;
+  const meta=SPEC_META[specKey];
+  const detailedBis=getActiveBis(specKey);
+  if(meta)buildRefTab(specKey,meta);
+  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>Detected ${specName} ${className} — full BiS data loaded.</span>`;}
+  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>Detected ${specName} ${className} — structural check. Detailed BiS coming soon.</span>`;}
+  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>Spec ${specName} ${className} not recognized — ilvl check only.</span>`;}
+  banner.style.display="flex";
+  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Loading item names…</div></div>`;
+  const gear=data.gear||{},items=gear.items||{},itemNames={};
+  await Promise.all(SLOT_ORDER.map(async k=>{
+    const it=items[k];
+    if(it?.item_id){
+      try{
+        const ctrl=new AbortController();
+        setTimeout(()=>ctrl.abort(),5000);
+        const r=await fetch(`/.netlify/functions/proxy?target=wowhead&item=${encodeURIComponent(it.item_id)}`,{signal:ctrl.signal});
+        const tx=await r.text();
+        const m=tx.match(/<name><!\[CDATA\[(.+?)\]\]><\/name>/);
+        if(m&&m[1])itemNames[k]=m[1];else itemNames[k]=it.name;
+      }catch(e){itemNames[k]=it.name;}
+    }else if(it?.name)itemNames[k]=it.name;
+  }));
+  await renderResults(data,items,itemNames,meta,specKey,className,specName);
+  btn.disabled=false;
+}
+
+/* ══ COMPARE ══ */
+async function runCompare(){
+  const btn=document.getElementById("btnCompare");
+  const out=document.getElementById("cmp-out");
+  const n1=document.getElementById("cmp-name1").value.trim();
+  const r1=document.getElementById("cmp-realm1").value.trim().toLowerCase().replace(/\s+/g,"-");
+  const reg1=document.getElementById("cmp-region1").value;
+  const n2=document.getElementById("cmp-name2").value.trim();
+  const r2=document.getElementById("cmp-realm2").value.trim().toLowerCase().replace(/\s+/g,"-");
+  const reg2=document.getElementById("cmp-region2").value;
+  if(!n1||!r1||!n2||!r2){alert("Please fill in both characters.");return;}
+  btn.disabled=true;
+  out.innerHTML=`<div class="loader"><div class="spin"></div><div>Fetching both characters…</div></div>`;
+  async function fetchChar(name,realm,region){
+    const r=await fetch(`/.netlify/functions/proxy?target=raiderio&region=${region}&realm=${encodeURIComponent(realm)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`);
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
+    return r.json();
+  }
+  let d1,d2;
+  try{[d1,d2]=await Promise.all([fetchChar(n1,r1,reg1),fetchChar(n2,r2,reg2)]);}
+  catch(e){out.innerHTML=`<div class="err"><strong>Error</strong><p>${e.message}</p></div>`;btn.disabled=false;return;}
+  const g1=d1.gear||{},g2=d2.gear||{};
+  const i1=g1.items||{},i2=g2.items||{};
+  const il1=g1.item_level_equipped||0,il2=g2.item_level_equipped||0;
+  const sc1=d1.mythic_plus_scores_by_season?.[0]?.scores?.all||0;
+  const sc2=d2.mythic_plus_scores_by_season?.[0]?.scores?.all||0;
+  const p1wins=SLOT_ORDER.filter(k=>(i1[k]?.item_level||0)>(i2[k]?.item_level||0)).length;
+  const p2wins=SLOT_ORDER.filter(k=>(i2[k]?.item_level||0)>(i1[k]?.item_level||0)).length;
+  const eq=SLOT_ORDER.length-p1wins-p2wins;
+  const iC1=il1>=il2?"cg":"cr",iC2=il2>=il1?"cg":"cr";
+  const sC1=sc1>=sc2?"cg":"cr",sC2=sc2>=sc1?"cg":"cr";
+  const slotRows=SLOT_ORDER.map(key=>{
+    const it1=i1[key],it2=i2[key];
+    const iv1=it1?.item_level||0,iv2=it2?.item_level||0;
+    const n1t=it1?.name||"—",n2t=it2?.name||"—";
+    const ico=x=>x?.icon?`<img class="cmp-slot-img" src="${icoUrl(x.icon)}" alt="" onerror="this.style.display='none'">`:`<div class="cmp-slot-img" style="display:flex;align-items:center;justify-content:center;font-size:12px">${SLOT_ICON[key]}</div>`;
+    const lbl=slotLabel(key);
+    let c1="",c2="",b1="",b2="";
+    if(iv1>iv2){c1="cmp-winner";c2="cmp-loser";b1=`<span class="cmp-slot-badge cmp-sb-win">+${iv1-iv2}</span>`;}
+    else if(iv2>iv1){c2="cmp-winner";c1="cmp-loser";b2=`<span class="cmp-slot-badge cmp-sb-win">+${iv2-iv1}</span>`;}
+    return`<div class="cmp-slot-row"><div class="cmp-slot-cell ${c1}">${ico(it1)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${n1t}</div><div class="cmp-slot-ilvl">${iv1||"—"} ${iv1?trkPill(iv1):""}</div></div>${b1}</div><div class="cmp-slot-cell ${c2}">${ico(it2)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${n2t}</div><div class="cmp-slot-ilvl">${iv2||"—"} ${iv2?trkPill(iv2):""}</div></div>${b2}</div></div>`;
+  }).join("");
+  out.innerHTML=`<div class="cmp-grid"><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${d1.name}</div><div class="cmp-player-sub">${d1.realm} · ${d1.active_spec_name||""} ${d1.class||""}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC1}">${il1}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC1}">${Math.round(sc1)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p1wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div><div class="cmp-vs">VS</div><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${d2.name}</div><div class="cmp-player-sub">${d2.realm} · ${d2.active_spec_name||""} ${d2.class||""}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC2}">${il2}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC2}">${Math.round(sc2)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p2wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div></div><div class="cmp-player"><div class="cmp-slots-head" style="display:grid;grid-template-columns:1fr 1fr"><span>${d1.name}</span><span>${d2.name}</span></div>${slotRows}</div>`;
+  btn.disabled=false;
+}
+
 
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js").catch(()=>{});});}
 </script>
