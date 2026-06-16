@@ -1,23 +1,45 @@
-# Nightfall — Netlify configuration
-
 [build]
   publish = "."
   functions = "netlify/functions"
 
-# Map friendly /api/ URLs to the proxy function
+# Sert assetlinks.json en application/json (requis par la verif Digital Asset Links)
+[[headers]]
+  for = "/.well-known/assetlinks.json"
+  [headers.values]
+    Content-Type = "application/json"
+
+# Headers de securite (defense en profondeur) — appliques a toutes les pages
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.googleadservices.com https://*.google.com https://*.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://wow.zamimg.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://*.gstatic.com; connect-src 'self' https://pagead2.googlesyndication.com https://*.google.com https://*.doubleclick.net; frame-src https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com; upgrade-insecure-requests"
+
+# Empeche l'exposition publique du README (information disclosure)
+[[redirects]]
+  from = "/README.md"
+  to = "/"
+  status = 404
+  force = true
+
 [[redirects]]
   from = "/api/raiderio"
   to = "/.netlify/functions/proxy?target=raiderio"
   status = 200
   force = true
+  query = {region = ":region", realm = ":realm", name = ":name", fields = ":fields"}
 
 [[redirects]]
   from = "/api/wowhead"
   to = "/.netlify/functions/proxy?target=wowhead"
   status = 200
   force = true
+  query = {item = ":item"}
 
-# SPA-style fallback (everything else serves index.html)
 [[redirects]]
   from = "/*"
   to = "/index.html"

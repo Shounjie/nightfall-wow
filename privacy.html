@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- ⚠️ MODÈLE — à faire valider par un professionnel du droit avant publication.
+     Remplace tous les {{...}} par tes informations réelles. -->
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Politique de confidentialité — Nightfall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04060e;--bg2:#080d1a;--border:#16233a;--text:#dce8ff;--muted:#4d6a99;--purple:#7755ee}
+*{box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;margin:0;padding:2.5rem 1.25rem}
+.doc{max-width:760px;margin:0 auto}
+h1{font-family:'Cinzel',serif;color:#fff;font-size:1.8rem;margin:0 0 .25rem}
+h2{font-family:'Cinzel',serif;color:var(--purple);font-size:1.15rem;margin:2rem 0 .5rem}
+.sub{color:var(--muted);font-size:.85rem;margin-bottom:2rem}
+a{color:var(--purple)}
+.back{display:inline-block;margin-bottom:1.5rem;color:var(--muted);text-decoration:none;font-size:.85rem}
+.back:hover{color:var(--text)}
+table{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.92rem}
+th,td{border:1px solid var(--border);padding:.5rem .65rem;text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--text)}
+code{background:var(--bg2);padding:.1rem .35rem;border-radius:4px;font-size:.85em}
+</style>
+</head>
+<body>
+<div class="doc">
+<a class="back" href="/">← Retour à Nightfall</a>
+<h1>Politique de confidentialité</h1>
+<div class="sub">Dernière mise à jour : {{DATE_MAJ}}</div>
+
+<p>La présente politique décrit comment l'application <strong>Nightfall — WoW M+ Gear Optimizer</strong>
+(« le Service ») traite vos données personnelles, conformément au Règlement Général
+sur la Protection des Données (RGPD).</p>
+
+<h2>1. Responsable du traitement</h2>
+<p>{{Shounjie}}, joignable à l'adresse <a href="mailto:{{Rubrique contact}}">{{Rubrique contact}}</a>.</p>
+
+<h2>2. Données traitées</h2>
+<table>
+<tr><th>Donnée</th><th>Finalité</th><th>Base légale</th></tr>
+<tr><td>Nom de personnage, royaume, région WoW</td><td>Interroger l'API Raider.IO pour afficher l'équipement</td><td>Intérêt légitime / exécution du service à votre demande</td></tr>
+<tr><td>Nom, e-mail, message (formulaire de contact)</td><td>Répondre à votre demande</td><td>Consentement</td></tr>
+<tr><td>Cookies publicitaires (Google AdSense)</td><td>Financer le service via la publicité</td><td>Consentement (bandeau cookies)</td></tr>
+</table>
+<p>Le Service ne crée pas de compte, ne stocke pas de mot de passe et n'utilise pas
+de base de données applicative.</p>
+
+<h2>3. Destinataires et transferts hors UE</h2>
+<p>Certaines données sont transmises à des prestataires situés hors de l'Union européenne :</p>
+<ul>
+<li><strong>Raider.IO</strong> (États-Unis) — nom de personnage / royaume / région, pour la récupération de l'équipement.</li>
+<li><strong>Google AdSense</strong> (États-Unis) — données de navigation à des fins publicitaires, uniquement après votre consentement.</li>
+<li><strong>Netlify, Inc.</strong> (États-Unis) — hébergement du site et stockage des messages du formulaire de contact.</li>
+</ul>
+<p>Ces transferts sont encadrés par les mécanismes prévus par le RGPD (clauses contractuelles types, EU-US Data Privacy Framework selon les cas).</p>
+
+<h2>4. Durée de conservation</h2>
+<p>Les requêtes vers Raider.IO ne sont pas conservées par le Service.
+Les messages du formulaire de contact sont conservés {{DURÉE_CONSERVATION}} puis supprimés.</p>
+
+<h2>5. Cookies et consentement</h2>
+<p>Aucun cookie publicitaire n'est déposé sans votre accord. Vous pouvez modifier
+votre choix à tout moment via le lien « Cookies » en bas de page. Les cookies
+strictement nécessaires au fonctionnement ne requièrent pas de consentement.</p>
+
+<h2>6. Vos droits</h2>
+<p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation,
+d'opposition et de portabilité de vos données. Pour les exercer, contactez
+<a href="mailto:{{EMAIL_CONTACT}}">{{EMAIL_CONTACT}}</a>. Vous pouvez également
+introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank">cnil.fr</a>).</p>
+
+<h2>7. Contact</h2>
+<p>Pour toute question relative à cette politique : <a href="mailto:{{EMAIL_CONTACT}}">{{EMAIL_CONTACT}}</a>.</p>
+
+<a class="back" href="/">← Retour à Nightfall</a>
+</div>
+</body>
+</html>
