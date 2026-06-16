@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "app.netlify.nightfall_wow.twa",
+      "package_name": "myth.nightfall.netfily",
       "sha256_cert_fingerprints": [
         "CA:BB:33:68:32:86:05:A1:F4:4C:E2:FC:4B:2D:B9:2D:2E:69:B0:0D:FB:85:13:2A:26:D9:17:F2:07:B3:16:F4"
       ]
