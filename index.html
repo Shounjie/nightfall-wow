@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Nightfall — WoW M+ Gear Optimizer</title>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4857959643759243" crossorigin="anonymous"></script>
+<!-- AdSense charge uniquement apres consentement (voir bandeau cookies en bas de page) -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#04060e">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -721,8 +721,44 @@ html, body { overflow-x: hidden !important; max-width: 100vw !important; }
   <span data-i18n="foot_data">Live gear</span> · <a href="https://raider.io/api" target="_blank">Raider.IO</a> &nbsp;·&nbsp;
   <span data-i18n="foot_bis">BiS data</span> · <a href="https://www.archon.gg" target="_blank">Archon.gg</a> &nbsp;·&nbsp;
   Midnight S1 · patch 12.0.5
+  <br>
+  <a href="/privacy.html">Politique de confidentialité</a> &nbsp;·&nbsp;
+  <a href="/legal.html">Mentions légales</a> &nbsp;·&nbsp;
+  <a href="#" onclick="showConsent();return false;">Cookies</a>
 </div>
 </div><!-- /wrap -->
+
+<!-- ══ Bandeau de consentement (gate AdSense) ══ -->
+<style>
+#consent{position:fixed;left:0;right:0;bottom:0;z-index:10000;display:none;
+  background:rgba(8,13,26,.98);border-top:1px solid var(--border2);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:1rem 1.25rem;box-shadow:0 -8px 30px -10px rgba(0,0,0,.6)}
+#consent.show{display:block}
+.consent-inner{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;
+  align-items:center;gap:.75rem 1rem;font-size:13px;color:var(--text);line-height:1.45}
+.consent-txt{flex:1 1 320px;min-width:0}
+.consent-txt a{color:var(--purple)}
+.consent-btns{display:flex;gap:.5rem;flex:0 0 auto}
+.consent-btn{font-size:13px;font-weight:700;padding:.55rem 1rem;border-radius:8px;
+  cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text);transition:.15s}
+.consent-btn:hover{border-color:var(--purple)}
+.consent-btn.accept{background:var(--purple);border-color:var(--purple);color:#fff}
+@media (max-width:520px){.consent-btns{flex:1 1 100%}.consent-btn{flex:1}}
+</style>
+<div id="consent" role="dialog" aria-live="polite" aria-label="Consentement cookies">
+  <div class="consent-inner">
+    <div class="consent-txt">
+      Nightfall utilise des cookies publicitaires (Google AdSense) pour financer le site.
+      Ils ne sont déposés qu'avec votre accord. Voir notre
+      <a href="/privacy.html">politique de confidentialité</a>.
+    </div>
+    <div class="consent-btns">
+      <button class="consent-btn" onclick="setConsent(false)">Refuser</button>
+      <button class="consent-btn accept" onclick="setConsent(true)">Accepter</button>
+    </div>
+  </div>
+</div>
 <script>
 /* ══════════════════════════════════════════
    I18N — Translations EN / ZH-Hans
@@ -883,6 +919,13 @@ const I18N = {
 };
 
 let LANG = 'en';
+/* Echappe toute donnee externe (API Raider.IO / Wowhead) injectee en innerHTML.
+   Defense contre une XSS DOM si une source amont renvoie un caractere hostile. */
+function esc(v){
+  return String(v==null?"":v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
 function t(key, vars={}) {
   let s = (I18N[LANG]||I18N.en)[key] || (I18N.en)[key] || key;
   Object.entries(vars).forEach(([k,v])=>{ s = s.replace(new RegExp(`{${k}}`,'g'), v); });
@@ -1236,7 +1279,7 @@ function renderSlotBiS(key,item,nameEn,ref,tierKw){
     else if(ilvl>=289)msg=`<div class="d-msg dm-ok">${isVF?t('msg_vfmax'):t('msg_max')}</div>`;
     else msg=`<div class="d-msg dm-ok">${t('msg_good')}${vfNote}</div>`;
   }
-  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${craftP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${detail}${msg}</div></div>`;
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn?esc(nameEn):"—"}</span>${tierP}${craftP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${detail}${msg}</div></div>`;
 }
 
 /* Render slot (structural only) */
@@ -1258,7 +1301,7 @@ function renderSlotStruct(key,item,nameEn){
   else if(status==="bad")msg=`<div class="d-msg dm-warn">${t('msg_bad',{ilvl,track:tN})}</div>`;
   else if(status==="medium")msg=`<div class="d-msg dm-warn">${t('msg_medium',{ilvl,track:tN})}${vfNote}</div>`;
   else msg=`<div class="d-msg dm-ok">${t('msg_good')}${ilvl===276?` (Hero 6/6 or Myth 1/6)`:""}${vfNote}</div>`;
-  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${msg}</div></div>`;
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn?esc(nameEn):"—"}</span>${tierP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${msg}</div></div>`;
 }
 
 /* Build reference tab */
@@ -1318,7 +1361,7 @@ async function run(){
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
     data=await r.json();
   }catch(e){
-    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${e.message}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
+    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${esc(e.message)}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
     btn.disabled=false;return;
   }
 
@@ -1327,9 +1370,9 @@ async function run(){
   const meta=SPEC_META[specKey]; const detailedBis=SPEC_BIS[specKey];
   if(meta)buildRefTab(specKey,meta);
 
-  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>${t('banner_full',{spec:specName,class:className})}</span>`;}
-  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>${t('banner_struct',{spec:specName,class:className})}</span>`;}
-  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>${t('banner_unknown',{spec:specName,class:className})}</span>`;}
+  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>${t('banner_full',{spec:esc(specName),class:esc(className)})}</span>`;}
+  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>${t('banner_struct',{spec:esc(specName),class:esc(className)})}</span>`;}
+  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>${t('banner_unknown',{spec:esc(specName),class:esc(className)})}</span>`;}
   banner.style.display="flex";
 
   out.innerHTML=`<div class="loader"><div class="spin"></div><div>${LANG==='zh'?'加载装备名称…':'Loading item names…'}</div></div>`;
@@ -1350,8 +1393,8 @@ async function run(){
   const heroCard=`<div class="hero">
     <div class="hero-top">
       <div class="hero-id">
-        <div class="hero-name">${data.name}</div>
-        <div class="hero-meta"><span class="spec-badge">${specName} ${className}</span><span>${data.realm} · ${(data.region||region).toUpperCase()}</span></div>
+        <div class="hero-name">${esc(data.name)}</div>
+        <div class="hero-meta"><span class="spec-badge">${esc(specName)} ${esc(className)}</span><span>${esc(data.realm)} · ${esc((data.region||region).toUpperCase())}</span></div>
       </div>
       <div class="hero-scores">
         <div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">${LANG==='zh'?'装备等级':'Item Level'}</div></div>
@@ -1520,7 +1563,7 @@ async function renderResults(data,items,itemNames,meta,specKey,className,specNam
     const barPct=Math.max(2,Math.min(100,((ilvlEq-237)/(298-237))*100));
     const barColor=tt?tt.c:"#4d6a99";
     const statPrioRow=meta?`<div class="statprio"><span class="statprio-lab">${t("stat_priority")}</span><div class="statprio-chain">${statChips(meta.prio,meta.primary)}</div></div>`:"";
-    const heroCard=`<div class="hero"><div class="hero-top"><div class="hero-id"><div class="hero-name">${data.name}</div><div class="hero-meta"><span class="spec-badge">${specName} ${className}</span><span>${data.realm} · ${(data.region||"").toUpperCase()}</span></div></div><div class="hero-scores"><div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">Item Level</div></div><div class="hscore"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div></div></div><div class="ilvl-bar-wrap"><div class="ilvl-bar-head"><span class="lab">Gear progression</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div><div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}bb)" data-pct="${barPct}"></div></div><div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div></div>${statPrioRow}</div>`;
+    const heroCard=`<div class="hero"><div class="hero-top"><div class="hero-id"><div class="hero-name">${esc(data.name)}</div><div class="hero-meta"><span class="spec-badge">${esc(specName)} ${esc(className)}</span><span>${esc(data.realm)} · ${esc((data.region||"").toUpperCase())}</span></div></div><div class="hero-scores"><div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">Item Level</div></div><div class="hscore"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div></div></div><div class="ilvl-bar-wrap"><div class="ilvl-bar-head"><span class="lab">Gear progression</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div><div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}bb)" data-pct="${barPct}"></div></div><div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div></div>${statPrioRow}</div>`;
     const vfNote=`<div class="vf-note"><div class="vf-ico">🔥</div><div><strong>Voidforge (patch 12.0.5)</strong> — Pushes to ilvl 298 on Hero/Myth track. Eligible: Main Hand · Trinket 1 · Trinket 2 only.</div></div>`;
     const animBar=()=>{setTimeout(()=>{const f=document.querySelector(".ilvl-bar-fill");if(f)f.style.width=f.dataset.pct+"%"},80)};
 
@@ -1566,7 +1609,7 @@ async function renderResults(data,items,itemNames,meta,specKey,className,specNam
     out.innerHTML=`${heroCard}<div class="summary"><div class="sc"><div class="sl">To Fix</div><div class="sv ${(bad.length+medium.length)===0?"cg":"ca"}">${bad.length+medium.length}</div></div><div class="sc"><div class="sl">276+</div><div class="sv cg">${good.length}</div></div><div class="sc"><div class="sl">Track</div><div class="sv ${iC} sm">${tt?tt.n:"—"}</div></div></div>${vfNote}${sec(bad,"var(--red)","High Priority")}${sec(medium,"var(--amber)","Needs Upgrade")}${sec(good,"var(--green)","ilvl 276+")}`;
     animBar();
   }catch(err){
-    out.innerHTML=`<div class="err"><strong>Render error</strong><p>${err.message}</p></div>`;
+    out.innerHTML=`<div class="err"><strong>Render error</strong><p>${esc(err.message)}</p></div>`;
     console.error(err);
   }
 }
@@ -1591,16 +1634,16 @@ async function run(){
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
     data=await r.json();
   }catch(e){
-    out.innerHTML=`<div class="err"><strong>Character not found</strong><p>${e.name==="AbortError"?"Request timed out. Please try again.":e.message}</p></div>`;
+    out.innerHTML=`<div class="err"><strong>Character not found</strong><p>${e.name==="AbortError"?"Request timed out. Please try again.":esc(e.message)}</p></div>`;
     btn.disabled=false;return;
   }
   const className=data.class||"",specName=data.active_spec_name||"",specKey=`${className}|${specName}`;
   const meta=SPEC_META[specKey];
   const detailedBis=getActiveBis(specKey);
   if(meta)buildRefTab(specKey,meta);
-  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>Detected ${specName} ${className} — full BiS data loaded.</span>`;}
-  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>Detected ${specName} ${className} — structural check. Detailed BiS coming soon.</span>`;}
-  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>Spec ${specName} ${className} not recognized — ilvl check only.</span>`;}
+  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>Detected ${esc(specName)} ${esc(className)} — full BiS data loaded.</span>`;}
+  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>Detected ${esc(specName)} ${esc(className)} — structural check. Detailed BiS coming soon.</span>`;}
+  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>Spec ${esc(specName)} ${esc(className)} not recognized — ilvl check only.</span>`;}
   banner.style.display="flex";
   out.innerHTML=`<div class="loader"><div class="spin"></div><div>Loading item names…</div></div>`;
   const gear=data.gear||{},items=gear.items||{},itemNames={};
@@ -1641,7 +1684,7 @@ async function runCompare(){
   }
   let d1,d2;
   try{[d1,d2]=await Promise.all([fetchChar(n1,r1,reg1),fetchChar(n2,r2,reg2)]);}
-  catch(e){out.innerHTML=`<div class="err"><strong>Error</strong><p>${e.message}</p></div>`;btn.disabled=false;return;}
+  catch(e){out.innerHTML=`<div class="err"><strong>Error</strong><p>${esc(e.message)}</p></div>`;btn.disabled=false;return;}
   const g1=d1.gear||{},g2=d2.gear||{};
   const i1=g1.items||{},i2=g2.items||{};
   const il1=g1.item_level_equipped||0,il2=g2.item_level_equipped||0;
@@ -1661,14 +1704,36 @@ async function runCompare(){
     let c1="",c2="",b1="",b2="";
     if(iv1>iv2){c1="cmp-winner";c2="cmp-loser";b1=`<span class="cmp-slot-badge cmp-sb-win">+${iv1-iv2}</span>`;}
     else if(iv2>iv1){c2="cmp-winner";c1="cmp-loser";b2=`<span class="cmp-slot-badge cmp-sb-win">+${iv2-iv1}</span>`;}
-    return`<div class="cmp-slot-row"><div class="cmp-slot-cell ${c1}">${ico(it1)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${n1t}</div><div class="cmp-slot-ilvl">${iv1||"—"} ${iv1?trkPill(iv1):""}</div></div>${b1}</div><div class="cmp-slot-cell ${c2}">${ico(it2)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${n2t}</div><div class="cmp-slot-ilvl">${iv2||"—"} ${iv2?trkPill(iv2):""}</div></div>${b2}</div></div>`;
+    return`<div class="cmp-slot-row"><div class="cmp-slot-cell ${c1}">${ico(it1)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${esc(n1t)}</div><div class="cmp-slot-ilvl">${iv1||"—"} ${iv1?trkPill(iv1):""}</div></div>${b1}</div><div class="cmp-slot-cell ${c2}">${ico(it2)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${esc(n2t)}</div><div class="cmp-slot-ilvl">${iv2||"—"} ${iv2?trkPill(iv2):""}</div></div>${b2}</div></div>`;
   }).join("");
-  out.innerHTML=`<div class="cmp-grid"><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${d1.name}</div><div class="cmp-player-sub">${d1.realm} · ${d1.active_spec_name||""} ${d1.class||""}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC1}">${il1}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC1}">${Math.round(sc1)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p1wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div><div class="cmp-vs">VS</div><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${d2.name}</div><div class="cmp-player-sub">${d2.realm} · ${d2.active_spec_name||""} ${d2.class||""}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC2}">${il2}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC2}">${Math.round(sc2)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p2wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div></div><div class="cmp-player"><div class="cmp-slots-head" style="display:grid;grid-template-columns:1fr 1fr"><span>${d1.name}</span><span>${d2.name}</span></div>${slotRows}</div>`;
+  out.innerHTML=`<div class="cmp-grid"><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${esc(d1.name)}</div><div class="cmp-player-sub">${esc(d1.realm)} · ${esc(d1.active_spec_name||"")} ${esc(d1.class||"")}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC1}">${il1}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC1}">${Math.round(sc1)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p1wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div><div class="cmp-vs">VS</div><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${esc(d2.name)}</div><div class="cmp-player-sub">${esc(d2.realm)} · ${esc(d2.active_spec_name||"")} ${esc(d2.class||"")}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC2}">${il2}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC2}">${Math.round(sc2)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p2wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div></div><div class="cmp-player"><div class="cmp-slots-head" style="display:grid;grid-template-columns:1fr 1fr"><span>${esc(d1.name)}</span><span>${esc(d2.name)}</span></div>${slotRows}</div>`;
   btn.disabled=false;
 }
 
 
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js?v=4").catch(()=>{});});}
+
+/* ══ Consentement publicitaire (gate AdSense) ══
+   adsbygoogle.js n'est charge QU'APRES un opt-in explicite. */
+const ADS_CLIENT="ca-pub-4857959643759243";
+function loadAds(){
+  if(window.__adsLoaded)return;window.__adsLoaded=true;
+  const sc=document.createElement("script");
+  sc.async=true;sc.crossOrigin="anonymous";
+  sc.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+ADS_CLIENT;
+  document.head.appendChild(sc);
+}
+function setConsent(accepted){
+  try{localStorage.setItem("nf_consent",accepted?"granted":"denied");}catch(e){}
+  document.getElementById("consent").classList.remove("show");
+  if(accepted)loadAds();
+}
+function showConsent(){document.getElementById("consent").classList.add("show");}
+(function initConsent(){
+  let c=null;try{c=localStorage.getItem("nf_consent");}catch(e){}
+  if(c==="granted")loadAds();
+  else if(c!=="denied")showConsent();   // aucune decision => on demande
+})();
 </script>
 </body>
 </html>
