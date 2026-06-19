@@ -1672,11 +1672,12 @@ function renderSlotBiS(key,item,nameEn,ref,tierKw){
   const isSameAlt=altEnKey&&nameEn.toLowerCase().includes(altEnKey.toLowerCase());
   const isBisConfirmed=(status==="ok"||status==="upgrade"||status==="raidok")&&(isSame||!detectable||status==="raidok");
   const pctSpan=(p)=>p?` <span style="color:var(--purple);font-size:9px">${p}</span>`:"";
-  const altBlock=hasAlt&&!isBisConfirmed
-    ?`<div class="d-row" style="grid-column:1/-1;margin-top:4px"><span class="d-k" style="color:var(--teal)">Alt #2</span><span class="d-v" style="color:var(--teal)">${ref.alt.en}${pctSpan(ref.alt?.pct)} <span style="color:var(--muted);font-size:10px">— ${ref.alt?.src||""}</span></span></div>`
+  // Always show alt when it exists
+  const altBlock=hasAlt
+    ?`<div class="d-row" style="grid-column:1/-1;margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><span class="d-k" style="color:var(--teal)">Alt #2${ref.alt?.pct?` · `+ref.alt.pct:""}</span><span class="d-v" style="color:var(--teal)">${ref.alt.en} <span style="color:var(--muted);font-size:10px">— ${ref.alt?.src||""}</span></span></div>`
     :"";
   const detail=isBisConfirmed
-    ?`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}${pctSpan(ref.pct)}</span></div><div class="d-row"></div>`
+    ?`<div class="d-row"><span class="d-k">${t('bis_label')}${pctSpan(ref.pct)}</span><span class="d-v">${ref.en}</span></div><div class="d-row"></div>${altBlock}`
     :`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}${pctSpan(ref.pct)}</span></div><div class="d-row"><span class="d-k">${t('src_label')}</span><span class="d-src">${ref.src}</span></div>${altBlock}`;
   const tk=getTrack(ilvl);const tN=tk?tk.n:"??";
   const vfNote=showVF?` ${LANG==='zh'?'虚空锻造可升至 298。':'Voidforge can push it to 298.'}`:"";
