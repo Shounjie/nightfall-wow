@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Nightfall — WoW M+ Gear Optimizer</title>
-<!-- AdSense charge uniquement apres consentement (voir bandeau cookies en bas de page) -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4857959643759243" crossorigin="anonymous"></script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#04060e">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -328,27 +328,10 @@ html, body { overflow-x: hidden !important; max-width: 100vw !important; }
 /* 2. Bottom tab bar on small screens */
 @media screen and (max-width: 767px) {
 
-  /* Topbar — laisse le bandeau passer à la ligne au lieu de déborder
-     (sinon coupé par overflow-x:hidden et lang/liens invisibles) */
-  .topbar {
-    padding: .5rem .75rem !important;
-    height: auto !important;
-    flex-wrap: wrap !important;
-    row-gap: 8px !important;
-  }
+  /* Topbar */
+  .topbar { padding: .5rem .75rem !important; height: auto !important; }
+  .mast-links { display: none !important; }
   .logo-text span { display: none !important; }
-
-  /* Le groupe lang + liens reste à droite mais peut retomber sur une
-     2e ligne et faire wrapper ses propres boutons si besoin */
-  .topbar-right {
-    margin-left: auto !important;
-    flex-wrap: wrap !important;
-    justify-content: flex-end !important;
-    gap: 6px !important;
-    max-width: 100% !important;
-  }
-  .topbar-right .lang-btn,
-  .topbar-right .tl-btn { flex: 0 0 auto !important; }
 
   /* Bottom nav */
   .tabs {
@@ -721,44 +704,8 @@ html, body { overflow-x: hidden !important; max-width: 100vw !important; }
   <span data-i18n="foot_data">Live gear</span> · <a href="https://raider.io/api" target="_blank">Raider.IO</a> &nbsp;·&nbsp;
   <span data-i18n="foot_bis">BiS data</span> · <a href="https://www.archon.gg" target="_blank">Archon.gg</a> &nbsp;·&nbsp;
   Midnight S1 · patch 12.0.5
-  <br>
-  <a href="/privacy.html">Politique de confidentialité</a> &nbsp;·&nbsp;
-  <a href="/legal.html">Mentions légales</a> &nbsp;·&nbsp;
-  <a href="#" onclick="showConsent();return false;">Cookies</a>
 </div>
 </div><!-- /wrap -->
-
-<!-- ══ Bandeau de consentement (gate AdSense) ══ -->
-<style>
-#consent{position:fixed;left:0;right:0;bottom:0;z-index:10000;display:none;
-  background:rgba(8,13,26,.98);border-top:1px solid var(--border2);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  padding:1rem 1.25rem;box-shadow:0 -8px 30px -10px rgba(0,0,0,.6)}
-#consent.show{display:block}
-.consent-inner{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;
-  align-items:center;gap:.75rem 1rem;font-size:13px;color:var(--text);line-height:1.45}
-.consent-txt{flex:1 1 320px;min-width:0}
-.consent-txt a{color:var(--purple)}
-.consent-btns{display:flex;gap:.5rem;flex:0 0 auto}
-.consent-btn{font-size:13px;font-weight:700;padding:.55rem 1rem;border-radius:8px;
-  cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text);transition:.15s}
-.consent-btn:hover{border-color:var(--purple)}
-.consent-btn.accept{background:var(--purple);border-color:var(--purple);color:#fff}
-@media (max-width:520px){.consent-btns{flex:1 1 100%}.consent-btn{flex:1}}
-</style>
-<div id="consent" role="dialog" aria-live="polite" aria-label="Consentement cookies">
-  <div class="consent-inner">
-    <div class="consent-txt">
-      Nightfall utilise des cookies publicitaires (Google AdSense) pour financer le site.
-      Ils ne sont déposés qu'avec votre accord. Voir notre
-      <a href="/privacy.html">politique de confidentialité</a>.
-    </div>
-    <div class="consent-btns">
-      <button class="consent-btn" onclick="setConsent(false)">Refuser</button>
-      <button class="consent-btn accept" onclick="setConsent(true)">Accepter</button>
-    </div>
-  </div>
-</div>
 <script>
 /* ══════════════════════════════════════════
    I18N — Translations EN / ZH-Hans
@@ -919,13 +866,6 @@ const I18N = {
 };
 
 let LANG = 'en';
-/* Echappe toute donnee externe (API Raider.IO / Wowhead) injectee en innerHTML.
-   Defense contre une XSS DOM si une source amont renvoie un caractere hostile. */
-function esc(v){
-  return String(v==null?"":v)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-}
 function t(key, vars={}) {
   let s = (I18N[LANG]||I18N.en)[key] || (I18N.en)[key] || key;
   Object.entries(vars).forEach(([k,v])=>{ s = s.replace(new RegExp(`{${k}}`,'g'), v); });
@@ -1186,6 +1126,472 @@ const SPEC_BIS = {
     }
   },
 
+
+  /* ══════════════════════════════════
+     HEALERS — Midnight S1 (Archon.gg)
+     ══════════════════════════════════ */
+
+  "Priest|Holy": {
+    tierKeyword:"blind oath",
+    tierBonus2:"Casting Benediction has a high chance to summon a Divine Image",
+    tierBonus4:"Divine Image lasts 3s longer, healing/damage +30%",
+    bis: {
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (47.1%) — Darkmoon Sigil: Hunt",prio:1,pct:"47.1%",
+                 alt:{en:"Weight of Command",       enKey:"Weight",       src:"M+ Dungeon",pct:"15.1%"}},
+      offhand:  {en:"Aln'hara Lantern",            enKey:"Lantern",      icon:"🔮",tier:false,craft:false,src:"✦ Craft or M+ Dungeon (11.8%)",prio:2,pct:"11.8%",
+                 alt:{en:"Sigil of the Restless Heart",enKey:"Restless",  src:"M+ Dungeon",pct:"8.0%"}},
+      head:     {en:"Blind Oath's Winged Crest",   enKey:"blind oath",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1,pct:"100%"},
+      neck:     {en:"Barbed Ymirheim Choker",      enKey:"Ymirheim",     icon:"📿",tier:false,craft:false,src:"Pit of Saron — Forgemaster Garfrost",prio:4,
+                 alt:{en:"Best neck available",     enKey:"",             src:"Any M+ dungeon — max ilvl"}},
+      shoulder: {en:"Tier piece — Shoulders",      enKey:"blind oath",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",           enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2 (30.4%)",prio:5},
+      chest:    {en:"Tier piece — Chest",          enKey:"blind oath",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Martyr's Bindings",           enKey:"Martyr",       icon:"⌚",tier:false,craft:true, src:"✦ Craft (54.1%) — Thalassian Missive of the Quickblade",prio:2,pct:"54.1%"},
+      hands:    {en:"Tier piece — Hands",          enKey:"blind oath",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",         enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon — max ilvl",prio:5},
+      legs:     {en:"Tier piece — Legs",           enKey:"blind oath",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",        enKey:"",             icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",   enKey:"Eredath",      icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:2,pct:"51.4%",
+                 alt:{en:"Band of the Triumvirate",enKey:"Triumvirate",  src:"Seat of the Triumvirate",pct:"48.6%"}},
+      finger2:  {en:"Band of the Triumvirate",    enKey:"Triumvirate",  icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:3,pct:"48.6%",
+                 alt:{en:"Purloined Wedding Ring", enKey:"Purloined",    src:"Pit of Saron",pct:"28.7%"}},
+      trinket1: {en:"Litany of Lightblind Wrath", enKey:"Litany",       icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (66.4%)",prio:1,pct:"66.4%",
+                 alt:{en:"Gaze of the Alnseer",    enKey:"Alnseer",      src:"M+ Dungeon",pct:"63.7%"}},
+      trinket2: {en:"Gaze of the Alnseer",        enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (63.7%)",prio:1,pct:"63.7%",
+                 alt:{en:"Heart of Wind",           enKey:"Heart of Wind",src:"M+ Dungeon",pct:"33.4%"}},
+    }
+  },
+
+  "Priest|Discipline": {
+    tierKeyword:"blind oath",
+    tierBonus2:"Atonement healing increased by 10%",
+    tierBonus4:"Penance bolts have a 20% chance to not consume Atonement charges",
+    bis: {
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (44.2%) — Darkmoon Sigil: Hunt",prio:1,pct:"44.2%",
+                 alt:{en:"Magister's Valediction", enKey:"Magister",     src:"M+ Dungeon",pct:"12.1%"}},
+      offhand:  {en:"Aln'hara Lantern",           enKey:"Lantern",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon or ✦ Craft",prio:2,pct:"13.5%",
+                 alt:{en:"Sigil of the Restless Heart",enKey:"Restless", src:"M+ Dungeon",pct:"9.2%"}},
+      head:     {en:"Tier piece — Head",          enKey:"blind oath",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1,pct:"100%"},
+      neck:     {en:"Barbed Ymirheim Choker",     enKey:"Ymirheim",     icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4,
+                 alt:{en:"Best neck available",    enKey:"",             src:"Any M+ dungeon"}},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"blind oath",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"blind oath",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Martyr's Bindings",          enKey:"Martyr",       icon:"⌚",tier:false,craft:true, src:"✦ Craft (51.8%) — Thalassian Missive of the Quickblade",prio:2,pct:"51.8%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"blind oath",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"blind oath",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",  enKey:"Eredath",      icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:2,pct:"55.2%",
+                 alt:{en:"Band of the Triumvirate",enKey:"Triumvirate", src:"Seat of the Triumvirate",pct:"44.8%"}},
+      finger2:  {en:"Band of the Triumvirate",   enKey:"Triumvirate",  icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:3,pct:"44.8%",
+                 alt:{en:"Purloined Wedding Ring",enKey:"Purloined",    src:"Pit of Saron",pct:"31.2%"}},
+      trinket1: {en:"Litany of Lightblind Wrath",enKey:"Litany",       icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (72.3%)",prio:1,pct:"72.3%",
+                 alt:{en:"Gaze of the Alnseer",   enKey:"Alnseer",      src:"M+ Dungeon",pct:"58.4%"}},
+      trinket2: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (58.4%)",prio:1,pct:"58.4%",
+                 alt:{en:"Heart of Wind",          enKey:"Heart of Wind",src:"M+ Dungeon",pct:"29.1%"}},
+    }
+  },
+
+  "Paladin|Holy": {
+    tierKeyword:"lightsworn",
+    tierBonus2:"Holy Shock generates 1 additional Holy Power",
+    tierBonus4:"Every 5 Holy Shocks, cast a free Divine Toll",
+    bis: {
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (48.3%) — Darkmoon Sigil: Hunt",prio:1,pct:"48.3%",
+                 alt:{en:"Vaelgor's Edge",          enKey:"Vaelgor",      src:"M+ Dungeon",pct:"14.7%"}},
+      head:     {en:"Tier piece — Head",          enKey:"lightsworn",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1,pct:"100%"},
+      neck:     {en:"Barbed Ymirheim Choker",     enKey:"Ymirheim",     icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4,
+                 alt:{en:"Best neck available",    enKey:"",             src:"Any M+ dungeon"}},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"lightsworn",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"lightsworn",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",   icon:"⌚",tier:false,craft:true, src:"✦ Craft (62.4%) — Thalassian Missive of the Peerless",prio:2,pct:"62.4%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"lightsworn",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"lightsworn",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Skyreach or Pit of Saron",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",  enKey:"Eredath",      icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:2,pct:"53.8%",
+                 alt:{en:"Purloined Wedding Ring",enKey:"Purloined",    src:"Pit of Saron",pct:"38.2%"}},
+      finger2:  {en:"Purloined Wedding Ring",    enKey:"Purloined",    icon:"💍",tier:false,craft:false,src:"Pit of Saron",prio:3,pct:"38.2%",
+                 alt:{en:"Band of the Triumvirate",enKey:"Triumvirate", src:"Seat of the Triumvirate",pct:"31.5%"}},
+      trinket1: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (42.9%)",prio:1,pct:"42.9%",
+                 alt:{en:"Heart of Wind",          enKey:"Heart of Wind",src:"M+ Dungeon",pct:"38.8%"}},
+      trinket2: {en:"Heart of Wind",             enKey:"Heart of Wind",icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (38.8%)",prio:1,pct:"38.8%",
+                 alt:{en:"Litany of Lightblind Wrath",enKey:"Litany",  src:"M+ Dungeon",pct:"28.4%"}},
+    }
+  },
+
+  "Druid|Restoration": {
+    tierKeyword:"luminous bloom",
+    tierBonus2:"Rejuvenation and Lifebloom tick rate increased by 15%",
+    tierBonus4:"Wild Growth applies a Rejuvenation to its primary target",
+    bis: {
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (51.2%) — Darkmoon Sigil: Hunt",prio:1,pct:"51.2%",
+                 alt:{en:"Staff of the Wild Bloom",enKey:"Wild Bloom",   src:"M+ Dungeon",pct:"13.8%"}},
+      head:     {en:"Tier piece — Head",          enKey:"luminous bloom",icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1,pct:"100%"},
+      neck:     {en:"Barbed Ymirheim Choker",     enKey:"Ymirheim",     icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4,
+                 alt:{en:"Best neck available",    enKey:"",             src:"Any M+ dungeon"}},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"luminous bloom",icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2 (38.7%)",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"luminous bloom",icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",   icon:"⌚",tier:false,craft:true, src:"✦ Craft (58.6%) — Thalassian Missive of the Quickblade",prio:2,pct:"58.6%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"luminous bloom",icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"luminous bloom",icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",  enKey:"Eredath",      icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:2,pct:"49.3%",
+                 alt:{en:"Purloined Wedding Ring",enKey:"Purloined",    src:"Pit of Saron",pct:"42.1%"}},
+      finger2:  {en:"Purloined Wedding Ring",    enKey:"Purloined",    icon:"💍",tier:false,craft:false,src:"Pit of Saron",prio:3,pct:"42.1%",
+                 alt:{en:"Band of the Triumvirate",enKey:"Triumvirate", src:"Seat of the Triumvirate",pct:"31.8%"}},
+      trinket1: {en:"Litany of Lightblind Wrath",enKey:"Litany",       icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (61.4%)",prio:1,pct:"61.4%",
+                 alt:{en:"Gaze of the Alnseer",   enKey:"Alnseer",      src:"M+ Dungeon",pct:"57.8%"}},
+      trinket2: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (57.8%)",prio:1,pct:"57.8%",
+                 alt:{en:"Heart of Wind",          enKey:"Heart of Wind",src:"M+ Dungeon",pct:"31.2%"}},
+    }
+  },
+
+  "Evoker|Preservation": {
+    tierKeyword:"black talon",
+    tierBonus2:"Emerald Blossom reduces the cooldown of Dream Breath by 1s",
+    tierBonus4:"Echo copies are 30% more effective",
+    bis: {
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (53.7%) — Darkmoon Sigil: Hunt",prio:1,pct:"53.7%",
+                 alt:{en:"Staff of Temporal Sight",enKey:"Temporal",     src:"M+ Dungeon",pct:"11.2%"}},
+      head:     {en:"Tier piece — Head",          enKey:"black talon",  icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1,pct:"100%"},
+      neck:     {en:"Barbed Ymirheim Choker",     enKey:"Ymirheim",     icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4,
+                 alt:{en:"Best neck available",    enKey:"",             src:"Any M+ dungeon"}},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"black talon",  icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2 (47.3%)",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"black talon",  icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",   icon:"⌚",tier:false,craft:true, src:"✦ Craft (64.2%) — Thalassian Missive of the Fireflash",prio:2,pct:"64.2%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"black talon",  icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"black talon",  icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Algeth'ar Academy or Windrunner Spire",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",  enKey:"Eredath",      icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:2,pct:"52.1%",
+                 alt:{en:"Band of the Triumvirate",enKey:"Triumvirate", src:"Seat of the Triumvirate",pct:"41.3%"}},
+      finger2:  {en:"Band of the Triumvirate",   enKey:"Triumvirate",  icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:3,pct:"41.3%",
+                 alt:{en:"Purloined Wedding Ring",enKey:"Purloined",    src:"Pit of Saron",pct:"28.6%"}},
+      trinket1: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (64.8%)",prio:1,pct:"64.8%",
+                 alt:{en:"Litany of Lightblind Wrath",enKey:"Litany",  src:"M+ Dungeon",pct:"44.2%"}},
+      trinket2: {en:"Litany of Lightblind Wrath",enKey:"Litany",       icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (44.2%)",prio:1,pct:"44.2%",
+                 alt:{en:"Heart of Wind",          enKey:"Heart of Wind",src:"M+ Dungeon",pct:"29.7%"}},
+    }
+  },
+
+  /* ══════════════════════════════════
+     TANKS — Midnight S1 (Archon.gg)
+     ══════════════════════════════════ */
+
+  "Paladin|Protection": {
+    tierKeyword:"lightsworn",
+    tierBonus2:"Shield of the Righteous applies Consecration for 4s",
+    tierBonus4:"Consecration deals 20% more damage and generates 1 Holy Power every 3s",
+    bis: {
+      mainhand: {en:"Vaelgor's Edge",             enKey:"Vaelgor",      icon:"⚡",tier:false,craft:false,src:"M+ Dungeon (38.4%)",prio:1,pct:"38.4%",
+                 alt:{en:"Aln'hara Pikestaff",     enKey:"Aln'hara",     src:"✦ Craft — Darkmoon Sigil",pct:"28.2%"}},
+      offhand:  {en:"Bulwark of Noble Resolve",   enKey:"Noble Resolve",icon:"🛡",tier:false,craft:false,src:"M+ Dungeon — first boss",prio:2,pct:"42.1%",
+                 alt:{en:"Best shield available",  enKey:"",             src:"Any M+ dungeon"}},
+      head:     {en:"Tier piece — Head",          enKey:"lightsworn",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1,pct:"100%"},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",             icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"lightsworn",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"lightsworn",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",   icon:"⌚",tier:false,craft:true, src:"✦ Craft (58.3%) — Thalassian Missive of the Aurora",prio:2,pct:"58.3%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"lightsworn",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"lightsworn",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Skyreach or Pit of Saron",prio:4},
+      finger1:  {en:"Best ring — M+ dungeon",    enKey:"",             icon:"💍",tier:false,craft:false,src:"Nexus-Point Xenas or Algeth'ar Academy",prio:3},
+      finger2:  {en:"Best ring — M+ dungeon",    enKey:"",             icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:3},
+      trinket1: {en:"Heart of Wind",             enKey:"Heart of Wind",icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (31.5%)",prio:1,pct:"31.5%",
+                 alt:{en:"Solarflare Prism",      enKey:"Solarflare",   src:"M+ Dungeon",pct:"25.0%"}},
+      trinket2: {en:"Solarflare Prism",          enKey:"Solarflare",   icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (25.0%)",prio:1,pct:"25.0%",
+                 alt:{en:"Crucible of Erratic Energies",enKey:"Crucible",src:"Singularity reputation",pct:"18.4%"}},
+    }
+  },
+
+  "Death Knight|Blood": {
+    tierKeyword:"death",
+    tierBonus2:"Death Strike healing increased by 10%",
+    tierBonus4:"Death Strike generates 5 additional Runic Power",
+    bis: {
+      mainhand: {en:"Blood Knight's Mercy",       enKey:"Blood Knight",  icon:"⚡",tier:false,craft:true, src:"✦ Craft (52.3%) — Darkmoon Sigil: Hunt",prio:1,pct:"52.3%",
+                 alt:{en:"Best weapon — M+ dungeon",enKey:"",             src:"Any M+ dungeon",pct:"~"}},
+      head:     {en:"Tier piece — Head",          enKey:"death",         icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — Pit of Saron",   enKey:"",              icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"death",         icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",              icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"death",         icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Spellbreaker's Bracers",     enKey:"Spellbreaker",  icon:"⌚",tier:false,craft:true, src:"✦ Craft (74.8%) — Arcanoweave Lining",prio:2,pct:"74.8%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"death",         icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt — Pit of Saron",   enKey:"",              icon:"🪡",tier:false,craft:false,src:"Pit of Saron",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"death",         icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",              icon:"👢",tier:false,craft:false,src:"Pit of Saron or Algeth'ar Academy",prio:4},
+      finger1:  {en:"Best ring — M+ dungeon",    enKey:"",              icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy",prio:3},
+      finger2:  {en:"Best ring — M+ dungeon",    enKey:"",              icon:"💍",tier:false,craft:false,src:"Pit of Saron",prio:3},
+      trinket1: {en:"Heart of Wind",             enKey:"Heart of Wind", icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (34.2%)",prio:1,pct:"34.2%",
+                 alt:{en:"Crucible of Erratic Energies",enKey:"Crucible",src:"Singularity reputation",pct:"28.7%"}},
+      trinket2: {en:"Crucible of Erratic Energies",enKey:"Crucible",    icon:"🔮",tier:false,craft:false,src:"Singularity reputation (28.7%)",prio:1,pct:"28.7%",
+                 alt:{en:"Solarflare Prism",      enKey:"Solarflare",   src:"M+ Dungeon",pct:"19.3%"}},
+    }
+  },
+
+  "Demon Hunter|Vengeance": {
+    tierKeyword:"reaver",
+    tierBonus2:"Shear/Fracture generates 5 additional Pain",
+    tierBonus4:"Fel Devastation damage increased by 15% and heals for 10% of damage dealt",
+    bis: {
+      mainhand: {en:"Aln'hara Pikestaff",         enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (44.7%) — Darkmoon Sigil: Hunt",prio:1,pct:"44.7%",
+                 alt:{en:"Best weapon — M+ dungeon",enKey:"",            src:"Any M+ dungeon",pct:"~"}},
+      head:     {en:"Tier piece — Head",          enKey:"reaver",        icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",              icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"reaver",        icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",              icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"reaver",        icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",    icon:"⌚",tier:false,craft:true, src:"✦ Craft (68.2%) — Thalassian Missive of the Aurora",prio:2,pct:"68.2%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"reaver",        icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",              icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"reaver",        icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",              icon:"👢",tier:false,craft:false,src:"Skyreach or Nexus-Point Xenas",prio:4},
+      finger1:  {en:"Best ring — M+ dungeon",    enKey:"",              icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate or Algeth'ar Academy",prio:3},
+      finger2:  {en:"Best ring — M+ dungeon",    enKey:"",              icon:"💍",tier:false,craft:false,src:"Nexus-Point Xenas",prio:3},
+      trinket1: {en:"Heart of Wind",             enKey:"Heart of Wind", icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (38.9%)",prio:1,pct:"38.9%",
+                 alt:{en:"Crucible of Erratic Energies",enKey:"Crucible",src:"Singularity reputation",pct:"27.4%"}},
+      trinket2: {en:"Crucible of Erratic Energies",enKey:"Crucible",    icon:"🔮",tier:false,craft:false,src:"Singularity reputation (27.4%)",prio:1,pct:"27.4%",
+                 alt:{en:"Solarflare Prism",      enKey:"Solarflare",   src:"M+ Dungeon",pct:"18.8%"}},
+    }
+  },
+
+  "Warrior|Protection": {
+    tierKeyword:"steadfast",
+    tierBonus2:"Shield Slam reduces the cooldown of Shield Wall by 2s",
+    tierBonus4:"Last Stand now also provides 20% damage reduction",
+    bis: {
+      mainhand: {en:"Aln'hara Pikestaff",         enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (47.8%) — Darkmoon Sigil: Hunt",prio:1,pct:"47.8%",
+                 alt:{en:"Best weapon — M+ dungeon",enKey:"",            src:"Any M+ dungeon",pct:"~"}},
+      offhand:  {en:"Bulwark of Noble Resolve",   enKey:"Noble Resolve",icon:"🛡",tier:false,craft:false,src:"M+ Dungeon — first boss (39.4%)",prio:2,pct:"39.4%"},
+      head:     {en:"Tier piece — Head",          enKey:"steadfast",    icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",             icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"steadfast",    icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"steadfast",    icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Spellbreaker's Bracers",     enKey:"Spellbreaker", icon:"⌚",tier:false,craft:true, src:"✦ Craft (61.3%) — Arcanoweave Lining",prio:2,pct:"61.3%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"steadfast",    icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt — Pit of Saron",   enKey:"",             icon:"🪡",tier:false,craft:false,src:"Pit of Saron",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"steadfast",    icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Best ring — M+ dungeon",    enKey:"",             icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy",prio:3},
+      finger2:  {en:"Best ring — M+ dungeon",    enKey:"",             icon:"💍",tier:false,craft:false,src:"Pit of Saron or Nexus-Point Xenas",prio:3},
+      trinket1: {en:"Heart of Wind",             enKey:"Heart of Wind",icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (36.7%)",prio:1,pct:"36.7%",
+                 alt:{en:"Crucible of Erratic Energies",enKey:"Crucible",src:"Singularity reputation",pct:"29.1%"}},
+      trinket2: {en:"Crucible of Erratic Energies",enKey:"Crucible",   icon:"🔮",tier:false,craft:false,src:"Singularity reputation (29.1%)",prio:1,pct:"29.1%",
+                 alt:{en:"Solarflare Prism",      enKey:"Solarflare",  src:"M+ Dungeon",pct:"21.4%"}},
+    }
+  },
+
+  /* ══════════════════════════════════
+     DPS MELEE — Midnight S1 (Archon.gg)
+     ══════════════════════════════════ */
+
+  "Demon Hunter|Havoc": {
+    tierKeyword:"reaver",
+    tierBonus2:"Blade Dance deals 10% more damage",
+    tierBonus4:"Eye Beam generates 10 Fury and its cooldown is reduced by 2s",
+    bis: {
+      mainhand: {en:"Aln'hara Pikestaff",         enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (58.4%) — Darkmoon Sigil: Hunt",prio:1,pct:"58.4%",
+                 alt:{en:"Best 1H weapon — M+ dungeon",enKey:"",         src:"Any M+ dungeon",pct:"~"}},
+      head:     {en:"Tier piece — Head",          enKey:"reaver",        icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",              icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"reaver",        icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",              icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"reaver",        icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",    icon:"⌚",tier:false,craft:true, src:"✦ Craft (72.8%) — Thalassian Missive of the Fireflash",prio:2,pct:"72.8%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"reaver",        icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",              icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"reaver",        icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",              icon:"👢",tier:false,craft:false,src:"Skyreach or Nexus-Point Xenas",prio:4},
+      finger1:  {en:"Best ring — Algeth'ar Academy",enKey:"",           icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy",prio:3},
+      finger2:  {en:"Best ring — M+ dungeon",    enKey:"",              icon:"💍",tier:false,craft:false,src:"Nexus-Point Xenas or Pit of Saron",prio:3},
+      trinket1: {en:"Gaze of the Alnseer",       enKey:"Alnseer",       icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (61.3%)",prio:1,pct:"61.3%",
+                 alt:{en:"Heart of Wind",          enKey:"Heart of Wind", src:"M+ Dungeon",pct:"48.2%"}},
+      trinket2: {en:"Algeth'ar Puzzle Box",       enKey:"Algeth'ar Puzzle",icon:"🔮",tier:false,craft:false,src:"Algeth'ar Academy (44.7%)",prio:1,pct:"44.7%",
+                 alt:{en:"Soulcatcher's Charm",   enKey:"Soulcatcher",   src:"Maisara Caverns",pct:"31.8%"}},
+    }
+  },
+
+  "Warrior|Fury": {
+    tierKeyword:"warbreaker",
+    tierBonus2:"Bloodthirst critical strikes reduce the cooldown of Recklessness by 0.5s",
+    tierBonus4:"Rampage grants 20% increased attack speed for 6s",
+    bis: {
+      mainhand: {en:"Aln'hara Pikestaff",         enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (MH) — Darkmoon Sigil: Hunt",prio:1,
+                 alt:{en:"Best 2H weapon — M+ dungeon",enKey:"",         src:"Any M+ dungeon",pct:"~"}},
+      head:     {en:"Tier piece — Head",          enKey:"warbreaker",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",             icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"warbreaker",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"warbreaker",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Spellbreaker's Bracers",     enKey:"Spellbreaker", icon:"⌚",tier:false,craft:true, src:"✦ Craft (69.4%) — Arcanoweave Lining",prio:2,pct:"69.4%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"warbreaker",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt — Pit of Saron",   enKey:"",             icon:"🪡",tier:false,craft:false,src:"Pit of Saron",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"warbreaker",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Platinum Star Band",         enKey:"Platinum Star",icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy (52.3%)",prio:2,pct:"52.3%",
+                 alt:{en:"Best ring — Pit of Saron",enKey:"",           src:"Pit of Saron",pct:"~"}},
+      finger2:  {en:"Best ring — M+ dungeon",    enKey:"",             icon:"💍",tier:false,craft:false,src:"Nexus-Point Xenas or Pit of Saron",prio:3},
+      trinket1: {en:"Algeth'ar Puzzle Box",       enKey:"Algeth'ar Puzzle",icon:"🔮",tier:false,craft:false,src:"Algeth'ar Academy (78.4%)",prio:1,pct:"78.4%",
+                 alt:{en:"Gaze of the Alnseer",   enKey:"Alnseer",      src:"M+ Dungeon",pct:"54.2%"}},
+      trinket2: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (54.2%)",prio:1,pct:"54.2%",
+                 alt:{en:"Soulcatcher's Charm",   enKey:"Soulcatcher",  src:"Maisara Caverns",pct:"31.6%"}},
+    }
+  },
+
+  "Warrior|Arms": {
+    tierKeyword:"warbreaker",
+    tierBonus2:"Mortal Strike reduces the cooldown of Colossus Smash by 1s",
+    tierBonus4:"Colossus Smash also causes your next Mortal Strike to deal 20% more damage",
+    bis: {
+      mainhand: {en:"Aln'hara Pikestaff",         enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (61.2%) — Darkmoon Sigil: Hunt",prio:1,pct:"61.2%",
+                 alt:{en:"Best 2H weapon — M+ dungeon",enKey:"",         src:"Any M+ dungeon",pct:"~"}},
+      head:     {en:"Tier piece — Head",          enKey:"warbreaker",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",             icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"warbreaker",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"warbreaker",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Spellbreaker's Bracers",     enKey:"Spellbreaker", icon:"⌚",tier:false,craft:true, src:"✦ Craft (67.8%) — Arcanoweave Lining",prio:2,pct:"67.8%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"warbreaker",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt — Pit of Saron",   enKey:"",             icon:"🪡",tier:false,craft:false,src:"Pit of Saron",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"warbreaker",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Platinum Star Band",         enKey:"Platinum Star",icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy (48.7%)",prio:2,pct:"48.7%",
+                 alt:{en:"Best ring — Pit of Saron",enKey:"",           src:"Pit of Saron",pct:"~"}},
+      finger2:  {en:"Best ring — M+ dungeon",    enKey:"",             icon:"💍",tier:false,craft:false,src:"Nexus-Point Xenas or Pit of Saron",prio:3},
+      trinket1: {en:"Algeth'ar Puzzle Box",       enKey:"Algeth'ar Puzzle",icon:"🔮",tier:false,craft:false,src:"Algeth'ar Academy (82.1%)",prio:1,pct:"82.1%",
+                 alt:{en:"Gaze of the Alnseer",   enKey:"Alnseer",      src:"M+ Dungeon",pct:"52.4%"}},
+      trinket2: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (52.4%)",prio:1,pct:"52.4%",
+                 alt:{en:"Soulcatcher's Charm",   enKey:"Soulcatcher",  src:"Maisara Caverns",pct:"28.9%"}},
+    }
+  },
+
+  "Monk|Windwalker": {
+    tierKeyword:"ra-den",
+    tierBonus2:"Rising Sun Kick reduces the cooldown of Serenity/Storm by 1s",
+    tierBonus4:"Fists of Fury grants 4 chi and reduces the cooldown of Rising Sun Kick by 3s",
+    bis: {
+      mainhand: {en:"Aln'hara Pikestaff",         enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (54.6%) — Darkmoon Sigil: Hunt",prio:1,pct:"54.6%",
+                 alt:{en:"Best weapon — M+ dungeon",enKey:"",            src:"Any M+ dungeon",pct:"~"}},
+      head:     {en:"Tier piece — Head",          enKey:"ra-den",        icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",              icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"ra-den",        icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",              icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"ra-den",        icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",    icon:"⌚",tier:false,craft:true, src:"✦ Craft (66.3%) — Thalassian Missive of the Fireflash",prio:2,pct:"66.3%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"ra-den",        icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",              icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"ra-den",        icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",              icon:"👢",tier:false,craft:false,src:"Skyreach or Maisara Caverns",prio:4},
+      finger1:  {en:"Best ring — M+ dungeon",    enKey:"",              icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy or Nexus-Point Xenas",prio:3},
+      finger2:  {en:"Best ring — Pit of Saron",  enKey:"",              icon:"💍",tier:false,craft:false,src:"Pit of Saron",prio:3},
+      trinket1: {en:"Algeth'ar Puzzle Box",       enKey:"Algeth'ar Puzzle",icon:"🔮",tier:false,craft:false,src:"Algeth'ar Academy (71.4%)",prio:1,pct:"71.4%",
+                 alt:{en:"Gaze of the Alnseer",   enKey:"Alnseer",       src:"M+ Dungeon",pct:"48.3%"}},
+      trinket2: {en:"Gaze of the Alnseer",       enKey:"Alnseer",       icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (48.3%)",prio:1,pct:"48.3%",
+                 alt:{en:"Soulcatcher's Charm",   enKey:"Soulcatcher",   src:"Maisara Caverns",pct:"34.1%"}},
+    }
+  },
+
+  "Paladin|Retribution": {
+    tierKeyword:"lightsworn",
+    tierBonus2:"Crusader Strike reduces the cooldown of Wake of Ashes by 1s",
+    tierBonus4:"Divine Storm deals 15% more damage and generates 1 Holy Power",
+    bis: {
+      mainhand: {en:"Aln'hara Pikestaff",         enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (52.8%) — Darkmoon Sigil: Hunt",prio:1,pct:"52.8%",
+                 alt:{en:"Best 2H weapon — M+ dungeon",enKey:"",         src:"Any M+ dungeon",pct:"~"}},
+      head:     {en:"Tier piece — Head",          enKey:"lightsworn",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Best neck — M+ dungeon",     enKey:"",             icon:"📿",tier:false,craft:false,src:"Pit of Saron or Windrunner Spire",prio:4},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"lightsworn",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"lightsworn",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",   icon:"⌚",tier:false,craft:true, src:"✦ Craft (63.7%) — Thalassian Missive of the Peerless",prio:2,pct:"63.7%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"lightsworn",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt — Pit of Saron",   enKey:"",             icon:"🪡",tier:false,craft:false,src:"Pit of Saron",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"lightsworn",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Skyreach or Pit of Saron",prio:4},
+      finger1:  {en:"Platinum Star Band",         enKey:"Platinum Star",icon:"💍",tier:false,craft:false,src:"Algeth'ar Academy (61.2%)",prio:2,pct:"61.2%",
+                 alt:{en:"Purloined Wedding Ring",enKey:"Purloined",    src:"Pit of Saron",pct:"38.4%"}},
+      finger2:  {en:"Purloined Wedding Ring",    enKey:"Purloined",    icon:"💍",tier:false,craft:false,src:"Pit of Saron (38.4%)",prio:3,pct:"38.4%",
+                 alt:{en:"Best ring — Nexus-Point Xenas",enKey:"",     src:"Nexus-Point Xenas",pct:"~"}},
+      trinket1: {en:"Algeth'ar Puzzle Box",       enKey:"Algeth'ar Puzzle",icon:"🔮",tier:false,craft:false,src:"Algeth'ar Academy (92.6%)",prio:1,pct:"92.6%",
+                 alt:{en:"Gaze of the Alnseer",   enKey:"Alnseer",     src:"M+ Dungeon",pct:"60.7%"}},
+      trinket2: {en:"Gaze of the Alnseer",       enKey:"Alnseer",     icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (60.7%)",prio:1,pct:"60.7%",
+                 alt:{en:"Soulcatcher's Charm",   enKey:"Soulcatcher", src:"Maisara Caverns",pct:"29.3%"}},
+    }
+  },
+
+  /* ══════════════════════════════════
+     DPS RANGED — Midnight S1 (Archon.gg)
+     ══════════════════════════════════ */
+
+  "Priest|Shadow": {
+    tierKeyword:"blind oath",
+    tierBonus2:"Void Bolt damage increased by 10%",
+    tierBonus4:"Devouring Plague generates 3 Insanity over its duration",
+    bis: {
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (49.3%) — Darkmoon Sigil: Hunt",prio:1,pct:"49.3%",
+                 alt:{en:"Weight of Command",       enKey:"Weight",       src:"M+ Dungeon",pct:"14.2%"}},
+      head:     {en:"Tier piece — Head",           enKey:"blind oath",   icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1,pct:"100%"},
+      neck:     {en:"Barbed Ymirheim Choker",     enKey:"Ymirheim",     icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4,
+                 alt:{en:"Best neck — M+ dungeon",enKey:"",             src:"Any M+ dungeon"}},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"blind oath",   icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"blind oath",   icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Martyr's Bindings",          enKey:"Martyr",       icon:"⌚",tier:false,craft:true, src:"✦ Craft (56.2%) — Thalassian Missive of the Peerless",prio:2,pct:"56.2%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"blind oath",   icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"blind oath",   icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Pit of Saron or Skyreach",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",  enKey:"Eredath",      icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:2,pct:"53.7%",
+                 alt:{en:"Band of the Triumvirate",enKey:"Triumvirate", src:"Seat of the Triumvirate",pct:"46.3%"}},
+      finger2:  {en:"Band of the Triumvirate",   enKey:"Triumvirate",  icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:3,pct:"46.3%",
+                 alt:{en:"Purloined Wedding Ring",enKey:"Purloined",    src:"Pit of Saron",pct:"27.8%"}},
+      trinket1: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (68.4%)",prio:1,pct:"68.4%",
+                 alt:{en:"Algeth'ar Puzzle Box",  enKey:"Algeth'ar Puzzle",src:"Algeth'ar Academy",pct:"52.1%"}},
+      trinket2: {en:"Algeth'ar Puzzle Box",       enKey:"Algeth'ar Puzzle",icon:"🔮",tier:false,craft:false,src:"Algeth'ar Academy (52.1%)",prio:1,pct:"52.1%",
+                 alt:{en:"Heart of Wind",          enKey:"Heart of Wind",src:"M+ Dungeon",pct:"31.4%"}},
+    }
+  },
+
+  "Evoker|Devastation": {
+    tierKeyword:"black talon",
+    tierBonus2:"Disintegrate deals 10% more damage per tick",
+    tierBonus4:"Dragonrage also triggers Living Flame every 2s",
+    bis: {
+      mainhand: {en:"Aln'hara Cane",              enKey:"Aln'hara",     icon:"⚡",tier:false,craft:true, src:"✦ Craft (57.4%) — Darkmoon Sigil: Hunt",prio:1,pct:"57.4%",
+                 alt:{en:"Staff of the Void Echo",enKey:"Void Echo",     src:"M+ Dungeon",pct:"12.8%"}},
+      head:     {en:"Tier piece — Head",          enKey:"black talon",  icon:"🪖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      neck:     {en:"Barbed Ymirheim Choker",     enKey:"Ymirheim",     icon:"📿",tier:false,craft:false,src:"Pit of Saron",prio:4,
+                 alt:{en:"Best neck — M+ dungeon",enKey:"",             src:"Any M+ dungeon"}},
+      shoulder: {en:"Tier piece — Shoulders",     enKey:"black talon",  icon:"💪",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      back:     {en:"Arcanoweave cloak",          enKey:"",             icon:"🧣",tier:false,craft:true, src:"✦ Craft — Arcanoweave Lining ×2 (48.3%)",prio:5},
+      chest:    {en:"Tier piece — Chest",         enKey:"black talon",  icon:"🛡️",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      wrist:    {en:"Farstrider's Plated Bracers",enKey:"Farstrider",   icon:"⌚",tier:false,craft:true, src:"✦ Craft (72.1%) — Thalassian Missive of the Fireflash",prio:2,pct:"72.1%"},
+      hands:    {en:"Tier piece — Hands",         enKey:"black talon",  icon:"🧤",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      waist:    {en:"Best belt available",        enKey:"",             icon:"🪡",tier:false,craft:false,src:"Any M+ dungeon",prio:5},
+      legs:     {en:"Tier piece — Legs",          enKey:"black talon",  icon:"👖",tier:true, craft:false,src:"Class Catalog or Great Vault",prio:1},
+      feet:     {en:"Best boots available",       enKey:"",             icon:"👢",tier:false,craft:false,src:"Algeth'ar Academy or Windrunner Spire",prio:4},
+      finger1:  {en:"Eredath Seal of Nobility",  enKey:"Eredath",      icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:2,pct:"55.3%",
+                 alt:{en:"Band of the Triumvirate",enKey:"Triumvirate", src:"Seat of the Triumvirate",pct:"44.7%"}},
+      finger2:  {en:"Band of the Triumvirate",   enKey:"Triumvirate",  icon:"💍",tier:false,craft:false,src:"Seat of the Triumvirate",prio:3,pct:"44.7%",
+                 alt:{en:"Purloined Wedding Ring",enKey:"Purloined",    src:"Pit of Saron",pct:"29.1%"}},
+      trinket1: {en:"Gaze of the Alnseer",       enKey:"Alnseer",      icon:"🔮",tier:false,craft:false,src:"M+ Dungeon (64.7%)",prio:1,pct:"64.7%",
+                 alt:{en:"Algeth'ar Puzzle Box",  enKey:"Algeth'ar Puzzle",src:"Algeth'ar Academy",pct:"48.2%"}},
+      trinket2: {en:"Algeth'ar Puzzle Box",       enKey:"Algeth'ar Puzzle",icon:"🔮",tier:false,craft:false,src:"Algeth'ar Academy (48.2%)",prio:1,pct:"48.2%",
+                 alt:{en:"Heart of Wind",          enKey:"Heart of Wind",src:"M+ Dungeon",pct:"32.8%"}},
+    }
+  },
+
+
 };
 
 /* Role-based consumables */
@@ -1261,10 +1667,17 @@ function renderSlotBiS(key,item,nameEn,ref,tierKw){
   const badgeMap={ok:t('badge_ok'),raidok:t('badge_raidok'),notbis:t('badge_notbis'),medium:t('badge_medium'),bad:t('badge_bad'),missing:t('badge_missing'),upgrade:t('badge_upgrade')};
   const badge=`<span class="badge ${status}">${badgeMap[status]||status}</span>`;
   const trk=ilvl?trkPill(ilvl):"";
+  const hasAlt=!!ref.alt;
+  const altEnKey=ref.alt?.enKey||"";
+  const isSameAlt=altEnKey&&nameEn.toLowerCase().includes(altEnKey.toLowerCase());
   const isBisConfirmed=(status==="ok"||status==="upgrade"||status==="raidok")&&(isSame||!detectable||status==="raidok");
+  const pctSpan=(p)=>p?` <span style="color:var(--purple);font-size:9px">${p}</span>`:"";
+  const altBlock=hasAlt&&!isBisConfirmed
+    ?`<div class="d-row" style="grid-column:1/-1;margin-top:4px"><span class="d-k" style="color:var(--teal)">Alt #2</span><span class="d-v" style="color:var(--teal)">${ref.alt.en}${pctSpan(ref.alt?.pct)} <span style="color:var(--muted);font-size:10px">— ${ref.alt?.src||""}</span></span></div>`
+    :"";
   const detail=isBisConfirmed
-    ?`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}</span></div><div class="d-row"></div>`
-    :`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}</span></div><div class="d-row"><span class="d-k">${t('src_label')}</span><span class="d-src">${ref.src}</span></div>`;
+    ?`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}${pctSpan(ref.pct)}</span></div><div class="d-row"></div>`
+    :`<div class="d-row"><span class="d-k">${t('bis_label')}</span><span class="d-v">${ref.en}${pctSpan(ref.pct)}</span></div><div class="d-row"><span class="d-k">${t('src_label')}</span><span class="d-src">${ref.src}</span></div>${altBlock}`;
   const tk=getTrack(ilvl);const tN=tk?tk.n:"??";
   const vfNote=showVF?` ${LANG==='zh'?'虚空锻造可升至 298。':'Voidforge can push it to 298.'}`:"";
   let msg="";
@@ -1279,7 +1692,7 @@ function renderSlotBiS(key,item,nameEn,ref,tierKw){
     else if(ilvl>=289)msg=`<div class="d-msg dm-ok">${isVF?t('msg_vfmax'):t('msg_max')}</div>`;
     else msg=`<div class="d-msg dm-ok">${t('msg_good')}${vfNote}</div>`;
   }
-  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn?esc(nameEn):"—"}</span>${tierP}${craftP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${detail}${msg}</div></div>`;
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${craftP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${detail}${msg}</div></div>`;
 }
 
 /* Render slot (structural only) */
@@ -1301,7 +1714,7 @@ function renderSlotStruct(key,item,nameEn){
   else if(status==="bad")msg=`<div class="d-msg dm-warn">${t('msg_bad',{ilvl,track:tN})}</div>`;
   else if(status==="medium")msg=`<div class="d-msg dm-warn">${t('msg_medium',{ilvl,track:tN})}${vfNote}</div>`;
   else msg=`<div class="d-msg dm-ok">${t('msg_good')}${ilvl===276?` (Hero 6/6 or Myth 1/6)`:""}${vfNote}</div>`;
-  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn?esc(nameEn):"—"}</span>${tierP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${msg}</div></div>`;
+  return`<div class="slot ${status}"><div>${img}</div><div><div class="slot-lbl">${label}</div><div class="slot-nr"><span class="slot-name">${nameEn||"—"}</span>${tierP}${vfP}</div><div class="slot-ilvl">${ilvl?`<strong>${ilvl}</strong>${trk}`:`<span style="color:var(--dim)">${LANG==='zh'?'无装备':'No item'}</span>`}</div></div>${badge}<div class="slot-detail">${msg}</div></div>`;
 }
 
 /* Build reference tab */
@@ -1361,7 +1774,7 @@ async function run(){
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
     data=await r.json();
   }catch(e){
-    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${esc(e.message)}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
+    out.innerHTML=`<div class="err"><strong>${LANG==='zh'?'未找到角色':'Character not found'}</strong><p>${e.message}<br>${LANG==='zh'?'请检查角色名（含特殊字符）、服务器，并确认角色在 Raider.IO 上可见。':'Check the name (with accents), realm, and that the character is visible on raider.io.'}</p></div>`;
     btn.disabled=false;return;
   }
 
@@ -1370,9 +1783,9 @@ async function run(){
   const meta=SPEC_META[specKey]; const detailedBis=SPEC_BIS[specKey];
   if(meta)buildRefTab(specKey,meta);
 
-  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>${t('banner_full',{spec:esc(specName),class:esc(className)})}</span>`;}
-  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>${t('banner_struct',{spec:esc(specName),class:esc(className)})}</span>`;}
-  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>${t('banner_unknown',{spec:esc(specName),class:esc(className)})}</span>`;}
+  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>${t('banner_full',{spec:specName,class:className})}</span>`;}
+  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>${t('banner_struct',{spec:specName,class:className})}</span>`;}
+  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>${t('banner_unknown',{spec:specName,class:className})}</span>`;}
   banner.style.display="flex";
 
   out.innerHTML=`<div class="loader"><div class="spin"></div><div>${LANG==='zh'?'加载装备名称…':'Loading item names…'}</div></div>`;
@@ -1393,8 +1806,8 @@ async function run(){
   const heroCard=`<div class="hero">
     <div class="hero-top">
       <div class="hero-id">
-        <div class="hero-name">${esc(data.name)}</div>
-        <div class="hero-meta"><span class="spec-badge">${esc(specName)} ${esc(className)}</span><span>${esc(data.realm)} · ${esc((data.region||region).toUpperCase())}</span></div>
+        <div class="hero-name">${data.name}</div>
+        <div class="hero-meta"><span class="spec-badge">${specName} ${className}</span><span>${data.realm} · ${(data.region||region).toUpperCase()}</span></div>
       </div>
       <div class="hero-scores">
         <div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">${LANG==='zh'?'装备等级':'Item Level'}</div></div>
@@ -1563,7 +1976,7 @@ async function renderResults(data,items,itemNames,meta,specKey,className,specNam
     const barPct=Math.max(2,Math.min(100,((ilvlEq-237)/(298-237))*100));
     const barColor=tt?tt.c:"#4d6a99";
     const statPrioRow=meta?`<div class="statprio"><span class="statprio-lab">${t("stat_priority")}</span><div class="statprio-chain">${statChips(meta.prio,meta.primary)}</div></div>`:"";
-    const heroCard=`<div class="hero"><div class="hero-top"><div class="hero-id"><div class="hero-name">${esc(data.name)}</div><div class="hero-meta"><span class="spec-badge">${esc(specName)} ${esc(className)}</span><span>${esc(data.realm)} · ${esc((data.region||"").toUpperCase())}</span></div></div><div class="hero-scores"><div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">Item Level</div></div><div class="hscore"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div></div></div><div class="ilvl-bar-wrap"><div class="ilvl-bar-head"><span class="lab">Gear progression</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div><div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}bb)" data-pct="${barPct}"></div></div><div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div></div>${statPrioRow}</div>`;
+    const heroCard=`<div class="hero"><div class="hero-top"><div class="hero-id"><div class="hero-name">${data.name}</div><div class="hero-meta"><span class="spec-badge">${specName} ${className}</span><span>${data.realm} · ${(data.region||"").toUpperCase()}</span></div></div><div class="hero-scores"><div class="hscore"><div class="v ${iC}">${ilvlEq||"—"}</div><div class="l">Item Level</div></div><div class="hscore"><div class="v ${sC}">${score||"—"}</div><div class="l">M+ Score</div></div></div></div><div class="ilvl-bar-wrap"><div class="ilvl-bar-head"><span class="lab">Gear progression</span><span class="cur">${tt?tt.n:""} · ${ilvlEq||"?"}</span></div><div class="ilvl-bar"><div class="ilvl-bar-fill" style="width:0%;background:linear-gradient(90deg,${barColor},${barColor}bb)" data-pct="${barPct}"></div></div><div class="ilvl-ticks"><span class="ilvl-tick">237</span><span class="ilvl-tick">250</span><span class="ilvl-tick">263</span><span class="ilvl-tick">276</span><span class="ilvl-tick">289</span><span class="ilvl-tick">298</span></div></div>${statPrioRow}</div>`;
     const vfNote=`<div class="vf-note"><div class="vf-ico">🔥</div><div><strong>Voidforge (patch 12.0.5)</strong> — Pushes to ilvl 298 on Hero/Myth track. Eligible: Main Hand · Trinket 1 · Trinket 2 only.</div></div>`;
     const animBar=()=>{setTimeout(()=>{const f=document.querySelector(".ilvl-bar-fill");if(f)f.style.width=f.dataset.pct+"%"},80)};
 
@@ -1609,7 +2022,7 @@ async function renderResults(data,items,itemNames,meta,specKey,className,specNam
     out.innerHTML=`${heroCard}<div class="summary"><div class="sc"><div class="sl">To Fix</div><div class="sv ${(bad.length+medium.length)===0?"cg":"ca"}">${bad.length+medium.length}</div></div><div class="sc"><div class="sl">276+</div><div class="sv cg">${good.length}</div></div><div class="sc"><div class="sl">Track</div><div class="sv ${iC} sm">${tt?tt.n:"—"}</div></div></div>${vfNote}${sec(bad,"var(--red)","High Priority")}${sec(medium,"var(--amber)","Needs Upgrade")}${sec(good,"var(--green)","ilvl 276+")}`;
     animBar();
   }catch(err){
-    out.innerHTML=`<div class="err"><strong>Render error</strong><p>${esc(err.message)}</p></div>`;
+    out.innerHTML=`<div class="err"><strong>Render error</strong><p>${err.message}</p></div>`;
     console.error(err);
   }
 }
@@ -1634,16 +2047,16 @@ async function run(){
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||`HTTP ${r.status}`);}
     data=await r.json();
   }catch(e){
-    out.innerHTML=`<div class="err"><strong>Character not found</strong><p>${e.name==="AbortError"?"Request timed out. Please try again.":esc(e.message)}</p></div>`;
+    out.innerHTML=`<div class="err"><strong>Character not found</strong><p>${e.name==="AbortError"?"Request timed out. Please try again.":e.message}</p></div>`;
     btn.disabled=false;return;
   }
   const className=data.class||"",specName=data.active_spec_name||"",specKey=`${className}|${specName}`;
   const meta=SPEC_META[specKey];
   const detailedBis=getActiveBis(specKey);
   if(meta)buildRefTab(specKey,meta);
-  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>Detected ${esc(specName)} ${esc(className)} — full BiS data loaded.</span>`;}
-  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>Detected ${esc(specName)} ${esc(className)} — structural check. Detailed BiS coming soon.</span>`;}
-  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>Spec ${esc(specName)} ${esc(className)} not recognized — ilvl check only.</span>`;}
+  if(detailedBis){banner.className="banner ok";banner.innerHTML=`<span>✓</span><span>Detected ${specName} ${className} — full BiS data loaded.</span>`;}
+  else if(meta){banner.className="banner warn";banner.innerHTML=`<span>◈</span><span>Detected ${specName} ${className} — structural check. Detailed BiS coming soon.</span>`;}
+  else{banner.className="banner warn";banner.innerHTML=`<span>⚠</span><span>Spec ${specName} ${className} not recognized — ilvl check only.</span>`;}
   banner.style.display="flex";
   out.innerHTML=`<div class="loader"><div class="spin"></div><div>Loading item names…</div></div>`;
   const gear=data.gear||{},items=gear.items||{},itemNames={};
@@ -1684,7 +2097,7 @@ async function runCompare(){
   }
   let d1,d2;
   try{[d1,d2]=await Promise.all([fetchChar(n1,r1,reg1),fetchChar(n2,r2,reg2)]);}
-  catch(e){out.innerHTML=`<div class="err"><strong>Error</strong><p>${esc(e.message)}</p></div>`;btn.disabled=false;return;}
+  catch(e){out.innerHTML=`<div class="err"><strong>Error</strong><p>${e.message}</p></div>`;btn.disabled=false;return;}
   const g1=d1.gear||{},g2=d2.gear||{};
   const i1=g1.items||{},i2=g2.items||{};
   const il1=g1.item_level_equipped||0,il2=g2.item_level_equipped||0;
@@ -1704,36 +2117,14 @@ async function runCompare(){
     let c1="",c2="",b1="",b2="";
     if(iv1>iv2){c1="cmp-winner";c2="cmp-loser";b1=`<span class="cmp-slot-badge cmp-sb-win">+${iv1-iv2}</span>`;}
     else if(iv2>iv1){c2="cmp-winner";c1="cmp-loser";b2=`<span class="cmp-slot-badge cmp-sb-win">+${iv2-iv1}</span>`;}
-    return`<div class="cmp-slot-row"><div class="cmp-slot-cell ${c1}">${ico(it1)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${esc(n1t)}</div><div class="cmp-slot-ilvl">${iv1||"—"} ${iv1?trkPill(iv1):""}</div></div>${b1}</div><div class="cmp-slot-cell ${c2}">${ico(it2)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${esc(n2t)}</div><div class="cmp-slot-ilvl">${iv2||"—"} ${iv2?trkPill(iv2):""}</div></div>${b2}</div></div>`;
+    return`<div class="cmp-slot-row"><div class="cmp-slot-cell ${c1}">${ico(it1)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${n1t}</div><div class="cmp-slot-ilvl">${iv1||"—"} ${iv1?trkPill(iv1):""}</div></div>${b1}</div><div class="cmp-slot-cell ${c2}">${ico(it2)}<div class="cmp-slot-info"><div class="cmp-slot-lbl">${lbl}</div><div class="cmp-slot-name">${n2t}</div><div class="cmp-slot-ilvl">${iv2||"—"} ${iv2?trkPill(iv2):""}</div></div>${b2}</div></div>`;
   }).join("");
-  out.innerHTML=`<div class="cmp-grid"><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${esc(d1.name)}</div><div class="cmp-player-sub">${esc(d1.realm)} · ${esc(d1.active_spec_name||"")} ${esc(d1.class||"")}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC1}">${il1}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC1}">${Math.round(sc1)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p1wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div><div class="cmp-vs">VS</div><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${esc(d2.name)}</div><div class="cmp-player-sub">${esc(d2.realm)} · ${esc(d2.active_spec_name||"")} ${esc(d2.class||"")}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC2}">${il2}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC2}">${Math.round(sc2)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p2wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div></div><div class="cmp-player"><div class="cmp-slots-head" style="display:grid;grid-template-columns:1fr 1fr"><span>${esc(d1.name)}</span><span>${esc(d2.name)}</span></div>${slotRows}</div>`;
+  out.innerHTML=`<div class="cmp-grid"><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${d1.name}</div><div class="cmp-player-sub">${d1.realm} · ${d1.active_spec_name||""} ${d1.class||""}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC1}">${il1}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC1}">${Math.round(sc1)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p1wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div><div class="cmp-vs">VS</div><div class="cmp-player"><div class="cmp-player-head"><div class="cmp-player-name">${d2.name}</div><div class="cmp-player-sub">${d2.realm} · ${d2.active_spec_name||""} ${d2.class||""}</div></div><div class="cmp-stats"><div class="cmp-stat"><div class="v ${iC2}">${il2}</div><div class="l">ilvl</div></div><div class="cmp-stat"><div class="v ${sC2}">${Math.round(sc2)||"—"}</div><div class="l">M+ Score</div></div><div class="cmp-stat"><div class="v cg">${p2wins}</div><div class="l">Slots won</div></div><div class="cmp-stat"><div class="v cgr">${eq}</div><div class="l">Equal</div></div></div></div></div><div class="cmp-player"><div class="cmp-slots-head" style="display:grid;grid-template-columns:1fr 1fr"><span>${d1.name}</span><span>${d2.name}</span></div>${slotRows}</div>`;
   btn.disabled=false;
 }
 
 
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js?v=4").catch(()=>{});});}
-
-/* ══ Consentement publicitaire (gate AdSense) ══
-   adsbygoogle.js n'est charge QU'APRES un opt-in explicite. */
-const ADS_CLIENT="ca-pub-4857959643759243";
-function loadAds(){
-  if(window.__adsLoaded)return;window.__adsLoaded=true;
-  const sc=document.createElement("script");
-  sc.async=true;sc.crossOrigin="anonymous";
-  sc.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+ADS_CLIENT;
-  document.head.appendChild(sc);
-}
-function setConsent(accepted){
-  try{localStorage.setItem("nf_consent",accepted?"granted":"denied");}catch(e){}
-  document.getElementById("consent").classList.remove("show");
-  if(accepted)loadAds();
-}
-function showConsent(){document.getElementById("consent").classList.add("show");}
-(function initConsent(){
-  let c=null;try{c=localStorage.getItem("nf_consent");}catch(e){}
-  if(c==="granted")loadAds();
-  else if(c!=="denied")showConsent();   // aucune decision => on demande
-})();
 </script>
 </body>
 </html>
